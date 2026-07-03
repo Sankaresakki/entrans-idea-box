@@ -1,0 +1,208 @@
+@import "tailwindcss";
+
+@theme {
+  /* ── Apple SF Pro system font stack ── */
+  --font-sans:    -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+                  "Helvetica Neue", "Helvetica", "Arial", ui-sans-serif, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+                  "Helvetica Neue", ui-sans-serif, sans-serif;
+  --font-mono:    "SF Mono", SFMono-Regular, ui-monospace, Menlo, Consolas, monospace;
+
+  --color-ion-blue:  #0b1a30;
+  --color-ion-sky:   #0ea5e9;
+  --color-ion-green: #10b981;
+}
+
+/* ── Global base ── */
+*,
+*::before,
+*::after {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+html {
+  /* Bump root 16px → 17.5px — scales all rem-based Tailwind sizes proportionally */
+  font-size: 17.5px;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 1rem;        /* 17.5px — comfortable reading size */
+  font-weight: 400;
+  line-height: 1.65;      /* more breathing room between lines */
+  letter-spacing: 0;      /* remove tight negative tracking */
+  background-color: #f5f5f7;
+  color: #1c1c1e;
+}
+
+/* ── Scale up tiny hardcoded px label text globally ──────────────────────────
+   Components use text-[9px], text-[10px], text-[10.5px], text-[11px] everywhere.
+   We rescale these to comfortable reading sizes without editing every component. */
+
+/* Catch-all: clamp any element whose computed font-size is ≤ 11px */
+* {
+  min-height: 0;
+}
+
+/* Target the pattern: small text inside .font-mono labels (the "AI dashboard" look) */
+.font-mono {
+  font-size: max(12px, 0.7em);
+  letter-spacing: 0.01em;
+}
+
+/* Tailwind text-xs = 0.75rem → 13.1px at new root; bump slightly */
+.text-xs   { font-size: 0.8rem !important; }   /* ~14px */
+
+/* Tailwind text-sm = 0.875rem → 15.3px — good */
+
+/* Override tracking-widest (0.1em in Tailwind) — too wide for small text */
+.tracking-widest { letter-spacing: 0.07em !important; }
+.tracking-wider  { letter-spacing: 0.04em !important; }
+
+/* Uppercase labels: reduce tracking so they don't look like form-stamp art */
+.uppercase { letter-spacing: 0.05em; }
+
+/* ── Display / heading helpers ── */
+.font-display { font-family: var(--font-display); }
+
+.text-large-title { font-size: 2rem;    font-weight: 700; letter-spacing: -0.02em; }
+.text-title1      { font-size: 1.625rem;font-weight: 700; letter-spacing: -0.015em; }
+.text-title2      { font-size: 1.3rem;  font-weight: 700; letter-spacing: -0.01em;  }
+.text-title3      { font-size: 1.15rem; font-weight: 600; letter-spacing: -0.005em; }
+.text-headline    { font-size: 1rem;    font-weight: 600; }
+.text-body        { font-size: 1rem;    font-weight: 400; }
+.text-callout     { font-size: 0.95rem; font-weight: 400; }
+.text-subhead     { font-size: 0.9rem;  font-weight: 400; }
+.text-footnote    { font-size: 0.8rem;  font-weight: 400; }
+.text-caption1    { font-size: 0.75rem; font-weight: 400; }
+.text-caption2    { font-size: 0.7rem;  font-weight: 400; letter-spacing: 0.01em; }
+
+/* ── Cards ── */
+.card-shadow {
+  box-shadow: 0 1px 0 rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04);
+}
+.ios-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04);
+}
+
+/* ── Accents ── */
+.bento-accent-indigo {
+  background: linear-gradient(135deg, var(--color-indigo-600) 0%, var(--color-violet-700) 100%);
+}
+.bento-accent-dark {
+  background-color: var(--color-slate-900);
+}
+
+/* ── Lightbulb glow animation (Submit Idea button) ── */
+@keyframes bulb-glow {
+  0%, 100% {
+    box-shadow: 0 0 6px 3px rgba(250, 204, 21, 0.25), 0 0 0 0 rgba(250, 204, 21, 0);
+    background-color: #fefce8;
+  }
+  50% {
+    box-shadow: 0 0 18px 6px rgba(250, 204, 21, 0.55), 0 0 32px 10px rgba(250, 204, 21, 0.18);
+    background-color: #fef9c3;
+  }
+}
+.animate-bulb-glow {
+  animation: bulb-glow 2.4s ease-in-out infinite;
+}
+@keyframes bulb-flicker {
+  0%, 90%, 100% { opacity: 1; }
+  92%           { opacity: 0.6; }
+  96%           { opacity: 0.9; }
+}
+.animate-bulb-icon {
+  animation: bulb-flicker 3s ease-in-out infinite;
+}
+
+/* Print Styles for Certificate Generation */
+@page {
+  size: A4;
+  margin: 8mm;
+}
+
+@media print {
+  html, body {
+    height: auto !important;
+    overflow: hidden !important;
+  }
+  body * {
+    visibility: hidden;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-area, .print-area * {
+    visibility: visible;
+  }
+  .print-area {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    page-break-inside: avoid;
+    page-break-after: avoid;
+    overflow: hidden;
+  }
+}
+
+/* Annexure 9 table print — body gets .print-tracker class via JS before window.print() */
+.screen-hidden-print-visible {
+  display: none;
+}
+
+@media print {
+  body.print-tracker {
+    overflow: visible !important;
+    height: auto !important;
+  }
+  body.print-tracker * {
+    visibility: hidden;
+  }
+  body.print-tracker .no-print {
+    display: none !important;
+  }
+  body.print-tracker .print-area-table,
+  body.print-tracker .print-area-table * {
+    visibility: visible;
+  }
+  body.print-tracker .print-area-table {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    padding: 8mm;
+  }
+  body.print-tracker .screen-hidden-print-visible {
+    display: block;
+  }
+  body.print-tracker table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 8pt;
+  }
+  body.print-tracker th,
+  body.print-tracker td {
+    border: 1px solid #cbd5e1;
+    padding: 4pt 6pt;
+    vertical-align: top;
+  }
+  body.print-tracker thead {
+    background-color: #0f766e !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  body.print-tracker thead th {
+    color: #ffffff !important;
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "One Ion Idea Box",
+  "description": "An interactive workflow portal and simulation cockpit for Ion Exchange's structured employee ideation programme, featuring Stage 1 Idea Submission to Selection and Stage 2 Selection to Implementation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
