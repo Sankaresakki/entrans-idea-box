@@ -254,23 +254,23 @@ export const Dashboard: React.FC<DashboardProps> = ({ ideas, onSelectIdea, selec
         </div>
 
         {/* KPI 4 */}
-        <div className="p-6 bg-slate-900 border border-slate-900 rounded-2xl card-shadow flex flex-col justify-between text-white shadow-lg shadow-indigo-950/15 min-h-[140px] relative overflow-hidden">
+        <div className="p-6 bg-white border border-[#0098DB]/20 rounded-2xl card-shadow flex flex-col justify-between shadow-lg shadow-[#0098DB]/10 min-h-[140px] relative overflow-hidden">
           <div className="absolute right-0 bottom-0 translate-x-4 translate-y-4 opacity-5 pointer-events-none">
-            <DollarSign className="w-36 h-36" />
+            <DollarSign className="w-36 h-36 text-[#0098DB]" />
           </div>
           <div className="flex justify-between items-start z-1">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block font-mono">
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block font-mono">
               Rewards Simulated
             </span>
-            <div className="p-2.5 bg-white/10 rounded-xl text-amber-400">
+            <div className="p-2.5 bg-[#0098DB]/10 rounded-xl text-amber-500">
               <DollarSign className="w-5 h-5" />
             </div>
           </div>
           <div className="mt-4 z-1">
-            <span className="text-2xl font-black text-white font-display tracking-tight block font-mono">
+            <span className="text-2xl font-black text-slate-900 font-display tracking-tight block font-mono">
               ₹ {totalRewards.toLocaleString()}
             </span>
-            <span className="text-[10px] text-indigo-200 font-medium block mt-1">{winnerCount} Leadership Winners</span>
+            <span className="text-[10px] text-[#0098DB] font-medium block mt-1">{winnerCount} Leadership Winners</span>
           </div>
         </div>
       </div>
@@ -361,7 +361,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ ideas, onSelectIdea, selec
         {/* Global Search and Filter Block inside selected Dashboard view */}
         <div className="p-5 border-b border-slate-150 bg-slate-50/20 flex flex-wrap items-center justify-between gap-4">
           <div className="space-y-0.5">
-            <h2 className="font-display font-black text-xs text-[#0b1a30] uppercase tracking-widest flex items-center gap-1.5">
+            <h2 className="font-display font-black text-xs text-[#004a69] uppercase tracking-widest flex items-center gap-1.5">
               {persona.role === "Employee" ? (
                 <>
                   <Sparkles className="w-3.5 h-3.5 text-indigo-650" />
@@ -621,7 +621,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ ideas, onSelectIdea, selec
             <div className="p-6 overflow-y-auto space-y-6 text-xs text-slate-800">
               
               {/* Row 1: Idea Title banner */}
-              <div className="bg-gradient-to-r from-slate-900 to-indigo-950 p-5 rounded-2xl text-white shadow-xs">
+              <div className="bg-gradient-to-r from-[#003350] to-[#004a69] p-5 rounded-2xl text-white shadow-xs">
                 <span className="text-[9px] uppercase font-mono font-bold tracking-widest text-indigo-300">Project Title</span>
                 <h4 className="text-sm font-black tracking-tight leading-tight mt-1 font-display uppercase">{viewingDetailIdea.title}</h4>
                 <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 pt-3 border-t border-white/10 text-[10px] text-slate-300 font-medium">
@@ -794,10 +794,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ ideas, onSelectIdea, selec
                         <span className="font-bold text-slate-800 tracking-tight">Gate 2: IRC Committee Scoring</span>
                         <div className="flex items-center gap-2">
                           <span className="text-[9px] font-mono font-bold text-slate-500">
-                            Threshold: {(viewingDetailIdea.ircScoresThreshold ? (viewingDetailIdea.ircScoresThreshold > 5 ? 4.0 : viewingDetailIdea.ircScoresThreshold) : 4.0).toFixed(1)}
+                            Threshold: {(viewingDetailIdea.ircScoresThreshold ?? 17).toFixed(1)}
                           </span>
                           <span className={`px-2 py-0.5 rounded-full text-[8.5px] font-black uppercase tracking-wider font-mono ${
-                            viewingDetailIdea.averageIrcScore ? (viewingDetailIdea.averageIrcScore >= (viewingDetailIdea.ircScoresThreshold ? (viewingDetailIdea.ircScoresThreshold > 5 ? 4.0 : viewingDetailIdea.ircScoresThreshold) : 4.0) ? "bg-emerald-50 text-emerald-700 border border-emerald-150" : "bg-rose-50 text-rose-700 border border-rose-150") : "bg-amber-50 text-amber-700 border border-amber-150"
+                            viewingDetailIdea.averageIrcScore ? (viewingDetailIdea.averageIrcScore >= (viewingDetailIdea.ircScoresThreshold ?? 17) ? "bg-emerald-50 text-emerald-700 border border-emerald-150" : "bg-rose-50 text-rose-700 border border-rose-150") : "bg-amber-50 text-amber-700 border border-amber-150"
                           }`}>
                             {viewingDetailIdea.averageIrcScore ? `Avg: ${viewingDetailIdea.averageIrcScore.toFixed(2)}` : "No Score"}
                           </span>
@@ -958,7 +958,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ ideas, onSelectIdea, selec
               <button
                 type="button"
                 onClick={() => setViewingDetailIdea(null)}
-                className="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold tracking-widest uppercase rounded-xl cursor-pointer text-[10px] transition-all"
+                className="px-5 py-2 bg-[#0098DB] hover:bg-[#0089c5] text-white font-bold tracking-widest uppercase rounded-xl cursor-pointer text-[10px] transition-all"
               >
                 Close Audit Logs
               </button>
@@ -1038,7 +1038,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ ideas, onSelectIdea, selec
                   <BarChart3 className="w-4 h-4 text-indigo-200" />
                 </div>
                 <div className="text-left">
-                  <div className="text-sm font-black tracking-tight">Annexure 10 — Quarterly Leadership Report</div>
+                  <div className="text-sm font-black tracking-tight">Quarterly Leadership Report</div>
                   <div className="text-[10px] text-indigo-300 font-mono">{currentYear} · For CHRO / MD / Board Review</div>
                 </div>
               </div>
@@ -1178,7 +1178,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ ideas, onSelectIdea, selec
                   </div>
                 </div>
 
-                <p className="text-center text-[9px] text-slate-400 font-mono">Annexure 10 — Ripple Quarterly Leadership Report · {currentYear} · Generated {new Date().toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' })}</p>
+                <p className="text-center text-[9px] text-slate-400 font-mono">Ripple Quarterly Leadership Report · {currentYear} · Generated {new Date().toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' })}</p>
               </div>
             )}
           </div>

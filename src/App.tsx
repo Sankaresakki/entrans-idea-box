@@ -271,8 +271,13 @@ export default function App() {
     uploadedFiles?: { name: string; size: string }[];
     customFields?: { id: string; label: string; value: string; type: string }[];
   }) => {
-    const nextNum = ideas.length + 1;
-    const formattedId = `ION-2026-${String(nextNum).padStart(4, "0")}`;
+    const existingNums = ideas.map(i => {
+      const parts = i.id.split("-");
+      return parseInt(parts[parts.length - 1] || "0", 10);
+    }).filter(n => !isNaN(n) && n > 0);
+    const maxNum = existingNums.length > 0 ? Math.max(...existingNums) : 50648;
+    const nextNum = Math.max(maxNum + 1, 50649);
+    const formattedId = `ION-2026-${nextNum}`;
 
     const newIdea: Idea = {
       id: formattedId,
@@ -404,22 +409,9 @@ export default function App() {
       <header className="bg-white border-b border-slate-200 text-slate-900 py-4 px-6 sticky top-0 z-10 shadow-xs">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
           
-          {/* Logo / Title */}
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-sm">
-              ION
-            </div>
-            <div>
-              <h1 className="text-sm font-extrabold font-display tracking-tight text-slate-900 flex items-center gap-1.5 leading-none uppercase">
-                One Ion — Idea Box Portal
-                <span className="bg-indigo-50 text-indigo-700 border border-indigo-200/50 font-mono font-bold text-[8.5px] px-2 py-0.5 rounded-full tracking-wider">
-                  Bento Flow
-                </span>
-              </h1>
-              <p className="text-[10px] text-slate-500 mt-1 uppercase tracking-wider font-semibold">
-                Ion Exchange (India) Limited Corporate Ideation Program
-              </p>
-            </div>
+          {/* Logo */}
+          <div>
+            <img src="/assets/ripple.png" className="h-10 w-auto" alt="Ripple" />
           </div>
 
           {/* Quick Resolute buttons */}
@@ -439,16 +431,7 @@ export default function App() {
               {demoOpen ? "Close Demo" : "Run Live Demo"}
             </button>
 
-            {/* Submit New Idea — Employee only, header shortcut */}
-            {currentPersona.role === "Employee" && (
-              <button
-                onClick={() => setActiveTab("submit")}
-                className="animate-bulb-glow px-4 py-2 text-sm font-bold text-amber-800 border border-amber-300 rounded-full transition-all cursor-pointer flex items-center gap-2 shadow-sm hover:scale-105 active:scale-95"
-              >
-                <Lightbulb className="w-4 h-4 text-amber-500 animate-bulb-icon" />
-                Submit New Idea
-              </button>
-            )}
+
             <button
               onClick={handleSystemRestore}
               className="px-3 py-1.5 text-[10px] font-bold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-all cursor-pointer flex items-center gap-1"
@@ -480,24 +463,24 @@ export default function App() {
       </header>
 
       {/* Active Secure Persona Workspace Segment */}
-      <section className="bg-slate-900 border-b border-slate-800 py-3 px-6 shadow-md relative text-slate-100">
+      <section className="bg-white border-b border-slate-200 py-3 px-6 shadow-sm relative text-slate-900">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-indigo-500/10 border border-indigo-400/35 flex items-center justify-center font-bold text-xs text-sky-450 font-mono shadow-xs animate-pulse">
+            <div className="w-9 h-9 rounded-full bg-[#0098DB]/10 border border-[#0098DB]/30 flex items-center justify-center font-bold text-xs text-[#0098DB] font-mono shadow-xs animate-pulse">
               {currentPersona.name.split(" ").map(n => n[0]).join("")}
             </div>
             <div className="text-left">
               <div className="flex items-center gap-2">
-                <span className="text-[9px] uppercase tracking-widest font-bold text-indigo-300 font-mono">
+                <span className="text-[9px] uppercase tracking-widest font-bold text-[#0098DB] font-mono">
                   Active Session
                 </span>
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               </div>
-              <div className="text-xs font-bold font-display text-white mt-0.5">
-                {currentPersona.name} &bull; <span className="text-sky-350 font-mono">[{currentPersona.role}]</span>
+              <div className="text-xs font-bold font-display text-slate-900 mt-0.5">
+                {currentPersona.name} &bull; <span className="text-[#0098DB] font-mono">[{currentPersona.role}]</span>
               </div>
-              <div className="text-[10px] text-slate-400 leading-none mt-1">
+              <div className="text-[10px] text-slate-500 leading-none mt-1">
                 {currentPersona.email} {currentPersona.businessUnit ? `| ${currentPersona.businessUnit}` : ""}
               </div>
             </div>
@@ -509,68 +492,80 @@ export default function App() {
             {currentPersona.role !== "Employee" && (
             <div className="relative group">
               <button 
-                className="px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-750 text-[10px] font-bold text-slate-300 flex items-center gap-1.5 transition-all cursor-pointer"
+                className="px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-[10px] font-bold text-slate-700 flex items-center gap-1.5 transition-all cursor-pointer"
               >
-                <KeyRound className="w-3.5 h-3.5 text-sky-400" />
+                <KeyRound className="w-3.5 h-3.5 text-[#0098DB]" />
                 <span>Simulate Switch User</span>
                 <ChevronDown className="w-3 h-3 opacity-60" />
               </button>
               
               {/* Dropdown Menu */}
-              <div className="absolute right-0 top-full mt-1.5 w-64 bg-slate-850 border border-slate-700 rounded-xl shadow-xl shadow-slate-950/40 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50 p-1 divide-y divide-slate-800 max-h-96 overflow-y-auto">
-                <div className="p-2 text-[9px] font-mono font-bold text-indigo-400 uppercase tracking-wider sticky top-0 bg-slate-850">
+              <div className="absolute right-0 top-full mt-1.5 w-64 bg-white border border-slate-200 rounded-xl shadow-xl shadow-slate-200/80 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50 p-1 divide-y divide-slate-100 max-h-96 overflow-y-auto">
+                <div className="p-2 text-[9px] font-mono font-bold text-[#0098DB] uppercase tracking-wider sticky top-0 bg-white border-b border-slate-100">
                   Select Corporate Persona
                 </div>
 
                 {/* Employee section */}
                 <div className="py-1">
-                  <div className="px-2.5 py-1 text-[8px] font-mono font-bold text-emerald-500 uppercase tracking-widest">
+                  <div className="px-2.5 py-1 text-[8px] font-mono font-bold text-emerald-600 uppercase tracking-widest">
                     Employees
                   </div>
                   {ALL_SWITCH_PERSONAS.filter(p => p.role === "Employee").map((p) => (
                     <button key={p.email}
                       onClick={() => { setCurrentPersona(p); localStorage.setItem("ripple_logged_persona", JSON.stringify(p)); }}
-                      className="w-full text-left px-2.5 py-1.5 rounded-lg text-[10.5px] text-slate-300 hover:text-white hover:bg-slate-800 transition-all flex flex-col cursor-pointer"
+                      className="w-full text-left px-2.5 py-1.5 rounded-lg text-[10.5px] text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-all flex flex-col cursor-pointer"
                     >
                       <span className="font-bold">{p.name}</span>
-                      <span className="text-[8px] text-emerald-500/70 font-mono">{p.role} &bull; {p.businessUnit}</span>
+                      <span className="text-[8px] text-emerald-600/70 font-mono">{p.role} &bull; {p.businessUnit}</span>
                     </button>
                   ))}
                 </div>
 
                 {/* Admin section */}
                 <div className="py-1">
-                  <div className="px-2.5 py-1 text-[8px] font-mono font-bold text-indigo-400 uppercase tracking-widest">
+                  <div className="px-2.5 py-1 text-[8px] font-mono font-bold text-[#0098DB] uppercase tracking-widest">
                     Governance / Admin
                   </div>
                   {ALL_SWITCH_PERSONAS.filter(p => p.role !== "Employee" && p.role !== "Super Admin").map((p) => (
                     <button key={p.email}
                       onClick={() => { setCurrentPersona(p); localStorage.setItem("ripple_logged_persona", JSON.stringify(p)); }}
-                      className="w-full text-left px-2.5 py-1.5 rounded-lg text-[10.5px] text-slate-300 hover:text-white hover:bg-slate-800 transition-all flex flex-col cursor-pointer"
+                      className="w-full text-left px-2.5 py-1.5 rounded-lg text-[10.5px] text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-all flex flex-col cursor-pointer"
                     >
                       <span className="font-bold">{p.name}</span>
-                      <span className="text-[8px] text-slate-500 font-mono">{p.role} &bull; {p.businessUnit}</span>
+                      <span className="text-[8px] text-slate-400 font-mono">{p.role} &bull; {p.businessUnit}</span>
                     </button>
                   ))}
                 </div>
 
                 {/* Super Admin section */}
                 <div className="py-1">
-                  <div className="px-2.5 py-1 text-[8px] font-mono font-bold text-amber-400 uppercase tracking-widest">
+                  <div className="px-2.5 py-1 text-[8px] font-mono font-bold text-amber-600 uppercase tracking-widest">
                     Super Admin
                   </div>
                   {ALL_SWITCH_PERSONAS.filter(p => p.role === "Super Admin").map((p) => (
                     <button key={p.email}
                       onClick={() => { setCurrentPersona(p); localStorage.setItem("ripple_logged_persona", JSON.stringify(p)); }}
-                      className="w-full text-left px-2.5 py-1.5 rounded-lg text-[10.5px] text-amber-200 hover:text-white hover:bg-amber-950/40 transition-all flex flex-col cursor-pointer"
+                      className="w-full text-left px-2.5 py-1.5 rounded-lg text-[10.5px] text-amber-700 hover:text-amber-900 hover:bg-amber-50 transition-all flex flex-col cursor-pointer"
                     >
                       <span className="font-bold">{p.name}</span>
-                      <span className="text-[8px] text-amber-500/70 font-mono">{p.role} &bull; Full Oversight</span>
+                      <span className="text-[8px] text-amber-600/70 font-mono">{p.role} &bull; Full Oversight</span>
                     </button>
                   ))}
                 </div>
               </div>
             </div>
+            )}
+
+            {/* Submit New Idea — Employee only */}
+            {currentPersona.role === "Employee" && (
+              <button
+                onClick={() => setActiveTab("submit")}
+                style={{ backgroundColor: "#15B45A", borderColor: "#15B45A" }}
+                className="px-4 py-1.5 text-[10px] font-black text-white border-2 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 shadow-sm hover:brightness-110 active:scale-95"
+              >
+                <Lightbulb className="w-3.5 h-3.5 text-white" />
+                + Submit New Idea
+              </button>
             )}
 
             {/* Clear Sign Out button */}
@@ -580,7 +575,7 @@ export default function App() {
                 setCurrentPersona(null);
                 setActiveTab("dashboard");
               }}
-              className="px-3 py-1.5 text-[10px] font-bold text-rose-300 bg-rose-950/30 hover:bg-rose-955/50 border border-rose-900/50 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 shadow-sm"
+              className="px-3 py-1.5 text-[10px] font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 shadow-sm"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span>Log Out</span>
@@ -597,27 +592,29 @@ export default function App() {
         <div className="flex border-b border-slate-200 mb-6 flex-wrap gap-1">
           <button
             onClick={() => setActiveTab("dashboard")}
+            style={activeTab === "dashboard" ? { borderBottomColor: "#0098DB", color: "#0098DB" } : {}}
             className={`px-4 py-2.5 text-xs font-bold font-display uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
               activeTab === "dashboard"
-                ? "border-indigo-600 text-indigo-700 bg-linear-to-b from-transparent to-indigo-50/20"
+                ? "border-b-2 bg-sky-50/30"
                 : "border-transparent text-slate-500 hover:text-slate-800"
             }`}
           >
-            {currentPersona.role === "Employee" ? "My Proposals Desk" : "Dashboard & Registry"}
+            Dashboard
           </button>
 
 
 
-          {/* Simulate Gating Task - visible for all roles */}
+          {/* My Idea Tracker - visible for all roles */}
           <button
               onClick={() => setActiveTab("taskcenter")}
+              style={activeTab === "taskcenter" ? { borderBottomColor: "#0098DB", color: "#0098DB" } : {}}
               className={`px-4 py-2.5 text-xs font-bold font-display uppercase tracking-wider border-b-2 transition-all cursor-pointer flex items-center gap-1.5 relative ${
                 activeTab === "taskcenter"
-                  ? "border-indigo-600 text-indigo-700 bg-linear-to-b from-transparent to-indigo-50/20"
+                  ? "border-b-2 bg-sky-50/30"
                   : "border-transparent text-slate-500 hover:text-slate-800"
               }`}
             >
-              Simulate Active Task
+              My Idea Tracker
               {selectedIdea && (
                 <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping absolute right-1.5 top-1.5" />
               )}
@@ -625,35 +622,38 @@ export default function App() {
 
           <button
             onClick={() => setActiveTab("certificates")}
+            style={activeTab === "certificates" ? { borderBottomColor: "#0098DB", color: "#0098DB" } : {}}
             className={`px-4 py-2.5 text-xs font-bold font-display uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
               activeTab === "certificates"
-                ? "border-indigo-600 text-indigo-700 bg-linear-to-b from-transparent to-indigo-50/20"
+                ? "border-b-2 bg-sky-50/30"
                 : "border-transparent text-slate-500 hover:text-slate-800"
             }`}
           >
-            Credentials Chamber
+            Certificates
           </button>
 
           <button
             onClick={() => setActiveTab("monthlytracker")}
+            style={activeTab === "monthlytracker" ? { borderBottomColor: "#0098DB", color: "#0098DB" } : {}}
             className={`px-4 py-2.5 text-xs font-bold font-display uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
               activeTab === "monthlytracker"
-                ? "border-indigo-600 text-indigo-700 bg-linear-to-b from-transparent to-indigo-50/20"
+                ? "border-b-2 bg-sky-50/30"
                 : "border-transparent text-slate-500 hover:text-slate-800"
             }`}
           >
-            Monthly Tracker
+            Monthly Work Log
           </button>
 
           <button
             onClick={() => setActiveTab("meetings")}
+            style={activeTab === "meetings" ? { borderBottomColor: "#0098DB", color: "#0098DB" } : {}}
             className={`px-4 py-2.5 text-xs font-bold font-display uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
               activeTab === "meetings"
-                ? "border-indigo-600 text-indigo-700 bg-linear-to-b from-transparent to-indigo-50/20"
+                ? "border-b-2 bg-sky-50/30"
                 : "border-transparent text-slate-500 hover:text-slate-800"
             }`}
           >
-            Meeting Management
+            Meetings
           </button>
 
           <button
@@ -832,7 +832,7 @@ export default function App() {
 
                 {/* RIPPLE Visual Timeline Checklist */}
                 <div className="pt-4 border-t border-slate-200">
-                  <h4 className="text-[10px] uppercase font-bold tracking-widest text-[#0b1a30] mb-3 flex items-center justify-between font-mono">
+                  <h4 className="text-[10px] uppercase font-bold tracking-widest text-[#004a69] mb-3 flex items-center justify-between font-mono">
                     <span>RIPPLE Stage-Gate Timeline</span>
                     <span className="text-indigo-650 font-bold text-[9.5px]">Active Progress</span>
                   </h4>

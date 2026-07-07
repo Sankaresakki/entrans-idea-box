@@ -58,7 +58,7 @@ export const CertificationModule: React.FC<CertificationModuleProps> = ({
         selectedIdea.status !== IdeaStatus.ReturnedToEmployee && 
         selectedIdea.status !== IdeaStatus.VettingLimitExceeded
       ) {
-        if (selectedIdea.averageIrcScore && selectedIdea.averageIrcScore >= 75) {
+        if (selectedIdea.averageIrcScore && selectedIdea.averageIrcScore >= 17) {
           setActiveCertType("Certificate of Selection");
         } else {
           setActiveCertType("B-IRC Shortlisting");
@@ -255,7 +255,7 @@ Corporate Treasury & HR Audit Systems`;
     <div className="space-y-6">
       
       {/* Intro Stats Bar */}
-      <div className="p-5 bg-gradient-to-br from-indigo-900 via-slate-900 to-indigo-950 border border-slate-800 rounded-2xl text-white relative overflow-hidden shadow-lg">
+      <div className="p-5 bg-gradient-to-br from-[#004a69] via-[#003350] to-[#003350] border border-[#0098DB]/20 rounded-2xl text-white relative overflow-hidden shadow-lg">
         <div className="absolute right-0 top-0 translate-x-8 -translate-y-8 opacity-10">
           <Award className="w-56 h-56 text-indigo-400" />
         </div>

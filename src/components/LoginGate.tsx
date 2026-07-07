@@ -116,6 +116,18 @@ const DEMO_ACCOUNTS: DemoAccount[] = [
     avatarInitials: "IR"
   },
   {
+    role: "IRC Member",
+    name: "Advisory Panel Member",
+    email: "advisor1@ionexchange.com",
+    businessUnit: "Technical Board",
+    employeeId: "ION-TECH-2026-013",
+    department: "R&D Centre of Excellence",
+    designation: "Technical Jury Member",
+    suggestedPassword: "ircJuryBoard",
+    badge: "Idea Review Committee",
+    avatarInitials: "IR"
+  },
+  {
     role: "Functional Head",
     name: "Dr. Alok Gupta",
     email: "alok.gupta@ionexchange.com",
@@ -411,29 +423,15 @@ export const LoginGate: React.FC<LoginGateProps> = ({ onLogin, onBack }) => {
 
           <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
 
-            {/* Mode Tabs */}
+            {/* Mode Tabs — Register hidden; login only per client requirement */}
             <div className="flex border-b border-slate-100">
               <button
                 type="button"
                 onClick={() => switchMode("login")}
-                className={`flex-1 py-4 text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                  mode === "login"
-                    ? "text-indigo-700 border-b-2 border-indigo-600 bg-indigo-50/50"
-                    : "text-slate-400 hover:text-slate-600"
-                }`}
+                style={{ borderBottomColor: "#0098DB", color: "#0098DB" }}
+                className="flex-1 py-4 text-sm font-bold flex items-center justify-center gap-2 border-b-2 bg-sky-50/30 cursor-pointer"
               >
                 <LogIn className="w-4 h-4" /> Sign In
-              </button>
-              <button
-                type="button"
-                onClick={() => switchMode("register")}
-                className={`flex-1 py-4 text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                  mode === "register"
-                    ? "text-violet-700 border-b-2 border-violet-600 bg-violet-50/50"
-                    : "text-slate-400 hover:text-slate-600"
-                }`}
-              >
-                <UserPlus className="w-4 h-4" /> Register
               </button>
             </div>
 

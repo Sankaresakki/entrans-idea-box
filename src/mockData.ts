@@ -72,7 +72,7 @@ export const MOCK_IDEAS: Idea[] = [
     vettingSendBackCount: 0,
     cpocVettedBy: "Kavita Sharma",
     vettingDate: "2026-06-29T10:00:00Z",
-    averageIrcScore: 4.2,
+    averageIrcScore: 20.83,
     ircSelectionStatus: "Selected",
     selectionVoucherReleased: true,
     selectionCertificateUrl: "CERTIFICATE_INC_SELECTION_ION-2026-0005.pdf",
@@ -108,10 +108,10 @@ export const MOCK_IDEAS: Idea[] = [
     submissionDate: "2026-06-02T11:00:00Z",
     vettingSendBackCount: 0,
     ircReviews: [
-      { reviewerName: "Advisor 1", reviewerEmail: "adv1@ionexchange.com", scores: { alignmentPriority: 4, feasibility: 4, businessValue: 4, innovation: 4, scalability: 4, riskDependency: 4 }, aggregateScore: 4.0, comments: "Highly viable pilot project.", dateSubmitted: "2026-06-04" },
-      { reviewerName: "Advisor 2", reviewerEmail: "adv2@ionexchange.com", scores: { alignmentPriority: 4, feasibility: 4, businessValue: 5, innovation: 4, scalability: 4, riskDependency: 4 }, aggregateScore: 4.17, comments: "Sound logic behind physical dosage adjustments.", dateSubmitted: "2026-06-04" }
+      { reviewerName: "Advisor 1", reviewerEmail: "adv1@ionexchange.com", scores: { alignmentPriority: 4, feasibility: 4, businessValue: 4, innovation: 4, scalability: 4, riskDependency: 4 }, aggregateScore: 20.0, comments: "Highly viable pilot project.", dateSubmitted: "2026-06-04" },
+      { reviewerName: "Advisor 2", reviewerEmail: "adv2@ionexchange.com", scores: { alignmentPriority: 4, feasibility: 4, businessValue: 5, innovation: 4, scalability: 4, riskDependency: 4 }, aggregateScore: 20.83, comments: "Sound logic behind physical dosage adjustments.", dateSubmitted: "2026-06-04" }
     ],
-    averageIrcScore: 4.125,
+    averageIrcScore: 20.42,
     ircSelectionStatus: "Selected",
     selectionVoucherReleased: true,
     assignedFHName: "Dr. Alok Gupta",
@@ -145,9 +145,9 @@ export const MOCK_IDEAS: Idea[] = [
     submissionDate: "2026-05-10T09:00:00Z",
     vettingSendBackCount: 0,
     ircReviews: [
-      { reviewerName: "Senior Advisor A", reviewerEmail: "advA@ionexchange.com", scores: { alignmentPriority: 5, feasibility: 4, businessValue: 5, innovation: 4, scalability: 4, riskDependency: 4 }, aggregateScore: 4.33, comments: "Extremely strategic move for municipal sewage plants.", dateSubmitted: "2026-05-12" }
+      { reviewerName: "Senior Advisor A", reviewerEmail: "advA@ionexchange.com", scores: { alignmentPriority: 5, feasibility: 4, businessValue: 5, innovation: 4, scalability: 4, riskDependency: 4 }, aggregateScore: 21.67, comments: "Extremely strategic move for municipal sewage plants.", dateSubmitted: "2026-05-12" }
     ],
-    averageIrcScore: 4.5,
+    averageIrcScore: 21.67,
     ircSelectionStatus: "Selected",
     selectionVoucherReleased: true,
     assignedFHName: "Dr. Alok Gupta",

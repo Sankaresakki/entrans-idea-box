@@ -8,9 +8,84 @@
                   "Helvetica Neue", ui-sans-serif, sans-serif;
   --font-mono:    "SF Mono", SFMono-Regular, ui-monospace, Menlo, Consolas, monospace;
 
-  --color-ion-blue:  #0b1a30;
-  --color-ion-sky:   #0ea5e9;
-  --color-ion-green: #10b981;
+  /* ── Brand colours ── */
+  --color-ion-blue:  #0098DB;
+  --color-ion-sky:   #0098DB;
+  --color-ion-green: #15B45A;
+
+  /* ── Brand Blue (#0098DB) palette — overrides indigo, sky, blue ── */
+  --color-indigo-50:  #e0f5fd;
+  --color-indigo-100: #b3e5f9;
+  --color-indigo-200: #81d4f6;
+  --color-indigo-300: #4fc3f2;
+  --color-indigo-400: #27b5ef;
+  --color-indigo-500: #0098db;
+  --color-indigo-600: #0089c5;
+  --color-indigo-700: #0074a5;
+  --color-indigo-800: #005f87;
+  --color-indigo-900: #004a69;
+  --color-indigo-950: #003350;
+
+  --color-sky-50:  #e0f5fd;
+  --color-sky-100: #b3e5f9;
+  --color-sky-200: #81d4f6;
+  --color-sky-300: #4fc3f2;
+  --color-sky-400: #27b5ef;
+  --color-sky-500: #0098db;
+  --color-sky-600: #0089c5;
+  --color-sky-700: #0074a5;
+  --color-sky-800: #005f87;
+  --color-sky-900: #004a69;
+  --color-sky-950: #003350;
+
+  --color-blue-50:  #e0f5fd;
+  --color-blue-100: #b3e5f9;
+  --color-blue-200: #81d4f6;
+  --color-blue-300: #4fc3f2;
+  --color-blue-400: #27b5ef;
+  --color-blue-500: #0098db;
+  --color-blue-600: #0089c5;
+  --color-blue-700: #0074a5;
+  --color-blue-800: #005f87;
+  --color-blue-900: #004a69;
+  --color-blue-950: #003350;
+
+  /* ── Brand Green (#15B45A) palette — overrides emerald, green, teal ── */
+  --color-emerald-50:  #e7f9ef;
+  --color-emerald-100: #bcf0d1;
+  --color-emerald-200: #8de6b2;
+  --color-emerald-300: #5ddb93;
+  --color-emerald-400: #36d37c;
+  --color-emerald-500: #15b45a;
+  --color-emerald-600: #0fa04f;
+  --color-emerald-700: #0c8742;
+  --color-emerald-800: #096d35;
+  --color-emerald-900: #075429;
+  --color-emerald-950: #043d1c;
+
+  --color-green-50:  #e7f9ef;
+  --color-green-100: #bcf0d1;
+  --color-green-200: #8de6b2;
+  --color-green-300: #5ddb93;
+  --color-green-400: #36d37c;
+  --color-green-500: #15b45a;
+  --color-green-600: #0fa04f;
+  --color-green-700: #0c8742;
+  --color-green-800: #096d35;
+  --color-green-900: #075429;
+  --color-green-950: #043d1c;
+
+  --color-teal-50:  #e7f9ef;
+  --color-teal-100: #bcf0d1;
+  --color-teal-200: #8de6b2;
+  --color-teal-300: #5ddb93;
+  --color-teal-400: #36d37c;
+  --color-teal-500: #15b45a;
+  --color-teal-600: #0fa04f;
+  --color-teal-700: #0c8742;
+  --color-teal-800: #096d35;
+  --color-teal-900: #075429;
+  --color-teal-950: #043d1c;
 }
 
 /* ── Global base ── */

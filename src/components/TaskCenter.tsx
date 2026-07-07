@@ -52,6 +52,7 @@ const AVAILABLE_ENTERPRISE_REVIEWERS: EnterpriseReviewer[] = [
   { id: "EMP-3849", name: "Meera Nair", email: "meera.nair@ionexchange.com", department: "Zero Liquid Discharge" },
   { id: "EMP-5021", name: "Anil Deshmukh", email: "anil.deshmukh@ionexchange.com", department: "Chemical Engineering" },
   { id: "EMP-8841", name: "Advisory Expert A", email: "advisor@ionexchange.com", department: "Sensing CoE" },
+  { id: "EMP-8842", name: "Advisory Panel Member", email: "advisor1@ionexchange.com", department: "R&D Centre of Excellence" },
   { id: "EMP-1022", name: "Technical Expert B", email: "council1@ionexchange.com", department: "Water Quality" },
   { id: "EMP-1023", name: "Jury Advisor C", email: "council2@ionexchange.com", department: "ZLD CoE" }
 ];
@@ -186,15 +187,15 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
 
   // C-POC IRC Commissioning configurations
   const [useDefaultIRC, setUseDefaultIRC] = useState(idea.useDefaultIRCCouncil !== undefined ? idea.useDefaultIRCCouncil : true);
-  const [customIRCEmails, setCustomIRCEmails] = useState(idea.ircCouncilAssignedEmails && idea.ircCouncilAssignedEmails.length > 0 ? idea.ircCouncilAssignedEmails.join(", ") : "advisor@ionexchange.com");
+  const [customIRCEmails, setCustomIRCEmails] = useState(idea.ircCouncilAssignedEmails && idea.ircCouncilAssignedEmails.length > 0 ? idea.ircCouncilAssignedEmails.join(", ") : "advisor@ionexchange.com, advisor1@ionexchange.com");
   const [reviewerSearch, setReviewerSearch] = useState("");
   
-  // Safe threshold mapping: if old threshold is > 5, convert it to 4.0, otherwise keep it (or default to 4.0)
+  // Threshold: 17/25 (5 criteria × max 5, scaled to /25)
   const [scoresThreshold, setScoresThreshold] = useState(() => {
     if (idea.ircScoresThreshold !== undefined) {
-      return idea.ircScoresThreshold > 5 ? 4.0 : idea.ircScoresThreshold;
+      return idea.ircScoresThreshold;
     }
-    return 4.0;
+    return 17;
   });
   const [scoreMin, setScoreMin] = useState(idea.ircScoreMin || 1);
   const [scoreMax, setScoreMax] = useState(idea.ircScoreMax || 5);
@@ -432,7 +433,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
     }
 
     const assignedEmails = useDefaultIRC
-      ? ["advisor@ionexchange.com"]
+      ? ["advisor@ionexchange.com", "advisor1@ionexchange.com"]
       : customIRCEmails.split(",").map(e => e.trim()).filter(e => e.includes("@"));
 
     if (assignedEmails.length === 0) {
@@ -487,7 +488,8 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
       return;
     }
 
-    const aggregate = (alignmentPriority + feasibility + businessValue + innovation + scalability + riskDependency) / 6;
+    // Score scaled to /25 (6 criteria × max 5 = 30, normalised: × 25/30)
+    const aggregate = parseFloat(((alignmentPriority + feasibility + businessValue + innovation + scalability + riskDependency) * 25 / 30).toFixed(2));
 
     const newReview: IRCReview = {
       reviewerName:  persona.name,
@@ -509,9 +511,9 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
     onAddNotification(
       "c-poc@ionexchange.com",
       `Jury Scorecard Logged: ${idea.id} by ${persona.name}`,
-      `Dear C-POC,\n\nAdvisor ${persona.name} has submitted their Annexure 4 evaluation for idea ${idea.id}.\n\nAverage score: ${aggregate.toFixed(2)}/5\nRecommended FH: ${ircRecommendedFH}`
+      `Dear C-POC,\n\nAdvisor ${persona.name} has submitted their Annexure 4 evaluation for idea ${idea.id}.\n\nScore: ${aggregate.toFixed(2)}/25\nRecommended FH: ${ircRecommendedFH}`
     );
-    alert(`Score of ${aggregate.toFixed(2)}/5 locked. Recommended FH: ${ircRecommendedFH}`);
+    alert(`Score of ${aggregate.toFixed(2)}/25 locked. Recommended FH: ${ircRecommendedFH}`);
   };
 
   // 5. C-POC Input Functional Head Details
@@ -2118,7 +2120,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
           <div className="space-y-3">
             <span className="text-[9.5px] uppercase font-mono font-bold text-slate-500 block">Active Jury Members Status:</span>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {(idea.ircCouncilAssignedEmails || ["advisor@ionexchange.com"]).map((email) => {
+              {(idea.ircCouncilAssignedEmails || ["advisor@ionexchange.com", "advisor1@ionexchange.com"]).map((email) => {
                 const isBypassed = bypassedIRCMembers.includes(email);
                 const review = idea.ircReviews?.find((r) => r.reviewerEmail === email);
                 const hasScored = !!review;
@@ -2285,7 +2287,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
             <button
               type="button"
               onClick={() => {
-                const activeAdvisors = (idea.ircCouncilAssignedEmails || ["advisor@ionexchange.com"])
+                const activeAdvisors = (idea.ircCouncilAssignedEmails || ["advisor@ionexchange.com", "advisor1@ionexchange.com"])
                   .filter((email) => !bypassedIRCMembers.includes(email));
 
                 const completedReviews = idea.ircReviews || [];
@@ -2324,10 +2326,10 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
                   onAddNotification(
                     idea.employeeEmail,
                     `CONGRATULATIONS! Your Idea has been Selected by RIPPLE IRC - ${idea.id}`,
-                    `Dear ${idea.employeeName},\n\nWe are ecstatic to share that our ${evaluationCycle} panel of Senior Advisors has selected your presentation "${idea.title}" with an average score of ${avg.toFixed(2)} (passing threshold: ${threshold.toFixed(1)})!\n\nAwards Triggered:\n1. Digital Certificate of Idea Selection is generated.\n2. Rs. 2,000 corporate voucher is dispatched to Finance for payouts.\n\nNext Step: C-POC is identifying matching Functional Heads to deploy local trials.`,
+                    `Dear ${idea.employeeName},\n\nWe are ecstatic to share that our ${evaluationCycle} panel of Senior Advisors has selected your presentation "${idea.title}" with an average score of ${avg.toFixed(2)}/25 (passing threshold: ${threshold.toFixed(1)}/25)!\n\nAwards Triggered:\n1. Digital Certificate of Idea Selection is generated.\n2. Rs. 2,000 corporate voucher is dispatched to Finance for payouts.\n\nNext Step: C-POC is identifying matching Functional Heads to deploy local trials.`,
                     `CERTIFICATE_INC_SELECTION_${idea.id}.pdf`
                   );
-                  alert(`IRC Selection Complete! Average Score: ${avg.toFixed(2)} is above passing threshold of ${threshold.toFixed(1)}. Idea SELECTED! Selection voucher & selection certificate unlocked.`);
+                  alert(`IRC Selection Complete! Average Score: ${avg.toFixed(2)}/25 is above passing threshold of ${threshold.toFixed(1)}/25. Idea SELECTED! Selection voucher & selection certificate unlocked.`);
                 } else {
                   // Annexure 5 — Idea Not Selected Mail to Employee
                   const firstName = (idea.employeeName || "").split(" ")[0] || idea.employeeName;
@@ -2338,7 +2340,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
                     `[Annexure 5] Your Ripple idea ${idea.id} — update from the review committee`,
                     annex5Body
                   );
-                  alert(`IRC Evaluation Finished! Average Score: ${avg.toFixed(2)} is below the threshold of ${threshold.toFixed(1)}. Idea NOT SELECTED. Annexure 5 appreciative mail dispatched to ${idea.employeeEmail}.`);
+                  alert(`IRC Evaluation Finished! Average Score: ${avg.toFixed(2)}/25 is below the threshold of ${threshold.toFixed(1)}/25. Idea NOT SELECTED. Annexure 5 appreciative mail dispatched to ${idea.employeeEmail}.`);
                 }
               }}
               className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold tracking-widest rounded-xl uppercase transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
