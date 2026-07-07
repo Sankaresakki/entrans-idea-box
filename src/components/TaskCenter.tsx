@@ -2287,14 +2287,12 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
             <button
               type="button"
               onClick={() => {
-                const activeAdvisors = (idea.ircCouncilAssignedEmails || ["advisor@ionexchange.com", "advisor1@ionexchange.com"])
-                  .filter((email) => !bypassedIRCMembers.includes(email));
-
                 const completedReviews = idea.ircReviews || [];
-                const reviewsToAverage = completedReviews.filter((r) => activeAdvisors.includes(r.reviewerEmail));
+                // Count all submitted reviews that are not explicitly bypassed
+                const reviewsToAverage = completedReviews.filter((r) => !bypassedIRCMembers.includes(r.reviewerEmail));
 
                 if (reviewsToAverage.length === 0) {
-                  alert("No active scoring reviews have been submitted yet. Please wait for at least one advisor or submit a dummy scoring review.");
+                  alert("No scoring reviews have been submitted yet. Please wait for at least one advisor to complete their evaluation.");
                   return;
                 }
 
