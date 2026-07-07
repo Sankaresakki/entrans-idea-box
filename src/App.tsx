@@ -411,7 +411,7 @@ export default function App() {
           
           {/* Logo */}
           <div>
-            <img src="/assets/ripple.png" className="h-10 w-auto" alt="Ripple" />
+            <img src="/ripple.png" className="h-10 w-auto" alt="Ripple" />
           </div>
 
           {/* Quick Resolute buttons */}
