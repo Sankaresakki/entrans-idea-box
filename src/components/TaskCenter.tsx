@@ -1926,7 +1926,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
                     <strong className="text-emerald-900 text-sm">Evaluation Submitted</strong>
                   </div>
                   <p className="text-xs text-emerald-800">
-                    Your score of <strong className="font-mono">{myReview.aggregateScore.toFixed(2)}/5</strong> has been recorded.
+                    Your score of <strong className="font-mono">{myReview.aggregateScore.toFixed(2)}/25</strong> has been recorded.
                     Recommended FH: <strong>{myReview.recommendedFH || "—"}</strong>
                   </p>
                   <p className="text-[10px] text-slate-500">Awaiting remaining advisors. C-POC will run the averaging calculation to finalise Stage Gate 2.</p>
@@ -2139,7 +2139,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
                           <>
                             <span className="text-emerald-700 font-extrabold uppercase">✓ Completed</span>
                             <span className="text-slate-400">•</span>
-                            <span className="text-indigo-700 font-extrabold">Score: {review.aggregateScore.toFixed(1)}</span>
+                            <span className="text-indigo-700 font-extrabold">Score: {review.aggregateScore.toFixed(1)}/25</span>
                           </>
                         ) : (
                           <span className="text-amber-700 font-extrabold uppercase">⌛ Awaiting Score</span>

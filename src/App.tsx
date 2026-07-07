@@ -602,6 +602,21 @@ export default function App() {
             Dashboard
           </button>
 
+          {/* Submit Idea tab — Employee only */}
+          {currentPersona.role === "Employee" && (
+            <button
+              onClick={() => setActiveTab("submit")}
+              style={activeTab === "submit" ? { borderBottomColor: "#15B45A", color: "#15B45A" } : {}}
+              className={`px-4 py-2.5 text-xs font-bold font-display uppercase tracking-wider border-b-2 transition-all cursor-pointer flex items-center gap-1.5 ${
+                activeTab === "submit"
+                  ? "border-b-2 bg-emerald-50/30"
+                  : "border-transparent text-slate-500 hover:text-slate-800"
+              }`}
+            >
+              Submit Idea
+            </button>
+          )}
+
 
 
           {/* My Idea Tracker - visible for all roles */}
