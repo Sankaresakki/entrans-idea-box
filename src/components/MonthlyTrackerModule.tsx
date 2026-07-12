@@ -216,8 +216,8 @@ export const MonthlyTrackerModule: React.FC<MonthlyTrackerModuleProps> = ({
     onUpdateIdea({ ...idea, monthlyTrackers: [entry, ...(idea.monthlyTrackers || [])] });
     onAddNotification(
       "coe@ionexchange.com",
-      `[Annexure 9] Monthly Update Submitted â€” ${idea.id} (${poMonth.trim()})`,
-      `Dear C-POC,\n\nPlan Owner ${persona.name} has submitted their monthly progress update for "${idea.fhProjectTitle || idea.title}" (${idea.id}) â€” ${poMonth.trim()}.\n\nMilestone Activities: ${poMilestones}\nProgress Achieved: ${poProgress}\nStatus: ${poStatus}${poRemarks ? `\nRemarks: ${poRemarks}` : ""}\n\nPlease review and update Annexure 9 by the 5th of the month.`
+      `Monthly Update Submitted — ${idea.id} (${poMonth.trim()})`,
+      `Dear C-POC,\n\nPlan Owner ${persona.name} has submitted their monthly progress update for "${idea.fhProjectTitle || idea.title}" (${idea.id}) â€” ${poMonth.trim()}.\n\nMilestone Activities: ${poMilestones}\nProgress Achieved: ${poProgress}\nStatus: ${poStatus}${poRemarks ? `\nRemarks: ${poRemarks}` : ""}\n\nPlease review and update the monthly tracker by the 5th of the month.`
     );
     setPoMilestones(""); setPoProgress(""); setPoRemarks(""); setPoStatus("On Track");
     setShowPoForm(false);
@@ -235,7 +235,7 @@ export const MonthlyTrackerModule: React.FC<MonthlyTrackerModuleProps> = ({
         <div className="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <span className="text-[9px] font-mono tracking-widest uppercase text-teal-700 font-bold bg-teal-50 px-2 py-0.5 rounded border border-teal-100">
-              Annexure 9
+              Monthly Tracker
             </span>
             <h2 className="text-xl font-black font-display text-slate-900 tracking-tight mt-1">
               Monthly Progress Update
@@ -391,7 +391,7 @@ export const MonthlyTrackerModule: React.FC<MonthlyTrackerModuleProps> = ({
       <div className="no-print bg-white border border-slate-200 rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <span className="text-[9px] font-mono tracking-widest uppercase text-teal-700 font-bold bg-teal-50 px-2 py-0.5 rounded border border-teal-100">
-            Annexure 9
+            Monthly Tracker
           </span>
           <h2 className="text-xl font-black font-display text-slate-900 tracking-tight mt-1">
             Monthly Project Progress Tracker
@@ -410,7 +410,7 @@ export const MonthlyTrackerModule: React.FC<MonthlyTrackerModuleProps> = ({
           </div>
           <button onClick={handlePrint}
             className="flex items-center gap-1.5 px-4 py-2.5 bg-slate-800 hover:bg-slate-900 text-white text-[10px] font-bold rounded-xl cursor-pointer transition-all">
-            <Printer className="w-3.5 h-3.5" /> Print Annexure 9
+            <Printer className="w-3.5 h-3.5" /> Print Monthly Tracker
           </button>
         </div>
       </div>
@@ -451,7 +451,7 @@ export const MonthlyTrackerModule: React.FC<MonthlyTrackerModuleProps> = ({
           <div className="no-print p-12 text-center text-slate-400 bg-white border border-slate-200 rounded-2xl">
             <Clock className="w-10 h-10 opacity-20 mx-auto mb-2" />
             <p className="font-bold text-slate-700 text-sm">No active pilot projects to track yet.</p>
-            <p className="text-[11px] mt-1">Projects appear here after their Action Plan is approved by the Functional Head (Annexure 7 Step 2).</p>
+            <p className="text-[11px] mt-1">Projects appear here after their Action Plan is approved by the Functional Head.</p>
           </div>
         ) : (
           <div className="bg-white border border-slate-200 rounded-2xl overflow-x-auto overflow-y-visible">

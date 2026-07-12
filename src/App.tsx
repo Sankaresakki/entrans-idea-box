@@ -6,7 +6,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Idea, IdeaStatus, UserPersona, NotificationLog, getAuthorizedIdeasForRole, OfflineMeeting } from "./types";
-import { MOCK_IDEAS } from "./mockData";
+
 import * as db from "./lib/db";
 import { supabase, isSupabaseConfigured } from "./lib/supabase";
 import { Dashboard } from "./components/Dashboard";
@@ -20,9 +20,11 @@ import { DemoFlowRunner } from "./components/DemoFlowRunner";
 import { CertificationModule } from "./components/CertificationModule";
 import { MonthlyTrackerModule } from "./components/MonthlyTrackerModule";
 import { MeetingManagementModule, OfflineMeeting as IOfflineMeeting } from "./components/MeetingManagementModule";
+import { EmployeeIdeaTracker } from "./components/EmployeeIdeaTracker";
+import { IdeaWorkflowPanel } from "./components/IdeaWorkflowPanel";
 import { 
   Building2, Users, Mail, ClipboardCheck, Sparkles, Inbox, Award, 
-  BookOpen, ChevronRight, Play, Loader2, RefreshCcw, Landmark, Clock,
+  BookOpen, ChevronRight, Play, Loader2, Landmark, Clock,
   LogOut, ShieldAlert, KeyRound, ChevronDown, Calendar, Activity, Eye, Lightbulb
 } from "lucide-react";
 
@@ -49,23 +51,13 @@ export default function App() {
   const [ideas, setIdeas] = useState<Idea[]>(() => {
     if (isSupabaseConfigured) return []; // loaded async on mount
     const saved = localStorage.getItem("ion_ideas");
-    return saved ? JSON.parse(saved) : MOCK_IDEAS;
+    return saved ? JSON.parse(saved) : [];
   });
 
   const [notificationLogs, setNotificationLogs] = useState<NotificationLog[]>(() => {
     if (isSupabaseConfigured) return []; // loaded async on mount
     const saved = localStorage.getItem("ion_notifications");
-    if (saved) return JSON.parse(saved);
-    return [
-      {
-        id: "notif-init",
-        ideaId: "ION-2026-0001",
-        recipient: "sathyakumar@entrans.io",
-        subject: "One Ion Idea Box: Idea Submitted - ION-2026-0001",
-        body: `Dear Sathya Kumar,<br/><br/>Thank you for submitting your idea to the One Ion — Idea Box program!<br/><br/>Your idea has been successfully received and allocated the unique identifier: <strong>ION-2026-0001</strong>.<br/><br/><strong>Idea Title:</strong> Eco-Loop Solar-Powered Modular ZLD System<br/><br/>Your idea is now under routing review by our B-POC coordinator to assign the relevant Business Idea Review Committee (B-IRC) members.<br/><br/>Best Regards,<br/>Talent Management & OD Centre of Excellence (CoE)<br/>Ion Exchange (India) Ltd.`,
-        timestamp: "2026-06-01T10:15:00Z"
-      }
-    ];
+    return saved ? JSON.parse(saved) : [];
   });
 
   // Meetings state — Supabase-backed when configured, otherwise localStorage
@@ -73,45 +65,23 @@ export default function App() {
     if (isSupabaseConfigured) return []; // loaded async on mount
     const saved = localStorage.getItem("ion_meetings");
     if (saved) return JSON.parse(saved);
-    return [
-      {
-        id: "MEET-0001",
-        ideaId: "ION-2026-0002",
-        ideaTitle: "Nanocoated Biofouling-Resistant RO Membranes",
-        meetingType: "IRC_Proposer",
-        meetingTypeLabel: "IRC ↔ Idea Proposer Meeting",
-        date: "2026-06-25",
-        time: "14:00",
-        participants: "Anita Desai, Ramesh Chawla (Sr Scientist), Dr. Sandeep Jha, C-POC Lead",
-        agenda: "Technical presentation of Nanocoated Biofouling-Resistant RO Membranes to the central IRC Advisory Jury to clarify scaling feasibility.",
-        mom: "Anita Desai presented atomic layer deposition variables. Ramesh Chawla verified the 120% membrane lifespan expectation, noting that localized gas chamber expansion represents the sole major scaling hurdle.",
-        decisions: "Agreed to proceed to next stage-gate with a custom score threshold of 80. Draft recommendation is positive.",
-        actionItems: "1. Anita Desai to share physical nano-thickness specs by 2nd July.\n2. Ramesh Chawla to draft final feasibility annexure.",
-        followUpStatus: "In Progress",
-        dateCreated: "2026-06-24T10:00:00Z"
-      },
-      {
-        id: "MEET-0002",
-        ideaId: "ION-2026-0003",
-        ideaTitle: "AI-Driven Smart Dosage Coagulant Injector",
-        meetingType: "FH_Proposer",
-        meetingTypeLabel: "Functional Head ↔ Idea Proposer Presentation",
-        date: "2026-06-18",
-        time: "11:30",
-        participants: "Aditi Rao, Dr. Alok Gupta (Functional Head), Kavita Sharma (Project Lead)",
-        agenda: "Reviewing 6-Month Pilot Implementation timeline, trial parameters, and milestone checkpoints for AI-Driven Smart Dosage Coagulant Injector.",
-        mom: "Reviewed the physical pump layout and turbidity sensor calibration phases. Dr. Alok Gupta approved the procurement budget of Rs. 1,50,050.",
-        decisions: "Action Plan officially approved. Cavendish pilot cleared to commence.",
-        actionItems: "1. Kavita Sharma to finalize sensor bill of material by 10th July.\n2. Aditi Rao to coordinate lab bench setup.",
-        followUpStatus: "Resolved",
-        dateCreated: "2026-06-17T15:00:00Z"
-      }
-    ];
+    return [];
   });
 
+
+
   // Active Workspace State
-  const [selectedIdeaId, setSelectedIdeaId] = useState<string | null>("ION-2026-0001");
-  const [activeTab, setActiveTab] = useState<"dashboard" | "submit" | "taskcenter" | "certificates" | "zohomail" | "monthlytracker" | "meetings">("dashboard");
+  const [selectedIdeaId, setSelectedIdeaId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<
+    | "dashboard" | "submit" | "taskcenter" | "mytracker" | "certificates" | "zohomail"
+    | "monthlytracker" | "meetings"
+    | "vetting" | "fhassignment" | "ircfinalization"
+    | "ircevaluation"
+    | "assignedideas" | "actionplanapproval" | "finalreportsapproval"
+    | "actionplansubmission" | "finalreportsubmission"
+    | "financetemplate"
+    | "cfoapproval"
+  >("dashboard");
   const [selectedCertType, setSelectedCertType] = useState<string | null>(null);
 
   // Simulated Actor Persona Switcher (Authentic Gated Authentication)
@@ -132,15 +102,15 @@ export default function App() {
     isSupabaseConfigured ? "connecting" : "offline"
   );
 
-  // ── localStorage fallback (only when Supabase is not configured) ──
+  // ── localStorage backup (always sync — provides resilience if Supabase is unavailable) ──
   useEffect(() => {
-    if (!isSupabaseConfigured) localStorage.setItem("ion_ideas", JSON.stringify(ideas));
+    if (ideas.length > 0) localStorage.setItem("ion_ideas", JSON.stringify(ideas));
   }, [ideas]);
   useEffect(() => {
-    if (!isSupabaseConfigured) localStorage.setItem("ion_meetings", JSON.stringify(meetings));
+    if (meetings.length > 0) localStorage.setItem("ion_meetings", JSON.stringify(meetings));
   }, [meetings]);
   useEffect(() => {
-    if (!isSupabaseConfigured) localStorage.setItem("ion_notifications", JSON.stringify(notificationLogs));
+    if (notificationLogs.length > 0) localStorage.setItem("ion_notifications", JSON.stringify(notificationLogs));
   }, [notificationLogs]);
 
   // ── Supabase: initial load + realtime subscription ──
@@ -155,17 +125,18 @@ export default function App() {
           db.fetchNotifications(),
           db.fetchMeetings(),
         ]);
-        // Seed mock data on first run (empty DB)
-        if (ideasData.length === 0) {
-          await db.upsertManyIdeas(MOCK_IDEAS);
-          setIdeas(MOCK_IDEAS);
-        } else {
-          setIdeas(ideasData);
-        }
+        // Seed mock data on first run (empty DB) — REMOVED for live mode
+        setIdeas(ideasData);
         setNotificationLogs(notifsData);
         setMeetings(meetingsData);
       } catch (err) {
-        console.error("[Supabase] Initial load failed:", err);
+        console.error("[Supabase] Initial load failed — falling back to localStorage:", err);
+        const savedIdeas = localStorage.getItem("ion_ideas");
+        const savedNotifs = localStorage.getItem("ion_notifications");
+        const savedMeetings = localStorage.getItem("ion_meetings");
+        if (savedIdeas) setIdeas(JSON.parse(savedIdeas));
+        if (savedNotifs) setNotificationLogs(JSON.parse(savedNotifs));
+        if (savedMeetings) setMeetings(JSON.parse(savedMeetings));
       } finally {
         setIsLoading(false);
       }
@@ -215,6 +186,23 @@ export default function App() {
 
   // Enforce role-based authorized ideas scope
   const authorizedIdeas = currentPersona ? getAuthorizedIdeasForRole(ideas, currentPersona) : [];
+
+  // Set default tab whenever persona/role changes
+  useEffect(() => {
+    if (!currentPersona) return;
+    const defaults: Record<string, typeof activeTab> = {
+      "Employee":        "submit",
+      "C-POC":           "dashboard",
+      "IRC Member":      "ircevaluation",
+      "Functional Head": "assignedideas",
+      "Plan Owner":      "actionplansubmission",
+      "Finance":         "financetemplate",
+      "CFO":             "cfoapproval",
+      "Super Admin":     "dashboard",
+    };
+    setActiveTab(defaults[currentPersona.role] ?? "dashboard");
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPersona?.role]);
 
   // Selected Idea Instance (only searches authorized ideas to avoid unauthorized access bypass)
   const selectedIdea = authorizedIdeas.find(i => i.id === selectedIdeaId) || null;
@@ -334,7 +322,7 @@ export default function App() {
     setNotificationLogs(prev => [log1, log2, ...prev]);
     Promise.all([db.insertNotification(log1), db.insertNotification(log2)])
       .catch(err => console.error("[db] submit notifications:", err));
-    setActiveTab("taskcenter");
+    setActiveTab("mytracker");
   };
 
   // Clear inbox — local + Supabase
@@ -344,31 +332,7 @@ export default function App() {
     setNotificationLogs([]);
   };
 
-  // Master system reset — clears both localStorage and Supabase, reseeds mock data
-  const handleSystemRestore = () => {
-    if (confirm("Reset local workshop state and restore defaults?")) {
-      localStorage.removeItem("ion_ideas");
-      localStorage.removeItem("ion_notifications");
-      // Clear DB and reseed with mock data
-      Promise.all([db.deleteAllIdeas(), db.deleteAllNotifications()])
-        .then(() => db.upsertManyIdeas(MOCK_IDEAS))
-        .catch(console.error);
-      setIdeas(MOCK_IDEAS);
-      setNotificationLogs([
-        {
-          id: "notif-init",
-          ideaId: "ION-2026-0001",
-          recipient: "sathyakumar@entrans.io",
-          subject: "One Ion Notification: Idea Submitted - ION-2026-0001",
-          body: `Dear Sathya Kumar,<br/><br/>Thank you for submitting your idea to the One Ion — Idea Box program!<br/><br/>Your idea has been successfully received and allocated the unique identifier: <strong>ION-2026-0001</strong>.<br/><br/>Best Regards,<br/>Talent Management & OD Centre of Excellence (CoE)<br/>Ion Exchange (India) Ltd.`,
-          timestamp: "2026-06-01T10:15:00Z"
-        }
-      ]);
-      setSelectedIdeaId("ION-2026-0001");
-      setActiveTab("dashboard");
-      alert("Workshop database successfully restored to standard test cases.");
-    }
-  };
+
 
   if (!currentPersona) {
     if (!showLogin) {
@@ -390,9 +354,7 @@ export default function App() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center gap-5 text-white">
-        <div className="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-lg">
-          ION
-        </div>
+        <img src="/ripple.png" className="h-14 w-auto" alt="Ripple" />
         <div className="flex items-center gap-3 text-sm font-medium text-slate-300">
           <Loader2 className="w-5 h-5 animate-spin text-indigo-400" />
           Connecting to Supabase — loading live data…
@@ -432,13 +394,6 @@ export default function App() {
             </button>
 
 
-            <button
-              onClick={handleSystemRestore}
-              className="px-3 py-1.5 text-[10px] font-bold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-all cursor-pointer flex items-center gap-1"
-            >
-              <RefreshCcw className="w-3 h-3 text-indigo-500" />
-              Restore Testcases
-            </button>
             <div className={`flex items-center border px-2.5 py-1 rounded-full text-[10px] font-semibold ${
               realtimeStatus === "connected"
                 ? "bg-emerald-50 border-emerald-200/60 text-emerald-700"
@@ -588,122 +543,56 @@ export default function App() {
       {/* Main Tab Controller navigation */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-6">
         
-        {/* Navigation Tabs Bar */}
+        {/* Navigation Tabs Bar — role-specific */}
         <div className="flex border-b border-slate-200 mb-6 flex-wrap gap-1">
-          <button
-            onClick={() => setActiveTab("dashboard")}
-            style={activeTab === "dashboard" ? { borderBottomColor: "#0098DB", color: "#0098DB" } : {}}
-            className={`px-4 py-2.5 text-xs font-bold font-display uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
-              activeTab === "dashboard"
-                ? "border-b-2 bg-sky-50/30"
-                : "border-transparent text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            Dashboard
-          </button>
+          {/* Helper: tab button */}
+          {(() => {
+            const T = (tabId: typeof activeTab, label: string, badge?: number) => (
+              <button
+                key={tabId}
+                onClick={() => setActiveTab(tabId)}
+                style={activeTab === tabId ? { borderBottomColor: "#0098DB", color: "#0098DB" } : {}}
+                className={`px-4 py-2.5 text-xs font-bold font-display uppercase tracking-wider border-b-2 transition-all cursor-pointer flex items-center gap-1.5 ${
+                  activeTab === tabId ? "bg-sky-50/30" : "border-transparent text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                {label}
+                {badge != null && badge > 0 && (
+                  <span className="bg-[#0098DB]/15 text-[#0098DB] font-mono px-1.5 py-0.5 text-[9px] rounded-full font-bold">{badge}</span>
+                )}
+              </button>
+            );
 
-          {/* Submit Idea tab — Employee only */}
-          {currentPersona.role === "Employee" && (
-            <button
-              onClick={() => setActiveTab("submit")}
-              style={activeTab === "submit" ? { borderBottomColor: "#15B45A", color: "#15B45A" } : {}}
-              className={`px-4 py-2.5 text-xs font-bold font-display uppercase tracking-wider border-b-2 transition-all cursor-pointer flex items-center gap-1.5 ${
-                activeTab === "submit"
-                  ? "border-b-2 bg-emerald-50/30"
-                  : "border-transparent text-slate-500 hover:text-slate-800"
-              }`}
-            >
-              Submit Idea
-            </button>
-          )}
+            const role = currentPersona.role;
 
+            const notifCount = notificationLogs.filter(log => {
+              const r = log.recipient.toLowerCase();
+              if (role === "Super Admin") return true;
+              return r === currentPersona.email.toLowerCase();
+            }).length;
 
-
-          {/* My Idea Tracker - visible for all roles */}
-          <button
-              onClick={() => setActiveTab("taskcenter")}
-              style={activeTab === "taskcenter" ? { borderBottomColor: "#0098DB", color: "#0098DB" } : {}}
-              className={`px-4 py-2.5 text-xs font-bold font-display uppercase tracking-wider border-b-2 transition-all cursor-pointer flex items-center gap-1.5 relative ${
-                activeTab === "taskcenter"
-                  ? "border-b-2 bg-sky-50/30"
-                  : "border-transparent text-slate-500 hover:text-slate-800"
-              }`}
-            >
-              My Idea Tracker
-              {selectedIdea && (
-                <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping absolute right-1.5 top-1.5" />
-              )}
-            </button>
-
-          <button
-            onClick={() => setActiveTab("certificates")}
-            style={activeTab === "certificates" ? { borderBottomColor: "#0098DB", color: "#0098DB" } : {}}
-            className={`px-4 py-2.5 text-xs font-bold font-display uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
-              activeTab === "certificates"
-                ? "border-b-2 bg-sky-50/30"
-                : "border-transparent text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            Certificates
-          </button>
-
-          <button
-            onClick={() => setActiveTab("monthlytracker")}
-            style={activeTab === "monthlytracker" ? { borderBottomColor: "#0098DB", color: "#0098DB" } : {}}
-            className={`px-4 py-2.5 text-xs font-bold font-display uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
-              activeTab === "monthlytracker"
-                ? "border-b-2 bg-sky-50/30"
-                : "border-transparent text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            Monthly Work Log
-          </button>
-
-          <button
-            onClick={() => setActiveTab("meetings")}
-            style={activeTab === "meetings" ? { borderBottomColor: "#0098DB", color: "#0098DB" } : {}}
-            className={`px-4 py-2.5 text-xs font-bold font-display uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
-              activeTab === "meetings"
-                ? "border-b-2 bg-sky-50/30"
-                : "border-transparent text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            Meetings
-          </button>
-
-          <button
-            onClick={() => setActiveTab("zohomail")}
-            className={`px-4 py-2.5 text-xs font-bold font-display uppercase tracking-wider border-b-2 transition-all cursor-pointer flex items-center gap-1.5 ${
-              activeTab === "zohomail"
-                ? "border-indigo-650 text-indigo-700 bg-linear-to-b from-transparent to-indigo-50/20"
-                : "border-transparent text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            Zoho Mail Inbox
-            {(() => {
-              const count = notificationLogs.filter(log => {
-                const r = log.recipient.toLowerCase();
-                const e = currentPersona?.email.toLowerCase() || "";
-                if (currentPersona?.role === "CFO" || currentPersona?.role === "Super Admin") {
-                  return true; // Super Admin and CFO see all
-                }
-                return r === e;
-              }).length;
-
-              return count > 0 ? (
-                <span className="bg-indigo-100 text-indigo-700 font-mono px-1.5 py-0.5 text-[9px] rounded-full font-bold">
-                  {count}
-                </span>
-              ) : null;
-            })()}
-          </button>
+            if (role === "Employee") return (<>{T("submit","Submit Idea")}{T("mytracker","My Idea Tracker")}{T("certificates","Certificates")}</>);
+            if (role === "C-POC") return (<>{T("dashboard","Dashboard")}{T("vetting","Idea Quality Vetting")}{T("fhassignment","FH Assignment")}{T("ircfinalization","Evaluation Finalization")}{T("monthlytracker","Monthly Worklog")}{T("meetings","Meetings")}</>);
+            if (role === "IRC Member") return (<>{T("ircevaluation","Idea Evaluation")}</>);
+            if (role === "Functional Head") return (<>{T("assignedideas","Assigned Ideas")}{T("actionplanapproval","Action Plan Approval")}{T("finalreportsapproval","Final Reports Approval")}{T("monthlytracker","Monthly Worklog")}</>);
+            if (role === "Plan Owner") return (<>{T("actionplansubmission","Action Plan Submission")}{T("finalreportsubmission","Final Report Submission")}{T("monthlytracker","Monthly Worklog")}{T("meetings","Meetings")}</>);
+            if (role === "Finance") return (<>{T("financetemplate","Finance Impact Template")}</>);
+            if (role === "CFO") return (<>{T("cfoapproval","Financial Impact Approval")}</>);
+            if (role === "Super Admin") return (<>{T("dashboard","Dashboard")}{T("taskcenter","All Workflows")}{T("certificates","Certificates")}{T("monthlytracker","Monthly Worklog")}{T("meetings","Meetings")}{T("zohomail","Notifications", notifCount)}</>);
+            return null;
+          })()}
         </div>
 
         {/* Tab Contents Frame */}
+        {(() => {
+          const FULL_WIDTH_TABS = ["vetting","fhassignment","ircfinalization","ircevaluation","assignedideas","actionplanapproval","finalreportsapproval","actionplansubmission","finalreportsubmission","financetemplate","cfoapproval","mytracker"] as const;
+          const isFullWidth = FULL_WIDTH_TABS.includes(activeTab as typeof FULL_WIDTH_TABS[number]);
+
+          return (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           
           {/* Left / Main Workspace Block */}
-          <div className="lg:col-span-8 space-y-6">
+          <div className={isFullWidth ? "lg:col-span-12 space-y-6" : "lg:col-span-8 space-y-6"}>
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab}
@@ -809,11 +698,164 @@ export default function App() {
                     onClear={handleClearInbox}
                   />
                 )}
+
+                {/* ── Employee: My Idea Tracker ── */}
+                {activeTab === "mytracker" && (
+                  <EmployeeIdeaTracker
+                    ideas={authorizedIdeas}
+                    persona={currentPersona}
+                  />
+                )}
+
+                {/* ── C-POC: Idea Quality Vetting ── */}
+                {activeTab === "vetting" && (
+                  <IdeaWorkflowPanel
+                    title="Idea Quality Vetting"
+                    description="Review newly submitted ideas. Approve to schedule for IRC or return to employee for revision."
+                    ideas={authorizedIdeas}
+                    statuses={[IdeaStatus.Submitted, IdeaStatus.ReturnedToEmployee, IdeaStatus.ApprovedByCPOC, IdeaStatus.VettingLimitExceeded]}
+                    persona={currentPersona}
+                    onUpdateIdea={handleUpdateIdea}
+                    onAddNotification={handleAddNotification}
+                  />
+                )}
+
+                {/* ── C-POC: FH Assignment ── */}
+                {activeTab === "fhassignment" && (
+                  <IdeaWorkflowPanel
+                    title="Functional Head Assignment"
+                    description="Ideas selected by IRC awaiting Functional Head assignment for implementation."
+                    ideas={authorizedIdeas}
+                    statuses={[IdeaStatus.SelectedByIRC]}
+                    persona={currentPersona}
+                    onUpdateIdea={handleUpdateIdea}
+                    onAddNotification={handleAddNotification}
+                  />
+                )}
+
+                {/* ── C-POC: IRC Evaluation Finalization ── */}
+                {activeTab === "ircfinalization" && (
+                  <IdeaWorkflowPanel
+                    title="Idea Evaluation Finalization"
+                    description="Ideas under active IRC evaluation. Finalize board average and publish the IRC decision."
+                    ideas={authorizedIdeas}
+                    statuses={[IdeaStatus.UnderIRCEvaluation]}
+                    persona={currentPersona}
+                    onUpdateIdea={handleUpdateIdea}
+                    onAddNotification={handleAddNotification}
+                  />
+                )}
+
+                {/* ── IRC Member: Idea Evaluation ── */}
+                {activeTab === "ircevaluation" && (
+                  <IdeaWorkflowPanel
+                    title="Idea Evaluation"
+                    description="Ideas referred to the IRC committee for scoring. Submit your scorecard for each idea."
+                    ideas={authorizedIdeas}
+                    statuses={[IdeaStatus.ApprovedByCPOC, IdeaStatus.UnderIRCEvaluation]}
+                    persona={currentPersona}
+                    onUpdateIdea={handleUpdateIdea}
+                    onAddNotification={handleAddNotification}
+                  />
+                )}
+
+                {/* ── Functional Head: Assigned Ideas ── */}
+                {activeTab === "assignedideas" && (
+                  <IdeaWorkflowPanel
+                    title="Assigned Ideas"
+                    description="Ideas assigned to your function by C-POC. Accept or decline, then nominate the Project Lead."
+                    ideas={authorizedIdeas}
+                    statuses={[IdeaStatus.WithFunctionalHead]}
+                    persona={currentPersona}
+                    onUpdateIdea={handleUpdateIdea}
+                    onAddNotification={handleAddNotification}
+                  />
+                )}
+
+                {/* ── Functional Head: Action Plan Approval ── */}
+                {activeTab === "actionplanapproval" && (
+                  <IdeaWorkflowPanel
+                    title="Action Plan Approval"
+                    description="Review and approve action plans submitted by Plan Owners."
+                    ideas={authorizedIdeas}
+                    statuses={[IdeaStatus.ActionPlanSubmitted, IdeaStatus.ActionPlanRevision]}
+                    persona={currentPersona}
+                    onUpdateIdea={handleUpdateIdea}
+                    onAddNotification={handleAddNotification}
+                  />
+                )}
+
+                {/* ── Functional Head: Final Reports Approval ── */}
+                {activeTab === "finalreportsapproval" && (
+                  <IdeaWorkflowPanel
+                    title="Final Reports Approval"
+                    description="Review and approve final project reports submitted by Plan Owners."
+                    ideas={authorizedIdeas}
+                    statuses={[IdeaStatus.ReportSubmitted, IdeaStatus.ReportRevision]}
+                    persona={currentPersona}
+                    onUpdateIdea={handleUpdateIdea}
+                    onAddNotification={handleAddNotification}
+                  />
+                )}
+
+                {/* ── Plan Owner: Action Plan Submission ── */}
+                {activeTab === "actionplansubmission" && (
+                  <IdeaWorkflowPanel
+                    title="Action Plan Submission"
+                    description="Submit your action plan for ideas assigned to you. Respond to any revision requests."
+                    ideas={authorizedIdeas}
+                    statuses={[IdeaStatus.AwaitingActionPlan, IdeaStatus.ActionPlanRevision]}
+                    persona={currentPersona}
+                    onUpdateIdea={handleUpdateIdea}
+                    onAddNotification={handleAddNotification}
+                  />
+                )}
+
+                {/* ── Plan Owner: Final Report Submission ── */}
+                {activeTab === "finalreportsubmission" && (
+                  <IdeaWorkflowPanel
+                    title="Final Report Submission"
+                    description="Submit your final project report once the action plan is approved."
+                    ideas={authorizedIdeas}
+                    statuses={[IdeaStatus.ActionPlanApproved, IdeaStatus.ReportRevision]}
+                    persona={currentPersona}
+                    onUpdateIdea={handleUpdateIdea}
+                    onAddNotification={handleAddNotification}
+                  />
+                )}
+
+                {/* ── Finance: Finance Impact Template ── */}
+                {activeTab === "financetemplate" && (
+                  <IdeaWorkflowPanel
+                    title="Finance Impact Template"
+                    description="Audit and certify financial savings for ideas reaching the Finance evaluation gate."
+                    ideas={authorizedIdeas}
+                    statuses={[IdeaStatus.PendingFinanceEvaluation, IdeaStatus.FinanceRevision]}
+                    persona={currentPersona}
+                    onUpdateIdea={handleUpdateIdea}
+                    onAddNotification={handleAddNotification}
+                  />
+                )}
+
+                {/* ── CFO: Financial Impact Approval ── */}
+                {activeTab === "cfoapproval" && (
+                  <IdeaWorkflowPanel
+                    title="Financial Impact Approval"
+                    description="Final CFO sign-off on ideas with certified financial impact. Approve to distribute rewards and close the journey."
+                    ideas={authorizedIdeas}
+                    statuses={[IdeaStatus.PendingCFOSignOff]}
+                    persona={currentPersona}
+                    onUpdateIdea={handleUpdateIdea}
+                    onAddNotification={handleAddNotification}
+                  />
+                )}
+
               </motion.div>
             </AnimatePresence>
           </div>
 
-          {/* Right Sidebar: Active 25-Stage Checklist Timeline */}
+          {/* Right Sidebar — only for non-full-width tabs */}
+          {!isFullWidth && (
           <div className="lg:col-span-4 space-y-6">
             
             {/* Project info card */}
@@ -952,12 +994,11 @@ export default function App() {
                           onClick={() => {
                             setCurrentPersona(switchPersona);
                             localStorage.setItem("ripple_logged_persona", JSON.stringify(switchPersona));
-                            setActiveTab("taskcenter");
                           }}
                           className="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-black uppercase tracking-widest rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
                         >
                           <KeyRound className="w-3 h-3" />
-                          Switch to {step.role} &amp; Open Task Center
+                          Switch to {step.role}
                         </button>
                       )}
                     </>
@@ -979,8 +1020,10 @@ export default function App() {
             })()}
 
           </div>
+          )} {/* end !isFullWidth sidebar */}
 
         </div>
+        );})()}  {/* end Tab Contents Frame IIFE */}
 
       </main>
 

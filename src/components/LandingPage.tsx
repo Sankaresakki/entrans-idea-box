@@ -13,17 +13,7 @@ const NAV_LINKS = [
   { label: "What is Ripple?", href: "#what-is-ripple" },
   { label: "Our Objectives",  href: "#objectives" },
   { label: "The Workflow",    href: "#workflow" },
-  { label: "Rewards",         href: "#rewards" },
   { label: "Get Started",     href: "#cta" },
-];
-
-const REWARD_TABLE = [
-  { range: "INR 50,000 – 1,00,000",       reward: "INR 10,000" },
-  { range: "INR 1,00,001 – 3,00,000",     reward: "INR 25,000" },
-  { range: "INR 3,00,001 – 7,00,000",     reward: "INR 35,000" },
-  { range: "INR 7,00,001 – 10,00,000",    reward: "INR 35k – 50k" },
-  { range: "INR 10,00,001 – 15,00,000",   reward: "INR 50k – 75k" },
-  { range: "INR 15,00,001 and above",      reward: "INR 75,000+" },
 ];
 
 const OBJECTIVES = [
@@ -151,7 +141,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-2.5">
-            <img src="/ripple.png" className="h-9 w-auto" alt="Ripple" />
+            <img src="/ripple.png" className="h-14 w-auto" alt="Ripple" />
           </div>
 
           {/* Desktop Nav */}
@@ -266,138 +256,104 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
               </button>
             </div>
 
-            {/* Quick stats */}
-            <div className="flex flex-wrap gap-8 pt-4 border-t border-white/10">
+            {/* Innovation highlights (no numbers) */}
+            <div className="flex flex-wrap gap-3 pt-4 border-t border-white/10">
               {[
-                { value: "7", label: "Workflow Roles" },
-                { value: "6", label: "Stage Gates" },
-                { value: "₹75k+", label: "Max Reward" },
-              ].map(stat => (
-                <div key={stat.label}>
-                  <div className="text-2xl font-black text-white">{stat.value}</div>
-                  <div className="text-xs text-indigo-300 font-medium mt-0.5 uppercase tracking-wider">{stat.label}</div>
+                { icon: "💡", text: "Employee-Driven Innovation" },
+                { icon: "🎯", text: "Structured Evaluation Process" },
+                { icon: "🚀", text: "Real Business Impact" },
+              ].map(item => (
+                <div key={item.text} className="flex items-center gap-2 text-sm text-indigo-200 font-medium">
+                  <span className="text-base">{item.icon}</span>
+                  {item.text}
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Right Illustration */}
+          {/* Right — Creative Innovation Imagery */}
           <div className="hidden lg:flex items-center justify-center">
             <div className="relative w-[420px] h-[420px]">
-              {/* Solar orbital SVG — animated */}
+              {/* Animated orbital SVG */}
               <svg viewBox="0 0 420 420" className="w-full h-full">
                 <defs>
-                  {/* Glow filter for planets */}
                   <filter id="orb-glow" x="-80%" y="-80%" width="260%" height="260%">
                     <feGaussianBlur stdDeviation="5" result="blur"/>
-                    <feMerge>
-                      <feMergeNode in="blur"/>
-                      <feMergeNode in="SourceGraphic"/>
-                    </feMerge>
+                    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
                   </filter>
-                  {/* Subtle center radial glow */}
                   <radialGradient id="centerBg" cx="50%" cy="50%" r="50%">
                     <stop offset="0%" stopColor="#818cf8" stopOpacity="0.18"/>
                     <stop offset="100%" stopColor="#6366f1" stopOpacity="0"/>
                   </radialGradient>
                 </defs>
-
-                {/* Background radial glow pool */}
                 <circle cx="210" cy="210" r="205" fill="url(#centerBg)"/>
-
-                {/* Slowly counter-rotating decorative ring field — depth layer */}
                 <g>
-                  <animateTransform attributeName="transform" type="rotate"
-                    from="0 210 210" to="-360 210 210" dur="90s" repeatCount="indefinite"/>
-                  {[52, 80, 106, 132, 158, 183].map((r, i) => (
-                    <circle key={r} cx="210" cy="210" r={r}
-                      fill="none"
-                      stroke={`rgba(165,180,252,${0.04 + i * 0.022})`}
-                      strokeWidth="0.8"
-                      strokeDasharray={`${Math.round(r * 0.16)},${Math.round(r * 0.22)}`}
-                    />
+                  <animateTransform attributeName="transform" type="rotate" from="0 210 210" to="-360 210 210" dur="90s" repeatCount="indefinite"/>
+                  {[52,80,106,132,158,183].map((r,i) => (
+                    <circle key={r} cx="210" cy="210" r={r} fill="none" stroke={`rgba(165,180,252,${0.04+i*0.022})`} strokeWidth="0.8" strokeDasharray={`${Math.round(r*0.16)},${Math.round(r*0.22)}`}/>
                   ))}
                 </g>
-
-                {/* Static orbital path guides */}
-                {[90, 120, 150, 175].map(r => (
-                  <circle key={`op-${r}`} cx="210" cy="210" r={r}
-                    fill="none" stroke="rgba(165,180,252,0.13)" strokeWidth="0.7" strokeDasharray="3,7"/>
+                {[90,120,150,175].map(r => (
+                  <circle key={`op-${r}`} cx="210" cy="210" r={r} fill="none" stroke="rgba(165,180,252,0.13)" strokeWidth="0.7" strokeDasharray="3,7"/>
                 ))}
-
-                {/* Center pulse rings */}
                 <circle cx="210" cy="210" r="22" fill="none" stroke="rgba(99,102,241,0.55)" strokeWidth="1.5">
                   <animate attributeName="r" values="22;52;22" dur="2.8s" repeatCount="indefinite"/>
                   <animate attributeName="opacity" values="0.65;0;0.65" dur="2.8s" repeatCount="indefinite"/>
                 </circle>
-                <circle cx="210" cy="210" r="22" fill="none" stroke="rgba(99,102,241,0.3)" strokeWidth="1">
-                  <animate attributeName="r" values="22;72;22" dur="2.8s" begin="0.6s" repeatCount="indefinite"/>
-                  <animate attributeName="opacity" values="0.4;0;0.4" dur="2.8s" begin="0.6s" repeatCount="indefinite"/>
-                </circle>
-
-                {/* Center body */}
                 <circle cx="210" cy="210" r="44" fill="rgba(99,102,241,0.2)"/>
                 <circle cx="210" cy="210" r="31" fill="rgba(99,102,241,0.46)"/>
                 <circle cx="210" cy="210" r="21" fill="#6366f1"/>
                 <text x="210" y="217" textAnchor="middle" fill="white" fontSize="18">💡</text>
-
-                {/* ── Planet 1: Submit — orbit r=90, 12s CW, phase 0° ── */}
-                <g>
-                  <animateTransform attributeName="transform" type="rotate"
-                    from="0 210 210" to="360 210 210" dur="12s" repeatCount="indefinite"/>
+                {/* Submit planet */}
+                <g><animateTransform attributeName="transform" type="rotate" from="0 210 210" to="360 210 210" dur="12s" repeatCount="indefinite"/>
                   <circle cx="210" cy="120" r="22" fill="#818cf8" opacity="0.18" filter="url(#orb-glow)"/>
                   <circle cx="210" cy="120" r="13" fill="#818cf8"/>
-                  {/* Counter-rotate text to stay upright */}
-                  <g>
-                    <animateTransform attributeName="transform" type="rotate"
-                      from="0 210 120" to="-360 210 120" dur="12s" repeatCount="indefinite"/>
-                    <text x="210" y="124" textAnchor="middle" fill="white"
-                      fontSize="7.5" fontWeight="700" fontFamily="system-ui">Submit</text>
+                  <g><animateTransform attributeName="transform" type="rotate" from="0 210 120" to="-360 210 120" dur="12s" repeatCount="indefinite"/>
+                    <text x="210" y="124" textAnchor="middle" fill="white" fontSize="7.5" fontWeight="700" fontFamily="system-ui">Submit</text>
                   </g>
                 </g>
-
-                {/* ── Planet 2: Evaluate — orbit r=120, 19s CW, phase 90° ── */}
-                <g>
-                  <animateTransform attributeName="transform" type="rotate"
-                    from="90 210 210" to="450 210 210" dur="19s" repeatCount="indefinite"/>
+                {/* Evaluate planet */}
+                <g><animateTransform attributeName="transform" type="rotate" from="90 210 210" to="450 210 210" dur="19s" repeatCount="indefinite"/>
                   <circle cx="210" cy="90" r="24" fill="#a78bfa" opacity="0.18" filter="url(#orb-glow)"/>
                   <circle cx="210" cy="90" r="14" fill="#a78bfa"/>
-                  <g>
-                    <animateTransform attributeName="transform" type="rotate"
-                      from="-90 210 90" to="-450 210 90" dur="19s" repeatCount="indefinite"/>
-                    <text x="210" y="94" textAnchor="middle" fill="white"
-                      fontSize="7" fontWeight="700" fontFamily="system-ui">Evaluate</text>
+                  <g><animateTransform attributeName="transform" type="rotate" from="-90 210 90" to="-450 210 90" dur="19s" repeatCount="indefinite"/>
+                    <text x="210" y="94" textAnchor="middle" fill="white" fontSize="7" fontWeight="700" fontFamily="system-ui">Evaluate</text>
                   </g>
                 </g>
-
-                {/* ── Planet 3: Execute — orbit r=150, 28s CCW, phase 195° ── */}
-                <g>
-                  <animateTransform attributeName="transform" type="rotate"
-                    from="195 210 210" to="-165 210 210" dur="28s" repeatCount="indefinite"/>
+                {/* Execute planet */}
+                <g><animateTransform attributeName="transform" type="rotate" from="195 210 210" to="-165 210 210" dur="28s" repeatCount="indefinite"/>
                   <circle cx="210" cy="60" r="24" fill="#34d399" opacity="0.18" filter="url(#orb-glow)"/>
                   <circle cx="210" cy="60" r="14" fill="#34d399"/>
-                  <g>
-                    <animateTransform attributeName="transform" type="rotate"
-                      from="-195 210 60" to="165 210 60" dur="28s" repeatCount="indefinite"/>
-                    <text x="210" y="64" textAnchor="middle" fill="white"
-                      fontSize="7" fontWeight="700" fontFamily="system-ui">Execute</text>
+                  <g><animateTransform attributeName="transform" type="rotate" from="-195 210 60" to="165 210 60" dur="28s" repeatCount="indefinite"/>
+                    <text x="210" y="64" textAnchor="middle" fill="white" fontSize="7" fontWeight="700" fontFamily="system-ui">Execute</text>
                   </g>
                 </g>
-
-                {/* ── Planet 4: Reward — orbit r=175, 38s CW, phase 270° ── */}
-                <g>
-                  <animateTransform attributeName="transform" type="rotate"
-                    from="270 210 210" to="630 210 210" dur="38s" repeatCount="indefinite"/>
+                {/* Impact planet */}
+                <g><animateTransform attributeName="transform" type="rotate" from="270 210 210" to="630 210 210" dur="38s" repeatCount="indefinite"/>
                   <circle cx="210" cy="35" r="24" fill="#fbbf24" opacity="0.18" filter="url(#orb-glow)"/>
                   <circle cx="210" cy="35" r="15" fill="#fbbf24"/>
-                  <g>
-                    <animateTransform attributeName="transform" type="rotate"
-                      from="-270 210 35" to="-630 210 35" dur="38s" repeatCount="indefinite"/>
-                    <text x="210" y="39" textAnchor="middle" fill="white"
-                      fontSize="7" fontWeight="700" fontFamily="system-ui">Reward</text>
+                  <g><animateTransform attributeName="transform" type="rotate" from="-270 210 35" to="-630 210 35" dur="38s" repeatCount="indefinite"/>
+                    <text x="210" y="39" textAnchor="middle" fill="white" fontSize="7" fontWeight="700" fontFamily="system-ui">Impact</text>
                   </g>
                 </g>
               </svg>
+
+              {/* Floating innovation cards */}
+              <div className="absolute top-4 -left-8 bg-white/15 backdrop-blur-sm border border-white/20 rounded-2xl px-4 py-3 text-white shadow-lg">
+                <div className="text-lg">🏆</div>
+                <div className="text-xs font-bold mt-1">Idea Selected</div>
+                <div className="text-[10px] text-white/70">Certificate Awarded</div>
+              </div>
+              <div className="absolute bottom-8 -right-6 bg-white/15 backdrop-blur-sm border border-white/20 rounded-2xl px-4 py-3 text-white shadow-lg">
+                <div className="text-lg">⚡</div>
+                <div className="text-xs font-bold mt-1">Real Impact</div>
+                <div className="text-[10px] text-white/70">Measured &amp; Rewarded</div>
+              </div>
+              <div className="absolute bottom-24 -left-10 bg-white/15 backdrop-blur-sm border border-white/20 rounded-2xl px-4 py-3 text-white shadow-lg">
+                <div className="text-lg">🌱</div>
+                <div className="text-xs font-bold mt-1">Ideas Grow</div>
+                <div className="text-[10px] text-white/70">Into Projects</div>
+              </div>
             </div>
           </div>
         </div>
@@ -442,20 +398,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
             </div>
           </div>
 
-          {/* Stats / info cards */}
+          {/* Features grid (replaces numbered stat cards) */}
           <div className="grid grid-cols-2 gap-4">
             {[
-              { num: "4+", label: "Areas of Impact", color: "from-indigo-500 to-indigo-700" },
-              { num: "6", label: "Workflow Stages", color: "from-violet-500 to-violet-700" },
-              { num: "7", label: "Roles Engaged",   color: "from-emerald-500 to-emerald-700" },
-              { num: "₹75k+", label: "Max Reward",  color: "from-amber-500 to-orange-600" },
+              { icon: "💡", title: "Employee-Led Ideas",    desc: "Every associate can contribute impactful ideas." },
+              { icon: "🔍", title: "Structured Evaluation", desc: "IRC reviews each idea with a transparent scorecard." },
+              { icon: "🚀", title: "Implementation Support", desc: "Functional Heads lead execution with dedicated teams." },
+              { icon: "🌟", title: "Recognized Contribution", desc: "Certificates and rewards for every selected idea." },
             ].map(card => (
-              <div
-                key={card.label}
-                className={`p-6 rounded-2xl bg-gradient-to-br ${card.color} text-white shadow-lg`}
-              >
-                <div className="text-4xl font-black">{card.num}</div>
-                <div className="text-sm font-medium opacity-80 mt-1">{card.label}</div>
+              <div key={card.title} className="p-5 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="text-2xl mb-3">{card.icon}</div>
+                <h4 className="text-sm font-bold text-slate-900 leading-snug">{card.title}</h4>
+                <p className="text-xs text-slate-500 mt-1 leading-relaxed">{card.desc}</p>
               </div>
             ))}
           </div>
@@ -527,81 +481,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
                 <p className="text-sm text-slate-500 leading-relaxed">{step.desc}</p>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── REWARDS & RECOGNITION ───────────────────────────────────── */}
-      <section id="rewards" className="py-24 bg-gradient-to-br from-indigo-950 via-indigo-900 to-violet-900 text-white">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-          {/* Left */}
-          <div className="space-y-6">
-            <span className="inline-flex items-center gap-2 text-indigo-300 text-sm font-semibold uppercase tracking-widest">
-              <span className="w-8 h-px bg-indigo-400" />
-              Earn Recognition
-            </span>
-            <h2 className="text-4xl font-black tracking-tight leading-tight">
-              Rewards &amp;{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-yellow-200">
-                Recognition
-              </span>
-            </h2>
-            <p className="text-indigo-200 text-lg leading-relaxed">
-              Significant financial impact leads to significant rewards. When your idea generates
-              measurable savings or revenue, you're compensated accordingly.
-            </p>
-
-            {/* Distribution */}
-            <div className="p-6 bg-white/8 backdrop-blur-sm border border-white/15 rounded-2xl space-y-4">
-              <h3 className="text-sm font-bold text-indigo-200 uppercase tracking-wider">Reward Distribution</h3>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-full bg-white/10 rounded-full h-3 overflow-hidden">
-                    <div className="h-full w-[25%] bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full" />
-                  </div>
-                  <span className="text-sm font-bold text-emerald-300 whitespace-nowrap">25%</span>
-                  <span className="text-sm text-indigo-200">Idea Owner (Employee)</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-full bg-white/10 rounded-full h-3 overflow-hidden">
-                    <div className="h-full w-[75%] bg-gradient-to-r from-indigo-400 to-violet-400 rounded-full" />
-                  </div>
-                  <span className="text-sm font-bold text-indigo-300 whitespace-nowrap">75%</span>
-                  <span className="text-sm text-indigo-200">Implementation Team</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right — table */}
-          <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
-            <div className="bg-white/8 backdrop-blur-sm px-5 py-3 flex items-center gap-2 border-b border-white/10">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-4 h-4 text-amber-300">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
-              </svg>
-              <span className="text-sm font-semibold text-white/80">Financial Impact → Reward Scale</span>
-            </div>
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-white/5 border-b border-white/10">
-                  <th className="px-5 py-3 text-left text-xs font-bold text-indigo-300 uppercase tracking-wider">Financial Impact Achieved</th>
-                  <th className="px-5 py-3 text-left text-xs font-bold text-amber-300 uppercase tracking-wider">Reward Amount</th>
-                </tr>
-              </thead>
-              <tbody>
-                {REWARD_TABLE.map((row, i) => (
-                  <tr
-                    key={row.range}
-                    className={`border-b border-white/5 transition-colors hover:bg-white/5 ${i % 2 === 0 ? "bg-white/3" : ""}`}
-                  >
-                    <td className="px-5 py-3.5 text-indigo-100 font-medium">{row.range}</td>
-                    <td className="px-5 py-3.5">
-                      <span className="text-amber-300 font-bold">{row.reward}</span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
           </div>
         </div>
       </section>

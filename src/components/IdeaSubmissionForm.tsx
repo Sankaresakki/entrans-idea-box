@@ -374,7 +374,7 @@ export const IdeaSubmissionForm: React.FC<IdeaSubmissionFormProps> = ({ onSubmit
             <FileText className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h2 className="font-bold text-base leading-none">Annexure 1 — Idea Submission Form</h2>
+            <h2 className="font-bold text-base leading-none">Idea Submission Form</h2>
             <p className="text-indigo-200 text-xs mt-1">RIPPLE · Ion Exchange (India) Limited</p>
           </div>
         </div>

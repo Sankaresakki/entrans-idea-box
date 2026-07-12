@@ -511,7 +511,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
     onAddNotification(
       "c-poc@ionexchange.com",
       `Jury Scorecard Logged: ${idea.id} by ${persona.name}`,
-      `Dear C-POC,\n\nAdvisor ${persona.name} has submitted their Annexure 4 evaluation for idea ${idea.id}.\n\nScore: ${aggregate.toFixed(2)}/25\nRecommended FH: ${ircRecommendedFH}`
+      `Dear C-POC,\n\nAdvisor ${persona.name} has submitted their evaluation scorecard for idea ${idea.id}.\n\nScore: ${aggregate.toFixed(2)}/25\nRecommended FH: ${ircRecommendedFH}`
     );
     alert(`Score of ${aggregate.toFixed(2)}/25 locked. Recommended FH: ${ircRecommendedFH}`);
   };
@@ -569,7 +569,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
       // 1 — Internal record to C-POC
       onAddNotification(
         "c-poc@ionexchange.com",
-        `[Annexure 7] FH Reject — Implementation path discontinued for ${idea.id}`,
+        `FH Decision: Implementation path discontinued for ${idea.id}`,
         `Dear C-POC,\n\nFunctional Head ${persona.name} has decided not to take forward the implementation of idea "${idea.title}" (${idea.id}).\n\nInternal reason on record: "${declineReason}"\n\nStatus: Closed — Declined by Functional Head.\nNote: The employee’s IRC selection recognition and rewards (Certificate of Idea Selection + Rs. 2,000 voucher) remain fully intact and unaffected.`
       );
 
@@ -577,7 +577,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
       const firstName = (idea.employeeName || "").split(" ")[0];
       onAddNotification(
         idea.employeeEmail,
-        `[Annexure 7] An update on your Ripple idea ${idea.id}`,
+        `An update on your Ripple idea ${idea.id}`,
         `Hi ${firstName},\n\nWe wanted to share a brief update on your idea "${idea.title}" (${idea.id}).\n\nYour idea was reviewed and selected by the Idea Review Committee — that recognition stands, and your Certificate of Idea Selection and associated reward remain fully intact.\n\nAfter the IRC selection stage, Ripple routes ideas to the relevant Functional Head for an assessment of implementation feasibility. On this occasion, the implementation path for your idea could not be taken forward at this time, due to factors such as current priorities, resourcing, or existing initiatives in the area.\n\nThis is not a reflection of the quality or merit of your idea. We encourage you to continue engaging with Ripple and bring forward new ideas or a refined version in a future cycle.\n\nThank you for your continued contribution to Ion Exchange.\n\nWarm regards,\nTeam Ripple | Talent Management & OD`
       );
 
@@ -617,14 +617,14 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
     // 1 — Notify C-POC: Step 1 complete, Step 2 initiated
     onAddNotification(
       "c-poc@ionexchange.com",
-      `[Annexure 7] Step 1 Complete — Action Plan Initiated for ${idea.id}`,
+      `Step 1 Complete — Action Plan Initiated for ${idea.id}`,
       `Dear C-POC,\n\nFunctional Head ${persona.name} has accepted idea "${idea.title}" (${idea.id}) for implementation.\n\nProject Title: ${fhProjectTitle || idea.title}\nNominated Plan Owner: ${nominatedOwner} (${ownerEmail})\nTeam: ${validTeam.map(r => r.name).join(", ")}\n\nStep 2 (Action Plan) has been initiated. The Plan Owner has been notified. Expected submission: within 3 working days.`
     );
 
     // 2 — Notify Nominated Plan Owner: Step 2 task assigned
     onAddNotification(
       ownerEmail,
-      `[Annexure 7] Action Required — Submit Action Plan (Step 2) for ${idea.id}`,
+      `Action Required — Submit Action Plan (Step 2) for ${idea.id}`,
       `Dear ${nominatedOwner},\n\nFunctional Head ${persona.name} has nominated you as the Plan Owner for project "${fhProjectTitle || idea.title}" (${idea.id}).\n\nYour task: Please log in to RIPPLE and submit the Step 2 Action Plan within 3 working days.\n\nThe Action Plan should cover: project objectives, phased milestones, team allocation, and estimated budget.\n\nFor questions, contact your Functional Head or the Ripple C-POC team.\n\nWarm regards,\nTeam Ripple | Talent Management & OD`
     );
 
@@ -1326,7 +1326,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
                 <CheckSquare className="w-5 h-5 text-white" />
                 <div>
                   <h4 className="font-bold text-sm text-white leading-none">Idea Vetting Guideline</h4>
-                  <p className="text-indigo-200 text-[10px] mt-0.5">Annexure 2 · C-POC Quality Gate</p>
+                  <p className="text-indigo-200 text-[10px] mt-0.5">C-POC Quality Gate</p>
                 </div>
               </div>
               <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${
@@ -1530,7 +1530,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
         <div className="bg-white p-5 border border-slate-200 rounded-2xl space-y-4">
           <h4 className="font-display font-black text-xs text-slate-900 uppercase tracking-widest flex items-center gap-1.5 text-indigo-750">
             <RefreshCcw className="w-4 h-4" />
-            Empower Idea Revision Loop (Annexure 2)
+            Empower Idea Revision Loop
           </h4>
 
           <div className="bg-rose-50 border border-rose-150 p-4 rounded-xl text-[11px] text-rose-950">
@@ -1911,7 +1911,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
                 <Sliders className="w-5 h-5 text-white" />
                 <div>
                   <h4 className="font-bold text-sm text-white leading-none">Idea Evaluation Template</h4>
-                  <p className="text-indigo-200 text-[10px] mt-0.5">Annexure 4 · IRC Advisor Scorecard</p>
+                  <p className="text-indigo-200 text-[10px] mt-0.5">IRC Advisor Scorecard</p>
                 </div>
               </div>
               <span className="text-[10px] font-bold bg-white/20 text-white border border-white/30 px-2.5 py-1 rounded-full">Jury Stage</span>
@@ -2335,10 +2335,10 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
                     `Hi ${firstName},\n\nThank you for taking the time to share your idea on Ripple. We genuinely appreciate every contribution — the thinking, the effort, and the commitment to making Ion Exchange better.\n\nAfter careful evaluation by the Idea Review Committee, your idea "${idea.title}" (${idea.id}) was not selected for implementation in this cycle.\n\nThis does not mean the idea lacks merit — evaluation is always contextual, and timing, feasibility, and current priorities all play a role. We encourage you to revisit and resubmit this idea, or bring a new one, in the next Ripple cycle.\n\nThank you for being part of Ripple.\n\nWarm regards,\nTeam Ripple | Talent Management & OD`;
                   onAddNotification(
                     idea.employeeEmail,
-                    `[Annexure 5] Your Ripple idea ${idea.id} — update from the review committee`,
+                    `Your Ripple idea ${idea.id} — update from the review committee`,
                     annex5Body
                   );
-                  alert(`IRC Evaluation Finished! Average Score: ${avg.toFixed(2)}/25 is below the threshold of ${threshold.toFixed(1)}/25. Idea NOT SELECTED. Annexure 5 appreciative mail dispatched to ${idea.employeeEmail}.`);
+                  alert(`IRC Evaluation Finished! Average Score: ${avg.toFixed(2)}/25 is below the threshold of ${threshold.toFixed(1)}/25. Idea NOT SELECTED. Appreciative mail dispatched to ${idea.employeeEmail}.`);
                 }
               }}
               className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold tracking-widest rounded-xl uppercase transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
@@ -2355,7 +2355,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
         <div className="bg-white p-5 border border-slate-200 rounded-2xl space-y-4">
           <h4 className="font-display font-black text-xs text-slate-900 uppercase tracking-widest flex items-center gap-1.5">
             <UserCheck className="w-4 h-4 text-indigo-600" />
-            IRC Handover - Assign Functional Head (Annexure 11)
+            IRC Handover - Assign Functional Head
           </h4>
 
           <div className="bg-emerald-50 border border-emerald-150 p-4 rounded-xl text-[11px] text-emerald-950 leading-relaxed">
@@ -2408,7 +2408,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
             <ShieldCheck className="w-4 h-4 text-indigo-300 flex-shrink-0" />
             <div>
               <p className="text-white font-black text-[11px] uppercase tracking-widest">Step 1 — Acceptance &amp; Team Assignment</p>
-              <p className="text-indigo-300 text-[9.5px] mt-0.5">Annexure 7 · Idea to Project Implementation Decision · Functional Head</p>
+              <p className="text-indigo-300 text-[9.5px] mt-0.5">Idea to Project Implementation Decision · Functional Head</p>
             </div>
           </div>
 
@@ -3660,7 +3660,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
           <div className="flex items-center justify-between border-b pb-2">
             <h4 className="font-display font-black text-xs text-slate-900 uppercase tracking-widest flex items-center gap-1.5">
               <Coins className="w-4 h-4 text-indigo-600" />
-              CFO Incu-Payout Worksheet Clearance (Annexure 18)
+              CFO Incu-Payout Worksheet Clearance
             </h4>
             <span className="bg-yellow-50 text-yellow-700 font-mono text-[9px] px-2.5 py-0.5 rounded-full font-bold">Payout Lock</span>
           </div>

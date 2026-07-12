@@ -90,6 +90,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ ideas, onSelectIdea, selec
 
   // Helper: Determine if the currently logged-in persona is authorized to take action on this idea's current status
   const isPersonaHandlerForIdea = (idea: Idea): boolean => {
+    // Employees always see their own ideas in Pending Inbox so they can track progress
+    if (persona.role === "Employee") {
+      return idea.employeeEmail.toLowerCase() === persona.email.toLowerCase();
+    }
+
     const status = idea.status;
     switch (status) {
       case IdeaStatus.Submitted:
@@ -98,7 +103,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ ideas, onSelectIdea, selec
         return persona.role === "C-POC";
 
       case IdeaStatus.ReturnedToEmployee:
-        // Employee matches either because they are employee role, and specifically match email
         return persona.role === "Employee" && persona.email.toLowerCase() === idea.employeeEmail.toLowerCase();
 
       case IdeaStatus.UnderIRCEvaluation:

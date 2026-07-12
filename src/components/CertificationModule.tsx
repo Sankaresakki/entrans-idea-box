@@ -64,7 +64,7 @@ export const CertificationModule: React.FC<CertificationModuleProps> = ({
           setActiveCertType("B-IRC Shortlisting");
         }
       } else {
-        setActiveCertType("Thank-you");
+        setActiveCertType(persona.role === "Employee" ? "Certificate of Selection" : "Thank-you");
       }
     }
   }, [selectedIdea]);
@@ -185,7 +185,10 @@ export const CertificationModule: React.FC<CertificationModuleProps> = ({
   // Filter based on persona role & email
   const myCredentials = credentialsList.filter((cred) => {
     if (persona.role === "Employee") {
-      return cred.recipientEmail.toLowerCase() === persona.email.toLowerCase();
+      const isOwner = cred.recipientEmail.toLowerCase() === persona.email.toLowerCase();
+      // Employee only sees their 2 milestone certificates
+      const isValidType = cred.type === "Certificate of Selection" || cred.type === "Certificate of Contribution";
+      return isOwner && isValidType;
     }
     return true; // Admins see all
   });
@@ -307,11 +310,20 @@ Corporate Treasury & HR Audit Systems`;
                 className="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-700"
               >
                 <option value="all">All Certificate Types</option>
-                <option value="Thank-you">Thank-You Appreciation</option>
-                <option value="B-IRC Shortlisting">Quality Vetting Shortlist</option>
-                <option value="Certificate of Selection">Certificate of Selection</option>
-                <option value="Winning Idea of the Quarter">Quarterly Winner Badge</option>
-                <option value="Certificate of Contribution">Certificate of Contribution</option>
+                {persona.role === "Employee" ? (
+                  <>
+                    <option value="Certificate of Selection">Certificate of Selection</option>
+                    <option value="Certificate of Contribution">Certificate of Contribution</option>
+                  </>
+                ) : (
+                  <>
+                    <option value="Thank-you">Thank-You Appreciation</option>
+                    <option value="B-IRC Shortlisting">Quality Vetting Shortlist</option>
+                    <option value="Certificate of Selection">Certificate of Selection</option>
+                    <option value="Winning Idea of the Quarter">Quarterly Winner Badge</option>
+                    <option value="Certificate of Contribution">Certificate of Contribution</option>
+                  </>
+                )}
               </select>
             </div>
 
@@ -327,6 +339,7 @@ Corporate Treasury & HR Audit Systems`;
               >
                 Certificate Gallery ({searchedCredentials.length})
               </button>
+              {persona.role !== "Employee" && (
               <button
                 onClick={() => setActiveSubTab("history")}
                 className={`pb-2 text-xs font-bold tracking-wide uppercase border-b-2 transition-all cursor-pointer ${
@@ -337,6 +350,7 @@ Corporate Treasury & HR Audit Systems`;
               >
                 Audit History Logs
               </button>
+              )}
             </div>
 
             {/* Certification Gallery Cards */}
@@ -475,26 +489,30 @@ Corporate Treasury & HR Audit Systems`;
 
               {/* Certificate selector controls */}
               <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
-                <button
-                  onClick={() => setActiveCertType("Thank-you")}
-                  className={`px-2.5 py-1 text-[9.5px] font-bold rounded-lg border transition-all cursor-pointer whitespace-nowrap ${
-                    activeCertType === "Thank-you"
-                      ? "bg-indigo-600 text-white border-indigo-600"
-                      : "bg-slate-100 hover:bg-slate-200 text-slate-700"
-                  }`}
-                >
-                  (1) Thank-You Appreciation
-                </button>
-                <button
-                  onClick={() => setActiveCertType("B-IRC Shortlisting")}
-                  className={`px-2.5 py-1 text-[9.5px] font-bold rounded-lg border transition-all cursor-pointer whitespace-nowrap ${
-                    activeCertType === "B-IRC Shortlisting"
-                      ? "bg-indigo-600 text-white border-indigo-600"
-                      : "bg-slate-100 hover:bg-slate-200 text-slate-700"
-                  }`}
-                >
-                  (2) Shortlisted Certificate
-                </button>
+                {persona.role !== "Employee" && (
+                  <>
+                  <button
+                    onClick={() => setActiveCertType("Thank-you")}
+                    className={`px-2.5 py-1 text-[9.5px] font-bold rounded-lg border transition-all cursor-pointer whitespace-nowrap ${
+                      activeCertType === "Thank-you"
+                        ? "bg-indigo-600 text-white border-indigo-600"
+                        : "bg-slate-100 hover:bg-slate-200 text-slate-700"
+                    }`}
+                  >
+                    (1) Thank-You Appreciation
+                  </button>
+                  <button
+                    onClick={() => setActiveCertType("B-IRC Shortlisting")}
+                    className={`px-2.5 py-1 text-[9.5px] font-bold rounded-lg border transition-all cursor-pointer whitespace-nowrap ${
+                      activeCertType === "B-IRC Shortlisting"
+                        ? "bg-indigo-600 text-white border-indigo-600"
+                        : "bg-slate-100 hover:bg-slate-200 text-slate-700"
+                    }`}
+                  >
+                    (2) Shortlisted Certificate
+                  </button>
+                  </>
+                )}
                 <button
                   onClick={() => setActiveCertType("Certificate of Selection")}
                   className={`px-2.5 py-1 text-[9.5px] font-bold rounded-lg border transition-all cursor-pointer whitespace-nowrap ${
@@ -503,7 +521,7 @@ Corporate Treasury & HR Audit Systems`;
                       : "bg-slate-100 hover:bg-slate-200 text-slate-700"
                   }`}
                 >
-                  (3) Certificate of Selection
+                  {persona.role === "Employee" ? "(1)" : "(3)"} Certificate of Selection
                 </button>
                 {activeCert.status === IdeaStatus.Completed && (
                   <button
@@ -514,7 +532,7 @@ Corporate Treasury & HR Audit Systems`;
                         : "bg-slate-100 hover:bg-slate-200 text-slate-700"
                     }`}
                   >
-                    (4) Certificate of Contribution
+                    {persona.role === "Employee" ? "(2)" : "(4)"} Certificate of Contribution
                   </button>
                 )}
               </div>
