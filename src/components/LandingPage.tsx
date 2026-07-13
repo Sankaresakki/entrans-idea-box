@@ -213,11 +213,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
         <div className="relative max-w-7xl mx-auto px-6 pt-24 pb-20 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           {/* Left Text */}
           <div className="text-white space-y-8">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 text-sm font-medium text-indigo-200">
-              <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-              Ion Exchange (India) Limited
-            </div>
-
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.05]">
               One Small{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-violet-300 to-pink-300">
