@@ -16,7 +16,6 @@ import { CertificateView } from "./components/CertificateView";
 import { NotificationLogView } from "./components/NotificationLogView";
 import { LoginGate } from "./components/LoginGate";
 import { LandingPage } from "./components/LandingPage";
-import { DemoFlowRunner } from "./components/DemoFlowRunner";
 import { CertificationModule } from "./components/CertificationModule";
 import { MonthlyTrackerModule } from "./components/MonthlyTrackerModule";
 import { MeetingManagementModule, OfflineMeeting as IOfflineMeeting } from "./components/MeetingManagementModule";
@@ -92,9 +91,6 @@ export default function App() {
 
   // Controls whether to show LoginGate or LandingPage when not authenticated
   const [showLogin, setShowLogin] = useState(false);
-
-  // Demo flow runner visibility
-  const [demoOpen, setDemoOpen] = useState(false);
 
   // Realtime sync status (shown in header badge)
   const [isLoading, setIsLoading] = useState(isSupabaseConfigured);
@@ -365,7 +361,7 @@ export default function App() {
   }
 
   return (
-    <div className={`min-h-screen flex flex-col font-sans select-none antialiased bg-slate-50 text-slate-800 transition-all duration-300 ${demoOpen ? "mr-80" : ""}`}>
+    <div className="min-h-screen flex flex-col font-sans select-none antialiased bg-slate-50 text-slate-800">
       
       {/* Dynamic Header */}
       <header className="bg-white border-b border-slate-200 text-slate-900 py-4 px-6 sticky top-0 z-10 shadow-xs">
@@ -378,21 +374,6 @@ export default function App() {
 
           {/* Quick Resolute buttons */}
           <div className="flex items-center gap-2">
-            {/* Demo Flow trigger button */}
-            <button
-              onClick={() => setDemoOpen(v => !v)}
-              className={`px-3 py-1.5 text-xs font-bold rounded-full border transition-all cursor-pointer flex items-center gap-1.5 ${
-                demoOpen
-                  ? "bg-indigo-600 text-white border-indigo-500 shadow-md"
-                  : "bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100"
-              }`}
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3.5 h-3.5">
-                <polygon points="5,3 19,12 5,21" fill="currentColor" />
-              </svg>
-              {demoOpen ? "Close Demo" : "Run Live Demo"}
-            </button>
-
 
             <div className={`flex items-center border px-2.5 py-1 rounded-full text-[10px] font-semibold ${
               realtimeStatus === "connected"
@@ -815,9 +796,9 @@ export default function App() {
                 {activeTab === "finalreportsubmission" && (
                   <IdeaWorkflowPanel
                     title="Final Report Submission"
-                    description="Submit your final project report once the action plan is approved."
+                    description="Submit your final project report once the action plan is approved. Respond to any Finance revision requests."
                     ideas={authorizedIdeas}
-                    statuses={[IdeaStatus.ActionPlanApproved, IdeaStatus.ReportRevision]}
+                    statuses={[IdeaStatus.ActionPlanApproved, IdeaStatus.ReportRevision, IdeaStatus.FinanceRevision]}
                     persona={currentPersona}
                     onUpdateIdea={handleUpdateIdea}
                     onAddNotification={handleAddNotification}
@@ -1030,21 +1011,6 @@ export default function App() {
       <footer className="bg-white border-t border-slate-200 py-3 mt-12 text-center text-[10px] text-slate-400 font-mono">
         &copy; 2026 Ion Exchange (India) Limited. Core Ideation Server Platform. Unified Corporate Portal.
       </footer>
-
-      {/* ── Demo Flow Runner Panel (fixed overlay, inside root div) ── */}
-      {demoOpen && (
-        <DemoFlowRunner
-          ideas={ideas}
-          setIdeas={setIdeas}
-          setCurrentPersona={(p) => {
-            setCurrentPersona(p);
-            localStorage.setItem("ripple_logged_persona", JSON.stringify(p));
-          }}
-          setActiveTab={(t) => setActiveTab(t as typeof activeTab)}
-          setSelectedIdeaId={setSelectedIdeaId}
-          onClose={() => setDemoOpen(false)}
-        />
-      )}
 
     </div>
   );

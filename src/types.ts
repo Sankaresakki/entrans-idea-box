@@ -316,7 +316,9 @@ export function getAuthorizedIdeasForRole(ideas: Idea[], persona: UserPersona): 
     switch (role) {
       case "C-POC":
         return [
-          IdeaStatus.Submitted, 
+          IdeaStatus.Submitted,
+          IdeaStatus.ReturnedToEmployee,
+          IdeaStatus.VettingLimitExceeded,
           IdeaStatus.ApprovedByCPOC, 
           IdeaStatus.UnderIRCEvaluation,
           IdeaStatus.SelectedByIRC, 
@@ -330,31 +332,47 @@ export function getAuthorizedIdeasForRole(ideas: Idea[], persona: UserPersona): 
           IdeaStatus.ActionPlanApproved,
           IdeaStatus.ReportSubmitted,
           IdeaStatus.ReportRevision,
+          IdeaStatus.ReportRejected,
           IdeaStatus.PendingFinanceEvaluation,
           IdeaStatus.FinanceRevision,
           IdeaStatus.FinanceRevisionLimitExceeded,
+          IdeaStatus.NoQuantifiableFinancialBenefit,
           IdeaStatus.PendingCFOSignOff,
-          IdeaStatus.Completed,
-          IdeaStatus.VettingLimitExceeded
+          IdeaStatus.Completed
         ].includes(idea.status);
       case "IRC Member":
         return [
+          IdeaStatus.ApprovedByCPOC,
           IdeaStatus.UnderIRCEvaluation, 
-          IdeaStatus.RejectedByIRC
+          IdeaStatus.RejectedByIRC,
+          IdeaStatus.SelectedByIRC
         ].includes(idea.status);
       case "Functional Head":
         return [
           IdeaStatus.WithFunctionalHead, 
-          IdeaStatus.ActionPlanSubmitted, 
-          IdeaStatus.ReportSubmitted,
           IdeaStatus.DeclinedByFH,
-          IdeaStatus.ActionPlanRejected
+          IdeaStatus.AwaitingActionPlan,
+          IdeaStatus.ActionPlanSubmitted, 
+          IdeaStatus.ActionPlanRevision,
+          IdeaStatus.ActionPlanRejected,
+          IdeaStatus.ActionPlanApproved,
+          IdeaStatus.ReportSubmitted,
+          IdeaStatus.ReportRevision,
+          IdeaStatus.ReportRejected,
+          IdeaStatus.PendingFinanceEvaluation,
+          IdeaStatus.FinanceRevision,
+          IdeaStatus.PendingCFOSignOff,
+          IdeaStatus.Completed
         ].includes(idea.status);
       case "Plan Owner":
         return [
           IdeaStatus.AwaitingActionPlan, 
-          IdeaStatus.ActionPlanRevision, 
-          IdeaStatus.ReportRevision
+          IdeaStatus.ActionPlanRevision,
+          IdeaStatus.ActionPlanApproved,
+          IdeaStatus.ReportRevision,
+          IdeaStatus.ReportSubmitted,
+          IdeaStatus.ReportRejected,
+          IdeaStatus.FinanceRevision
         ].includes(idea.status);
       case "Finance":
         return [

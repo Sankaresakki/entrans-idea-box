@@ -2439,6 +2439,64 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
               </div>
             </div>
 
+            {/* IRC Evaluation Summary — shown to FH for informed decision */}
+            {(idea.ircReviews && idea.ircReviews.length > 0) && (
+              <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4 space-y-3">
+                <p className="text-[9px] font-bold uppercase tracking-widest text-indigo-700 mb-1">IRC Evaluation Results — For Your Reference</p>
+
+                {/* Score summary */}
+                <div className="flex flex-wrap gap-3 text-[11px]">
+                  {idea.averageIrcScore !== undefined && (
+                    <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold ${
+                      idea.averageIrcScore >= (idea.ircScoresThreshold || 17)
+                        ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
+                        : "bg-rose-100 text-rose-800 border border-rose-200"
+                    }`}>
+                      <span>Avg Score: {idea.averageIrcScore.toFixed(2)} / 25</span>
+                      <span className="text-[9px] opacity-70">(threshold {idea.ircScoresThreshold || 17}/25)</span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-indigo-200 text-indigo-800 font-bold text-[11px]">
+                    Reviews: {idea.ircReviews.length}
+                  </div>
+                  {idea.ircEvaluationCycle && (
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-indigo-200 text-indigo-700 text-[10px]">
+                      Cycle: {idea.ircEvaluationCycle}
+                    </div>
+                  )}
+                </div>
+
+                {/* Per-reviewer summary */}
+                <div className="space-y-2">
+                  {idea.ircReviews.map((review, i) => (
+                    <div key={i} className="bg-white border border-indigo-100 rounded-lg p-3 text-[10.5px]">
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <span className="font-bold text-slate-800">{review.reviewerName}</span>
+                        <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold ${
+                          review.aggregateScore >= (idea.ircScoresThreshold || 17)
+                            ? "bg-emerald-100 text-emerald-700"
+                            : "bg-amber-100 text-amber-700"
+                        }`}>{review.aggregateScore.toFixed(2)} / 25</span>
+                      </div>
+                      {review.recommendedFH && (
+                        <p className="text-slate-500 mt-1 text-[9.5px]">Recommended FH: <span className="font-semibold text-indigo-700">{review.recommendedFH}</span></p>
+                      )}
+                      {review.comments && (
+                        <p className="text-slate-500 mt-0.5 text-[9.5px] italic">"{review.comments}"</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Meeting info */}
+                {idea.proposerIrcMeetingDetails && (
+                  <p className="text-[9.5px] text-indigo-600 border-t border-indigo-200 pt-2">
+                    <strong>Pitch session:</strong> {idea.proposerIrcMeetingDetails}
+                  </p>
+                )}
+              </div>
+            )}
+
             {/* Project Title */}
             <div>
               <label className="block text-[9.5px] font-bold uppercase tracking-widest text-slate-500 mb-1.5">
@@ -3799,6 +3857,47 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
           <p className="text-[11px] text-slate-500 leading-relaxed max-w-md mx-auto">
             The Action Plan proposed was Rejected by Functional Head with remarks: "{idea.fhPlanRejectReason}". 
             This incubation cycle is closed.
+          </p>
+        </div>
+      )}
+
+      {idea.status === IdeaStatus.RejectedByIRC && (
+        <div className="bg-white p-6 border border-slate-200 rounded-2xl text-center space-y-3">
+          <div className="w-11 h-11 bg-rose-50 text-rose-600 border rounded-full flex items-center justify-center mx-auto">
+            <XCircle className="w-6 h-6" />
+          </div>
+          <h4 className="font-display font-black text-xs text-slate-900 uppercase tracking-widest">Not Selected by IRC</h4>
+          <p className="text-[11px] text-slate-500 leading-relaxed max-w-md mx-auto">
+            The IRC evaluated this idea and it did not meet the selection threshold
+            {idea.averageIrcScore !== undefined ? ` (average score: ${idea.averageIrcScore.toFixed(2)}/25; threshold: ${idea.ircScoresThreshold || 17}/25)` : ""}.
+            The employee's contribution is acknowledged and on record.
+          </p>
+        </div>
+      )}
+
+      {idea.status === IdeaStatus.ReportRejected && (
+        <div className="bg-white p-6 border border-slate-200 rounded-2xl text-center space-y-3">
+          <div className="w-11 h-11 bg-rose-50 text-rose-600 border rounded-full flex items-center justify-center mx-auto">
+            <XCircle className="w-6 h-6" />
+          </div>
+          <h4 className="font-display font-black text-xs text-slate-900 uppercase tracking-widest">Project Report Rejected</h4>
+          <p className="text-[11px] text-slate-500 leading-relaxed max-w-md mx-auto">
+            The Final Project Report was reviewed and rejected by Functional Head <strong>{idea.assignedFHName}</strong>
+            {idea.fhReportRemarks ? `: "${idea.fhReportRemarks}"` : ""}. The pilot did not deliver reportable outcomes. This incubation cycle is closed.
+          </p>
+        </div>
+      )}
+
+      {idea.status === IdeaStatus.NoQuantifiableFinancialBenefit && (
+        <div className="bg-white p-6 border border-slate-200 rounded-2xl text-center space-y-3">
+          <div className="w-11 h-11 bg-amber-50 text-amber-600 border border-amber-200 rounded-full flex items-center justify-center mx-auto">
+            <XCircle className="w-6 h-6" />
+          </div>
+          <h4 className="font-display font-black text-xs text-slate-900 uppercase tracking-widest">No Quantifiable Financial Benefit</h4>
+          <p className="text-[11px] text-slate-500 leading-relaxed max-w-md mx-auto">
+            Finance reviewed the project report and could not certify a defensible annualized ₹ impact
+            {idea.finQualitativeNote ? `: "${idea.finQualitativeNote}"` : ""}. 
+            IRC selection recognition (Certificate + ₹2,000 voucher) remains intact.
           </p>
         </div>
       )}
