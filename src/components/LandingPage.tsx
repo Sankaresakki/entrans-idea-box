@@ -141,7 +141,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-2.5">
-            <img src="/ripple.png" className="h-14 w-auto" alt="Ripple" />
+            <img src="/ripple.png" className="h-20 w-auto" alt="Ripple" />
           </div>
 
           {/* Desktop Nav */}
@@ -215,7 +215,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
           <div className="text-white space-y-8">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 text-sm font-medium text-indigo-200">
               <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-              Ion Exchange (India) Limited · Talent Management & OD
+              Ion Exchange (India) Limited
             </div>
 
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.05]">
@@ -534,7 +534,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
             </div>
             <div>
               <div className="font-bold text-white text-sm">Ripple</div>
-              <div className="text-xs text-slate-400">Talent Management &amp; OD</div>
+              <div className="text-xs text-slate-400">Ion Exchange (India) Limited</div>
             </div>
           </div>
           <p className="text-xs text-slate-500 text-center sm:text-right">

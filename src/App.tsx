@@ -188,7 +188,7 @@ export default function App() {
     if (!currentPersona) return;
     const defaults: Record<string, typeof activeTab> = {
       "Employee":        "submit",
-      "C-POC":           "dashboard",
+      "C-POC":           "vetting",
       "IRC Member":      "ircevaluation",
       "Functional Head": "assignedideas",
       "Plan Owner":      "actionplansubmission",
@@ -552,14 +552,14 @@ export default function App() {
               return r === currentPersona.email.toLowerCase();
             }).length;
 
-            if (role === "Employee") return (<>{T("submit","Submit Idea")}{T("mytracker","My Idea Tracker")}{T("certificates","Certificates")}</>);
-            if (role === "C-POC") return (<>{T("dashboard","Dashboard")}{T("vetting","Idea Quality Vetting")}{T("fhassignment","FH Assignment")}{T("ircfinalization","Evaluation Finalization")}{T("monthlytracker","Monthly Worklog")}{T("meetings","Meetings")}</>);
+            if (role === "Employee") return (<>{T("submit","New Idea Proposal")}{T("mytracker","My Idea Tracker")}{T("certificates","Certificates")}</>);
+            if (role === "C-POC") return (<>{T("vetting","Idea Quality Vetting")}{T("fhassignment","FH Assignment")}{T("ircfinalization","Evaluation Finalization")}{T("monthlytracker","Monthly Tracker")}{T("meetings","Meetings Log")}</>);
             if (role === "IRC Member") return (<>{T("ircevaluation","Idea Evaluation")}</>);
-            if (role === "Functional Head") return (<>{T("assignedideas","Assigned Ideas")}{T("actionplanapproval","Action Plan Approval")}{T("finalreportsapproval","Final Reports Approval")}{T("monthlytracker","Monthly Worklog")}</>);
-            if (role === "Plan Owner") return (<>{T("actionplansubmission","Action Plan Submission")}{T("finalreportsubmission","Final Report Submission")}{T("monthlytracker","Monthly Worklog")}{T("meetings","Meetings")}</>);
+            if (role === "Functional Head") return (<>{T("assignedideas","Assigned Ideas")}{T("actionplanapproval","Action Plan Approval")}{T("finalreportsapproval","Final Reports Approval")}</>);
+            if (role === "Plan Owner") return (<>{T("actionplansubmission","Action Plan Submission")}{T("finalreportsubmission","Final Report Submission")}</>);
             if (role === "Finance") return (<>{T("financetemplate","Finance Impact Template")}</>);
             if (role === "CFO") return (<>{T("cfoapproval","Financial Impact Approval")}</>);
-            if (role === "Super Admin") return (<>{T("dashboard","Dashboard")}{T("taskcenter","All Workflows")}{T("certificates","Certificates")}{T("monthlytracker","Monthly Worklog")}{T("meetings","Meetings")}{T("zohomail","Notifications", notifCount)}</>);
+            if (role === "Super Admin") return (<>{T("dashboard","Dashboard")}{T("taskcenter","All Workflows")}{T("certificates","Certificates")}{T("monthlytracker","Monthly Tracker")}{T("meetings","Meetings Log")}{T("zohomail","Notifications", notifCount)}</>);
             return null;
           })()}
         </div>
