@@ -1117,8 +1117,8 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
         </div>
       </div>
 
-      {/* RIPPLE Live Progress Flowchart */}
-      <WorkflowMap idea={idea} />
+      {/* WorkflowMap hidden */}
+      {/* <WorkflowMap idea={idea} /> */}
 
       {/* Role Warnings */}
       <div className="p-4 bg-indigo-50/60 border border-indigo-150/50 rounded-2xl text-[11px] text-slate-700 flex flex-col sm:flex-row items-center justify-between gap-3">
