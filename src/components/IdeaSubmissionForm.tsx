@@ -61,12 +61,14 @@ interface IdeaSubmissionFormProps {
     employeeId?: string;
     department?: string;
     designation?: string;
+    grade?: string;
+    cadre?: string;
     customFields?: { id: string; label: string; value: string; type: string }[];
   }) => void;
   currentPersona?: {
     role: string; name: string; email: string;
     businessUnit?: string; employeeId?: string;
-    department?: string; designation?: string;
+    department?: string; designation?: string; grade?: string; cadre?: string;
   };
 }
 
@@ -183,6 +185,8 @@ export const IdeaSubmissionForm: React.FC<IdeaSubmissionFormProps> = ({ onSubmit
   const [employeeId,       setEmployeeId]       = useState(currentPersona?.employeeId || "");
   const [department,       setDepartment]       = useState(currentPersona?.department || "");
   const [designation,      setDesignation]      = useState(currentPersona?.designation || "");
+  const [grade,            setGrade]            = useState(currentPersona?.grade || "");
+  const [cadre,            setCadre]            = useState(currentPersona?.cadre || "");
   const [baseLocation,     setBaseLocation]     = useState("");
   const [reportingManager, setReportingManager] = useState("");
   const [yearsInRole,      setYearsInRole]      = useState("");
@@ -235,6 +239,8 @@ export const IdeaSubmissionForm: React.FC<IdeaSubmissionFormProps> = ({ onSubmit
       setEmployeeId(currentPersona.employeeId || "");
       setDepartment(currentPersona.department || "");
       setDesignation(currentPersona.designation || "");
+      setGrade(currentPersona.grade || "");
+      setCadre(currentPersona.cadre || "");
       if (currentPersona.businessUnit) setBusinessUnit(currentPersona.businessUnit);
     }
   }, [currentPersona]);
@@ -351,6 +357,8 @@ export const IdeaSubmissionForm: React.FC<IdeaSubmissionFormProps> = ({ onSubmit
       employeeId: employeeId || currentPersona?.employeeId,
       department: department || currentPersona?.department,
       designation: designation || currentPersona?.designation,
+      grade: grade || currentPersona?.grade,
+      cadre: cadre || currentPersona?.cadre,
       customFields,
     });
 
@@ -439,13 +447,31 @@ export const IdeaSubmissionForm: React.FC<IdeaSubmissionFormProps> = ({ onSubmit
               <input type="email" readOnly value={employeeEmail} className={autoClass + " font-mono"} />
             </div>
 
+            {/* Grade */}
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <FieldLabel required>Grade</FieldLabel>
+                <AutoBadge />
+              </div>
+              <input type="text" readOnly value={grade || currentPersona?.grade || ""} className={autoClass} placeholder="e.g. M4, E3" />
+            </div>
+
             {/* Designation */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <FieldLabel required>Grade / Designation</FieldLabel>
+                <FieldLabel required>Designation</FieldLabel>
                 <AutoBadge />
               </div>
               <input type="text" readOnly value={designation || currentPersona?.designation || ""} className={autoClass} />
+            </div>
+
+            {/* Cadre */}
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <FieldLabel required>Cadre</FieldLabel>
+                <AutoBadge />
+              </div>
+              <input type="text" readOnly value={cadre || currentPersona?.cadre || ""} className={autoClass} placeholder="e.g. Officer, Staff, Executive" />
             </div>
 
             {/* Base Location */}

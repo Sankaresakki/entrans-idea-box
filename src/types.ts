@@ -37,6 +37,8 @@ export interface UserPersona {
   employeeId?: string;
   department?: string;
   designation?: string;
+  grade?: string;
+  cadre?: string;
 }
 
 export interface Idea {
@@ -60,6 +62,8 @@ export interface Idea {
   employeeId?: string;
   department?: string;
   designation?: string;
+  grade?: string;
+  cadre?: string;
 
   // Annexure 3 & 4: C-POC Vetting
   cpocVettedBy?: string;

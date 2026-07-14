@@ -11,7 +11,6 @@ import {
   ShieldCheck, 
   Clock, 
   FileCheck, 
-  DollarSign, 
   Award, 
   Eye, 
   AlertTriangle,
@@ -46,6 +45,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ ideas, onSelectIdea, selec
   const [searchTerm, setSearchTerm] = useState("");
   const [buFilter, setBuFilter] = useState("");
   const [impactFilter, setImpactFilter] = useState("");
+  const [gradeFilter, setGradeFilter] = useState("");
+  const [cadreFilter, setCadreFilter] = useState("");
+  const [divisionFilter, setDivisionFilter] = useState("");
   const [statusSearch, setStatusSearch] = useState("");
   const [activeWorkspaceTab, setActiveWorkspaceTab] = useState<"pending" | "all">("pending");
   const [showQuarterly, setShowQuarterly] = useState(false);
@@ -144,8 +146,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ ideas, onSelectIdea, selec
     const matchesBU = buFilter ? idea.businessUnit === buFilter : true;
     const matchesImpact = impactFilter ? idea.areaOfImpact === impactFilter : true;
     const matchesStatus = statusSearch ? idea.status === statusSearch : true;
+    const matchesGrade = gradeFilter ? (idea as Idea & { grade?: string }).grade === gradeFilter : true;
+    const matchesCadre = cadreFilter ? (idea as Idea & { cadre?: string }).cadre === cadreFilter : true;
+    const matchesDivision = divisionFilter ? idea.department === divisionFilter : true;
 
-    return matchesSearch && matchesBU && matchesImpact && matchesStatus;
+    return matchesSearch && matchesBU && matchesImpact && matchesStatus && matchesGrade && matchesCadre && matchesDivision;
   };
 
   // Filter ideas at the entry level of dashboard to enforce strict segregation of duties (SoD)
@@ -175,6 +180,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ ideas, onSelectIdea, selec
     i.status !== IdeaStatus.VettingLimitExceeded
   ).length;
 
+  const underVettingCount = authorizedIdeas.filter(i =>
+    i.status === IdeaStatus.Submitted || i.status === IdeaStatus.ReturnedToEmployee
+  ).length;
+
   const stage2Active = authorizedIdeas.filter(i => {
     const s = i.status;
     return s !== IdeaStatus.Submitted && 
@@ -189,92 +198,155 @@ export const Dashboard: React.FC<DashboardProps> = ({ ideas, onSelectIdea, selec
            s !== IdeaStatus.Completed;
   }).length;
 
+  const ircSelectedCount = authorizedIdeas.filter(i => {
+    const s = i.status;
+    return s === IdeaStatus.SelectedByIRC || s === IdeaStatus.WithFunctionalHead ||
+           s === IdeaStatus.AwaitingActionPlan || s === IdeaStatus.ActionPlanSubmitted ||
+           s === IdeaStatus.ActionPlanRevision || s === IdeaStatus.ActionPlanApproved ||
+           s === IdeaStatus.ReportSubmitted || s === IdeaStatus.ReportRevision ||
+           s === IdeaStatus.PendingFinanceEvaluation || s === IdeaStatus.FinanceRevision ||
+           s === IdeaStatus.PendingCFOSignOff || s === IdeaStatus.Completed ||
+           s === IdeaStatus.DeclinedByFH || s === IdeaStatus.ActionPlanRejected ||
+           s === IdeaStatus.ReportRejected || s === IdeaStatus.FinanceRevisionLimitExceeded ||
+           s === IdeaStatus.NoQuantifiableFinancialBenefit;
+  }).length;
+
   const winnerCount = authorizedIdeas.filter(i => i.status === IdeaStatus.Completed).length;
 
-  // Total funds calculated for deployment rewards
-  const totalRewards = authorizedIdeas.reduce((acc, curr) => {
-    return acc + (curr.calculatedRewardIdeaOwner || 0) + (curr.calculatedRewardTeamMembers || 0);
-  }, 0);
+  const closedRejectedCount = authorizedIdeas.filter(i => {
+    const s = i.status;
+    return s === IdeaStatus.VettingLimitExceeded || s === IdeaStatus.RejectedByIRC ||
+           s === IdeaStatus.DeclinedByFH || s === IdeaStatus.ActionPlanRejected ||
+           s === IdeaStatus.ReportRejected || s === IdeaStatus.FinanceRevisionLimitExceeded ||
+           s === IdeaStatus.NoQuantifiableFinancialBenefit;
+  }).length;
+
+  const vettingRate = totalSubmissions > 0 ? Math.round((shortlistedCount / totalSubmissions) * 100) : 0;
+  const ircSelectionRate = shortlistedCount > 0 ? Math.round((ircSelectedCount / shortlistedCount) * 100) : 0;
+  const completionRate = ircSelectedCount > 0 ? Math.round((winnerCount / ircSelectedCount) * 100) : 0;
 
   const activeDisplayList = activeWorkspaceTab === "pending" ? pendingInboxIdeas : allRegistryIdeas;
 
   return (
     <div className="space-y-6">
 
-      {/* Bento Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        {/* KPI 1 */}
-        <div className="p-6 bg-white rounded-2xl border border-slate-200 card-shadow flex flex-col justify-between hover:border-indigo-400 hover:shadow-md transition-all duration-300 min-h-[140px]">
-          <div className="flex justify-between items-start">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block font-mono">
-              Total Proposals
-            </span>
-            <div className="p-2.5 bg-slate-50 border border-slate-100 rounded-xl text-slate-600">
-              <Clock className="w-5 h-5 text-indigo-600" />
-            </div>
+      {/* 7-Card KPI Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3">
+        {/* KPI 1: Total Proposals */}
+        <div className="p-4 bg-white rounded-2xl border border-slate-200 card-shadow flex flex-col justify-between hover:border-indigo-300 hover:shadow-md transition-all duration-300 min-h-[120px]">
+          <div className="flex justify-between items-start gap-1">
+            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest font-mono leading-tight">Total Proposals</span>
+            <div className="p-1.5 bg-slate-50 border border-slate-100 rounded-lg flex-shrink-0"><Clock className="w-3.5 h-3.5 text-indigo-500" /></div>
           </div>
-          <div className="mt-4">
-            <span className="text-3xl font-extrabold text-slate-900 font-display tracking-tight block">
-              {totalSubmissions}
-            </span>
-            <span className="text-[10px] text-slate-500 font-medium block mt-1">Across 7 Business Units</span>
+          <div className="mt-3">
+            <span className="text-3xl font-extrabold text-slate-900 font-display tracking-tight block">{totalSubmissions}</span>
+            <span className="text-[9.5px] text-slate-500 font-medium block mt-0.5">All received</span>
           </div>
         </div>
 
-        {/* KPI 2 */}
-        <div className="p-6 bg-white rounded-2xl border border-slate-200 card-shadow flex flex-col justify-between hover:border-indigo-400 hover:shadow-md transition-all duration-300 min-h-[140px]">
-          <div className="flex justify-between items-start">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block font-mono">
-              Shortlisted (Stage 1)
-            </span>
-            <div className="p-2.5 bg-slate-50 border border-slate-100 rounded-xl text-slate-600">
-              <FileCheck className="w-5 h-5 text-indigo-600" />
-            </div>
+        {/* KPI 2: Under Vetting */}
+        <div className="p-4 bg-white rounded-2xl border border-amber-200 card-shadow flex flex-col justify-between hover:shadow-md transition-all duration-300 min-h-[120px]">
+          <div className="flex justify-between items-start gap-1">
+            <span className="text-[9px] font-bold text-amber-500 uppercase tracking-widest font-mono leading-tight">Under Vetting</span>
+            <div className="p-1.5 bg-amber-50 border border-amber-100 rounded-lg flex-shrink-0"><Clock className="w-3.5 h-3.5 text-amber-500" /></div>
           </div>
-          <div className="mt-4">
-            <span className="text-3xl font-extrabold text-slate-900 font-display tracking-tight block">
-              {shortlistedCount}
-            </span>
-            <span className="text-[10px] text-slate-500 font-medium block mt-1">Passed B-IRC Checkpoints</span>
+          <div className="mt-3">
+            <span className="text-3xl font-extrabold text-slate-900 font-display tracking-tight block">{underVettingCount}</span>
+            <span className="text-[9.5px] text-amber-600 font-medium block mt-0.5">Awaiting B-IRC</span>
           </div>
         </div>
 
-        {/* KPI 3 */}
-        <div className="p-6 bg-white rounded-2xl border border-slate-200 card-shadow flex flex-col justify-between hover:border-indigo-400 hover:shadow-md transition-all duration-300 min-h-[140px]">
-          <div className="flex justify-between items-start">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block font-mono">
-              Stage 2 Pilots Active
-            </span>
-            <div className="p-2.5 bg-emerald-50 border border-emerald-100 rounded-xl text-slate-600">
-              <Award className="w-5 h-5 text-emerald-600" />
-            </div>
+        {/* KPI 3: Cleared Vetting */}
+        <div className="p-4 bg-white rounded-2xl border border-slate-200 card-shadow flex flex-col justify-between hover:border-indigo-300 hover:shadow-md transition-all duration-300 min-h-[120px]">
+          <div className="flex justify-between items-start gap-1">
+            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest font-mono leading-tight">Cleared Vetting</span>
+            <div className="p-1.5 bg-slate-50 border border-slate-100 rounded-lg flex-shrink-0"><FileCheck className="w-3.5 h-3.5 text-indigo-500" /></div>
           </div>
-          <div className="mt-4">
-            <span className="text-3xl font-extrabold text-slate-900 font-display tracking-tight block">
-              {stage2Active}
-            </span>
-            <span className="text-[10px] text-emerald-600 font-semibold block mt-1">Undergoing 6-Month Trial</span>
+          <div className="mt-3">
+            <span className="text-3xl font-extrabold text-slate-900 font-display tracking-tight block">{shortlistedCount}</span>
+            <span className="text-[9.5px] text-slate-500 font-medium block mt-0.5">B-IRC passed</span>
           </div>
         </div>
 
-        {/* KPI 4 */}
-        <div className="p-6 bg-white border border-[#0098DB]/20 rounded-2xl card-shadow flex flex-col justify-between shadow-lg shadow-[#0098DB]/10 min-h-[140px] relative overflow-hidden">
-          <div className="absolute right-0 bottom-0 translate-x-4 translate-y-4 opacity-5 pointer-events-none">
-            <DollarSign className="w-36 h-36 text-[#0098DB]" />
+        {/* KPI 4: IRC Selected */}
+        <div className="p-4 bg-white rounded-2xl border border-teal-200 card-shadow flex flex-col justify-between hover:shadow-md transition-all duration-300 min-h-[120px]">
+          <div className="flex justify-between items-start gap-1">
+            <span className="text-[9px] font-bold text-teal-600 uppercase tracking-widest font-mono leading-tight">IRC Selected</span>
+            <div className="p-1.5 bg-teal-50 border border-teal-100 rounded-lg flex-shrink-0"><Award className="w-3.5 h-3.5 text-teal-600" /></div>
           </div>
-          <div className="flex justify-between items-start z-1">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block font-mono">
-              Rewards Simulated
-            </span>
-            <div className="p-2.5 bg-[#0098DB]/10 rounded-xl text-amber-500">
-              <DollarSign className="w-5 h-5" />
-            </div>
+          <div className="mt-3">
+            <span className="text-3xl font-extrabold text-slate-900 font-display tracking-tight block">{ircSelectedCount}</span>
+            <span className="text-[9.5px] text-teal-600 font-medium block mt-0.5">Post-IRC pipeline</span>
           </div>
-          <div className="mt-4 z-1">
-            <span className="text-2xl font-black text-slate-900 font-display tracking-tight block font-mono">
-              ₹ {totalRewards.toLocaleString()}
-            </span>
-            <span className="text-[10px] text-[#0098DB] font-medium block mt-1">{winnerCount} Leadership Winners</span>
+        </div>
+
+        {/* KPI 5: Active Pilots */}
+        <div className="p-4 bg-white rounded-2xl border border-emerald-200 card-shadow flex flex-col justify-between hover:shadow-md transition-all duration-300 min-h-[120px]">
+          <div className="flex justify-between items-start gap-1">
+            <span className="text-[9px] font-bold text-emerald-600 uppercase tracking-widest font-mono leading-tight">Active Pilots</span>
+            <div className="p-1.5 bg-emerald-50 border border-emerald-100 rounded-lg flex-shrink-0"><Award className="w-3.5 h-3.5 text-emerald-600" /></div>
+          </div>
+          <div className="mt-3">
+            <span className="text-3xl font-extrabold text-slate-900 font-display tracking-tight block">{stage2Active}</span>
+            <span className="text-[9.5px] text-emerald-600 font-medium block mt-0.5">6-month trial</span>
+          </div>
+        </div>
+
+        {/* KPI 6: Completed */}
+        <div className="p-4 bg-white rounded-2xl border border-indigo-200 card-shadow flex flex-col justify-between hover:shadow-md transition-all duration-300 min-h-[120px]">
+          <div className="flex justify-between items-start gap-1">
+            <span className="text-[9px] font-bold text-indigo-500 uppercase tracking-widest font-mono leading-tight">Completed</span>
+            <div className="p-1.5 bg-indigo-50 border border-indigo-100 rounded-lg flex-shrink-0"><CheckCircle2 className="w-3.5 h-3.5 text-indigo-500" /></div>
+          </div>
+          <div className="mt-3">
+            <span className="text-3xl font-extrabold text-slate-900 font-display tracking-tight block">{winnerCount}</span>
+            <span className="text-[9.5px] text-indigo-500 font-medium block mt-0.5">Rewards distributed</span>
+          </div>
+        </div>
+
+        {/* KPI 7: Closed / Rejected */}
+        <div className="p-4 bg-white rounded-2xl border border-rose-200 card-shadow flex flex-col justify-between hover:shadow-md transition-all duration-300 min-h-[120px]">
+          <div className="flex justify-between items-start gap-1">
+            <span className="text-[9px] font-bold text-rose-400 uppercase tracking-widest font-mono leading-tight">Closed / Rejected</span>
+            <div className="p-1.5 bg-rose-50 border border-rose-100 rounded-lg flex-shrink-0"><AlertTriangle className="w-3.5 h-3.5 text-rose-400" /></div>
+          </div>
+          <div className="mt-3">
+            <span className="text-3xl font-extrabold text-slate-900 font-display tracking-tight block">{closedRejectedCount}</span>
+            <span className="text-[9.5px] text-rose-400 font-medium block mt-0.5">Not progressed</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Outcome Rate Indicators */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between">
+          <div>
+            <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest font-mono">Vetting Pass Rate</p>
+            <p className="text-xl font-black text-slate-900 font-display mt-0.5">{vettingRate}<span className="text-base font-bold text-slate-400">%</span></p>
+            <p className="text-[9.5px] text-slate-500 mt-0.5">Cleared ÷ Submitted</p>
+          </div>
+          <div className="w-14 h-14 rounded-full border-4 border-indigo-200 flex items-center justify-center bg-white">
+            <span className="text-xs font-black text-indigo-600">{vettingRate}%</span>
+          </div>
+        </div>
+        <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between">
+          <div>
+            <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest font-mono">IRC Selection Rate</p>
+            <p className="text-xl font-black text-slate-900 font-display mt-0.5">{ircSelectionRate}<span className="text-base font-bold text-slate-400">%</span></p>
+            <p className="text-[9.5px] text-slate-500 mt-0.5">IRC Selected ÷ Vetted</p>
+          </div>
+          <div className="w-14 h-14 rounded-full border-4 border-teal-200 flex items-center justify-center bg-white">
+            <span className="text-xs font-black text-teal-600">{ircSelectionRate}%</span>
+          </div>
+        </div>
+        <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between">
+          <div>
+            <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest font-mono">Completion Rate</p>
+            <p className="text-xl font-black text-slate-900 font-display mt-0.5">{completionRate}<span className="text-base font-bold text-slate-400">%</span></p>
+            <p className="text-[9.5px] text-slate-500 mt-0.5">Completed ÷ IRC Selected</p>
+          </div>
+          <div className="w-14 h-14 rounded-full border-4 border-emerald-200 flex items-center justify-center bg-white">
+            <span className="text-xs font-black text-emerald-600">{completionRate}%</span>
           </div>
         </div>
       </div>
@@ -434,6 +506,39 @@ export const Dashboard: React.FC<DashboardProps> = ({ ideas, onSelectIdea, selec
               <option value="">All Statuses</option>
               {Object.values(IdeaStatus).map(status => (
                 <option key={status} value={status}>{status}</option>
+              ))}
+            </select>
+
+            <select
+              value={divisionFilter}
+              onChange={(e) => setDivisionFilter(e.target.value)}
+              className="px-3.5 py-2 focus:outline-hidden text-xs bg-white border border-slate-200 hover:border-slate-300 rounded-xl transition-all shadow-xs text-slate-700"
+            >
+              <option value="">All Departments</option>
+              {[...new Set(authorizedIdeas.map(i => i.department).filter(Boolean))].sort().map(dept => (
+                <option key={dept} value={dept}>{dept}</option>
+              ))}
+            </select>
+
+            <select
+              value={gradeFilter}
+              onChange={(e) => setGradeFilter(e.target.value)}
+              className="px-3.5 py-2 focus:outline-hidden text-xs bg-white border border-slate-200 hover:border-slate-300 rounded-xl transition-all shadow-xs text-slate-700"
+            >
+              <option value="">All Grades</option>
+              {[...new Set(authorizedIdeas.map(i => (i as Idea & { grade?: string }).grade).filter(Boolean))].sort().map(g => (
+                <option key={g} value={g}>{g}</option>
+              ))}
+            </select>
+
+            <select
+              value={cadreFilter}
+              onChange={(e) => setCadreFilter(e.target.value)}
+              className="px-3.5 py-2 focus:outline-hidden text-xs bg-white border border-slate-200 hover:border-slate-300 rounded-xl transition-all shadow-xs text-slate-700"
+            >
+              <option value="">All Cadres</option>
+              {[...new Set(authorizedIdeas.map(i => (i as Idea & { cadre?: string }).cadre).filter(Boolean))].sort().map(c => (
+                <option key={c} value={c}>{c}</option>
               ))}
             </select>
           </div>

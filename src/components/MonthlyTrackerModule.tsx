@@ -189,7 +189,7 @@ export const MonthlyTrackerModule: React.FC<MonthlyTrackerModuleProps> = ({
   };
 
   // â”€â”€ Plan Owner form state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  const [selectedIdeaId, setSelectedIdeaId] = useState(visibleIdeas[0]?.id ?? "");
+  const [selectedIdeaId, setSelectedIdeaId] = useState(""); // Require explicit selection
   const [poMonth, setPoMonth] = useState(formatMonth(new Date()));
   const [poMilestones, setPoMilestones] = useState("");
   const [poProgress, setPoProgress] = useState("");
@@ -244,16 +244,20 @@ export const MonthlyTrackerModule: React.FC<MonthlyTrackerModuleProps> = ({
               Log milestone activities and progress for your active pilot. C-POC is notified automatically.
             </p>
           </div>
-          {visibleIdeas.length > 1 && (
-            <select
-              value={selectedIdeaId}
-              onChange={(e) => setSelectedIdeaId(e.target.value)}
-              className="min-w-[220px] px-3.5 py-2.5 bg-slate-50 border border-slate-200 text-xs font-bold rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 text-slate-800"
-            >
-              {visibleIdeas.map((i) => (
-                <option key={i.id} value={i.id}>{i.id} â€” {i.title.slice(0, 32)}â€¦</option>
-              ))}
-            </select>
+          {visibleIdeas.length > 0 && (
+            <div className="flex flex-col gap-1.5 min-w-[240px]">
+              <label className="text-[9px] font-bold uppercase tracking-widest text-slate-500">Select Project <span className="text-rose-500">*</span></label>
+              <select
+                value={selectedIdeaId}
+                onChange={(e) => { setSelectedIdeaId(e.target.value); setShowPoForm(false); }}
+                className="px-3.5 py-2.5 bg-slate-50 border border-slate-200 text-xs font-bold rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 text-slate-800"
+              >
+                <option value="">-- Select an Idea ID --</option>
+                {visibleIdeas.map((i) => (
+                  <option key={i.id} value={i.id}>{i.id} — {(i.fhProjectTitle || i.title).slice(0, 35)}</option>
+                ))}
+              </select>
+            </div>
           )}
         </div>
 
@@ -268,6 +272,12 @@ export const MonthlyTrackerModule: React.FC<MonthlyTrackerModuleProps> = ({
             <Clock className="w-10 h-10 opacity-20 mx-auto mb-2" />
             <p className="font-bold text-slate-700 text-sm">No active pilots assigned to you yet.</p>
             <p className="text-[11px] mt-1">Projects become trackable after the Action Plan is approved by the Functional Head.</p>
+          </div>
+        ) : !selectedIdeaId ? (
+          <div className="p-12 text-center text-slate-400 bg-white border border-slate-200 rounded-2xl">
+            <Clock className="w-10 h-10 opacity-20 mx-auto mb-2" />
+            <p className="font-bold text-slate-700 text-sm">Select a Project to Continue</p>
+            <p className="text-[11px] mt-1">Choose an Idea ID from the dropdown above to view history or log a new update.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
@@ -387,31 +397,51 @@ export const MonthlyTrackerModule: React.FC<MonthlyTrackerModuleProps> = ({
   // â”€â”€ C-POC / ADMIN / FH / OTHER ROLES â€” ANNEXURE 9 TABLE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   return (
     <div className="space-y-5">
-      {/* Header bar */}
-      <div className="no-print bg-white border border-slate-200 rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <span className="text-[9px] font-mono tracking-widest uppercase text-teal-700 font-bold bg-teal-50 px-2 py-0.5 rounded border border-teal-100">
-            Monthly Tracker
-          </span>
-          <h2 className="text-xl font-black font-display text-slate-900 tracking-tight mt-1">
-            Monthly Project Progress Tracker
-          </h2>
-          <p className="text-slate-500 text-xs mt-0.5">
-            One row per active pilot idea. Update by the 5th of each month and share with CHRO.
-          </p>
-        </div>
-        <div className="flex items-end gap-3 flex-wrap">
+      {/* ── Header bar with Idea ID selector ── */}
+      <div className="no-print bg-white border border-slate-200 rounded-2xl p-5 space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <label className="block text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">
-              Reporting Month
-            </label>
-            <input type="text" value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)}
-              className="px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-400 w-44" />
+            <span className="text-[9px] font-mono tracking-widest uppercase text-teal-700 font-bold bg-teal-50 px-2 py-0.5 rounded border border-teal-100">
+              Monthly Tracker
+            </span>
+            <h2 className="text-xl font-black font-display text-slate-900 tracking-tight mt-1">
+              Monthly Project Progress Tracker
+            </h2>
+            <p className="text-slate-500 text-xs mt-0.5">
+              Select a project first, then update by the 5th of each month.
+            </p>
           </div>
-          <button onClick={handlePrint}
-            className="flex items-center gap-1.5 px-4 py-2.5 bg-slate-800 hover:bg-slate-900 text-white text-[10px] font-bold rounded-xl cursor-pointer transition-all">
-            <Printer className="w-3.5 h-3.5" /> Print Monthly Tracker
-          </button>
+          <div className="flex items-end gap-3 flex-wrap">
+            <div>
+              <label className="block text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">
+                Reporting Month
+              </label>
+              <input type="text" value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)}
+                className="px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-400 w-44" />
+            </div>
+            <button onClick={handlePrint}
+              className="flex items-center gap-1.5 px-4 py-2.5 bg-slate-800 hover:bg-slate-900 text-white text-[10px] font-bold rounded-xl cursor-pointer transition-all">
+              <Printer className="w-3.5 h-3.5" /> Print
+            </button>
+          </div>
+        </div>
+        {/* Idea selector */}
+        <div className="flex flex-col sm:flex-row gap-3 items-end border-t border-slate-100 pt-4">
+          <div className="flex-1">
+            <label className="block text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-1.5">
+              Select Project (Idea ID) <span className="text-rose-500">*</span>
+            </label>
+            <select
+              value={cpocSelectedIdeaId}
+              onChange={(e) => setCpocSelectedIdeaId(e.target.value)}
+              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-400"
+            >
+              <option value="">-- Select an Idea ID to load its tracker --</option>
+              {activeIdeas.map((i) => (
+                <option key={i.id} value={i.id}>{i.id} — {i.fhProjectTitle || i.title}</option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 
@@ -447,7 +477,13 @@ export const MonthlyTrackerModule: React.FC<MonthlyTrackerModuleProps> = ({
           </p>
         </div>
 
-        {visibleIdeas.length === 0 ? (
+        {!cpocSelectedIdeaId ? (
+          <div className="no-print p-12 text-center text-slate-400 bg-white border border-slate-200 rounded-2xl">
+            <Clock className="w-10 h-10 opacity-20 mx-auto mb-2" />
+            <p className="font-bold text-slate-700 text-sm">Select a Project to Load the Tracker</p>
+            <p className="text-[11px] mt-1">Choose an Idea ID from the selector above to view and edit that project's monthly tracker.</p>
+          </div>
+        ) : visibleIdeas.length === 0 ? (
           <div className="no-print p-12 text-center text-slate-400 bg-white border border-slate-200 rounded-2xl">
             <Clock className="w-10 h-10 opacity-20 mx-auto mb-2" />
             <p className="font-bold text-slate-700 text-sm">No active pilot projects to track yet.</p>
@@ -473,7 +509,7 @@ export const MonthlyTrackerModule: React.FC<MonthlyTrackerModuleProps> = ({
                 </tr>
               </thead>
               <tbody>
-                {visibleIdeas.map((idea, idx) => {
+                {visibleIdeas.filter(i => !cpocSelectedIdeaId || i.id === cpocSelectedIdeaId).map((idea, idx) => {
                   const edit = rowEdits[idea.id] || emptyRow();
                   const isSaved = savedRows.has(idea.id);
                   return (

@@ -27,7 +27,7 @@ export interface OfflineMeeting {
   id: string;
   ideaId: string;
   ideaTitle: string;
-  meetingType: 'IRC_Proposer' | 'FH_Proposer' | 'FH_Finance';
+  meetingType: 'IRC_Proposer' | 'IRC_FH_Selection' | 'FH_Proposer' | 'FH_Finance';
   meetingTypeLabel: string;
   date: string;
   time: string;
@@ -61,7 +61,7 @@ export const MeetingManagementModule: React.FC<MeetingManagementModuleProps> = (
 
   // Form states
   const [associatedIdeaId, setAssociatedIdeaId] = useState(ideas.length > 0 ? ideas[0].id : "");
-  const [meetingType, setMeetingType] = useState<'IRC_Proposer' | 'FH_Proposer' | 'FH_Finance'>('IRC_Proposer');
+  const [meetingType, setMeetingType] = useState<'IRC_Proposer' | 'IRC_FH_Selection' | 'FH_Proposer' | 'FH_Finance'>('IRC_Proposer');
   const [date, setDate] = useState("2026-07-02");
   const [time, setTime] = useState("14:30");
   const [participants, setParticipants] = useState("");
@@ -80,6 +80,9 @@ export const MeetingManagementModule: React.FC<MeetingManagementModuleProps> = (
     if (meetingType === 'IRC_Proposer') {
       setParticipants(`${proposerName}, TM & OD CoE Lead, IRC Senior Advisory Panel, C-POC coordinator`);
       setAgenda(`Technical presentation of "${selectedIdea?.title || "Proposal"}" to the central IRC Advisory Jury to clarify scaling feasibility.`);
+    } else if (meetingType === 'IRC_FH_Selection') {
+      setParticipants(`IRC Panel, C-POC Coordinator, ${fhName}, TM & OD CoE Lead`);
+      setAgenda(`IRC panel deliberation on selection of Functional Head for implementing "${selectedIdea?.title || "Proposal"}" and confirming the implementation path.`);
     } else if (meetingType === 'FH_Proposer') {
       setParticipants(`${proposerName}, ${fhName}, Project Pilot Lead (Kavita Sharma)`);
       setAgenda(`Reviewing 6-Month Pilot Implementation timeline, trial parameters, and milestone checkpoints for "${selectedIdea?.title || "Proposal"}".`);
@@ -99,6 +102,7 @@ export const MeetingManagementModule: React.FC<MeetingManagementModuleProps> = (
 
     const labels = {
       IRC_Proposer: "IRC ↔ Idea Proposer Meeting",
+      IRC_FH_Selection: "IRC ↔ Functional Head Selection",
       FH_Proposer: "Functional Head ↔ Idea Proposer Presentation",
       FH_Finance: "Functional Head ↔ Finance Discussion"
     };
@@ -187,6 +191,8 @@ Ion Exchange (India) Limited`;
     switch (type) {
       case "IRC_Proposer":
         return "bg-violet-100 text-violet-850 font-mono";
+      case "IRC_FH_Selection":
+        return "bg-indigo-100 text-indigo-850 font-mono";
       case "FH_Proposer":
         return "bg-amber-100 text-amber-850 font-sans";
       case "FH_Finance":
@@ -261,8 +267,9 @@ Ion Exchange (India) Limited`;
               >
                 <option value="all">All Meeting Types</option>
                 <option value="IRC_Proposer">IRC ↔ Proposer</option>
+                <option value="IRC_FH_Selection">IRC ↔ FH Selection</option>
                 <option value="FH_Proposer">FH ↔ Proposer Presentation</option>
-                <option value="FH_Finance">FH ↔ Finance discussion</option>
+                <option value="FH_Finance">FH ↔ Finance Discussion</option>
               </select>
             </div>
 
@@ -398,6 +405,7 @@ Ion Exchange (India) Limited`;
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-bold"
                   >
                     <option value="IRC_Proposer">IRC ↔ Idea Proposer Meeting</option>
+                    <option value="IRC_FH_Selection">IRC ↔ Functional Head Selection</option>
                     <option value="FH_Proposer">Functional Head ↔ Idea Proposer Presentation</option>
                     <option value="FH_Finance">Functional Head ↔ Finance Discussion</option>
                   </select>
