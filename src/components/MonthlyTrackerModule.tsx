@@ -1,4 +1,4 @@
-﻿/**
+﻿﻿﻿﻿/**
  * ANNEXURE 9 â€” RIPPLE Monthly Project Progress Tracker
  * One row per active pilot idea.
  * C-POC fills and saves by the 5th of each month, then prints / shares with CHRO.
@@ -120,6 +120,7 @@ export const MonthlyTrackerModule: React.FC<MonthlyTrackerModuleProps> = ({
 
   // â”€â”€ Month selector â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [selectedMonth, setSelectedMonth] = useState(formatMonth(new Date()));
+  const [cpocSelectedIdeaId, setCpocSelectedIdeaId] = useState("");
 
   // â”€â”€ C-POC inline row edits â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [rowEdits, setRowEdits] = useState<Record<string, RowState>>({});
