@@ -13,6 +13,7 @@ const NAV_LINKS = [
   { label: "What is Ripple?", href: "#what-is-ripple" },
   { label: "Our Objectives",  href: "#objectives" },
   { label: "The Workflow",    href: "#workflow" },
+  { label: "Employee Manual", href: "#manual" },
   { label: "Get Started",     href: "#cta" },
 ];
 
@@ -477,6 +478,104 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ── EMPLOYEE USER MANUAL ─────────────────────────────────────── */}
+      <section id="manual" className="py-24 bg-slate-50 border-t border-slate-200">
+        <div className="max-w-5xl mx-auto px-6 space-y-12">
+
+          {/* Section header */}
+          <div className="text-center space-y-4">
+            <span className="inline-flex items-center gap-2 text-indigo-600 text-sm font-semibold uppercase tracking-widest">
+              <span className="w-8 h-px bg-indigo-300" />
+              Employee User Manual
+              <span className="w-8 h-px bg-indigo-300" />
+            </span>
+            <h2 className="text-4xl font-black tracking-tight text-slate-900">
+              How to Use{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">
+                Ripple
+              </span>
+            </h2>
+            <p className="text-lg text-slate-500 max-w-2xl mx-auto">
+              A step-by-step visual guide to submitting your first idea and navigating the platform.
+              Download the full guide PDF or log in to access the interactive manual.
+            </p>
+            <div className="flex flex-wrap gap-3 justify-center pt-2">
+              <a
+                href="/employee-manual.pdf"
+                download
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white text-sm font-semibold rounded-full shadow hover:bg-indigo-700 transition-all cursor-pointer"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1m-4-4-4 4m0 0-4-4m4 4V4" />
+                </svg>
+                Download PDF Guide
+              </a>
+              <button
+                onClick={onSignIn}
+                className="inline-flex items-center gap-2 px-5 py-2.5 border border-indigo-200 text-indigo-700 text-sm font-semibold rounded-full hover:bg-indigo-50 transition-all cursor-pointer"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4m-5-4 5-5-5-5m5 5H3" />
+                </svg>
+                Open Interactive Guide
+              </button>
+            </div>
+          </div>
+
+          {/* 6-step visual cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {[
+              { step: "01", title: "Log In", desc: "Sign in with your corporate credentials on the Ripple platform.", color: "border-indigo-200 bg-indigo-50", badge: "bg-indigo-600" },
+              { step: "02", title: "Fill the Proposal Form", desc: "Complete all sections — problem, proposed idea, risks, and estimated impact.", color: "border-violet-200 bg-violet-50", badge: "bg-violet-600" },
+              { step: "03", title: "Submit & Track", desc: "Submit your idea and monitor its journey through the evaluation pipeline.", color: "border-emerald-200 bg-emerald-50", badge: "bg-emerald-600" },
+              { step: "04", title: "Respond to Queries", desc: "If C-POC requests more detail, update and resubmit within the platform.", color: "border-amber-200 bg-amber-50", badge: "bg-amber-500" },
+              { step: "05", title: "Pitch to IRC", desc: "Present your idea to the Idea Review Committee in a 5-minute Teams session.", color: "border-sky-200 bg-sky-50", badge: "bg-sky-600" },
+              { step: "06", title: "Get Recognised", desc: "Receive your Certificate of Selection and Rs. 2,000 reward on IRC selection.", color: "border-rose-200 bg-rose-50", badge: "bg-rose-600" },
+            ].map(card => (
+              <div key={card.step} className={`p-5 rounded-2xl border ${card.color} space-y-3 relative overflow-hidden`}>
+                <span className={`absolute top-4 right-4 text-[9px] font-black font-mono text-white px-2 py-0.5 rounded-full ${card.badge}`}>
+                  {card.step}
+                </span>
+                <h3 className="font-extrabold text-slate-900 text-sm pr-10">{card.title}</h3>
+                <p className="text-slate-600 text-xs leading-relaxed">{card.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Embedded PDF viewer — visible once /public/employee-manual.pdf is placed */}
+          <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
+            <div className="flex items-center gap-2 px-5 py-3 border-b border-slate-100 bg-slate-50">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-4 h-4 text-indigo-500">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z" />
+              </svg>
+              <span className="text-xs font-semibold text-slate-700">Employee Platform Guide — Ripple PDF</span>
+              <a href="/employee-manual.pdf" download className="ml-auto text-[10px] text-indigo-600 font-bold hover:underline flex items-center gap-1">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3 h-3">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1m-4-4-4 4m0 0-4-4m4 4V4" />
+                </svg>
+                Download
+              </a>
+            </div>
+            <div className="bg-slate-100 flex items-center justify-center" style={{ height: '480px' }}>
+              <object
+                data="/employee-manual.pdf"
+                type="application/pdf"
+                className="w-full h-full"
+              >
+                <div className="flex flex-col items-center justify-center gap-4 p-8 text-center">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-12 h-12 text-slate-300">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z" />
+                  </svg>
+                  <p className="text-sm font-semibold text-slate-500">PDF guide not yet uploaded</p>
+                  <p className="text-xs text-slate-400 max-w-sm">Place <code className="bg-slate-200 px-1 rounded">employee-manual.pdf</code> in the <code className="bg-slate-200 px-1 rounded">/public</code> folder to display here.</p>
+                </div>
+              </object>
+            </div>
+          </div>
+
         </div>
       </section>
 

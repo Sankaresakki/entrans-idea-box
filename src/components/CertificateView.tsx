@@ -5,35 +5,16 @@
 
 import React from "react";
 import { Idea, IdeaStatus } from "../types";
-import { Award, CheckCircle, Flame, ShieldAlert, Sparkles, Printer } from "lucide-react";
+import { Award, Sparkles, Printer } from "lucide-react";
 
 interface CertificateViewProps {
   idea: Idea;
-  certType: "Thank-you" | "B-IRC Shortlisting" | "C-IRC Selection" | "Certificate of Selection" | "Winning Idea of the Quarter" | "Certificate of Achievement" | "Certificate of Contribution";
+  certType: "Certificate of Selection" | "Certificate of Contribution";
 }
 
 export const CertificateView: React.FC<CertificateViewProps> = ({ idea, certType }) => {
   const getBannerDetails = () => {
     switch (certType) {
-      case "Thank-you":
-        return {
-          title: "APPRECIATION OF PARTICIPATION",
-          subtitle: "Presented for valuable contribution to One Ion Idea Box",
-          description: "Thank you for sharing your innovative spark and contributing ideas for organizational excellence. Every great innovation starts with a single thought.",
-          color: "border-gray-300 bg-linear-to-br from-slate-50 to-zinc-100",
-          accentColor: "text-zinc-600",
-          headerBg: "bg-linear-to-r from-zinc-700 to-slate-800"
-        };
-      case "B-IRC Shortlisting":
-        return {
-          title: "QUALITY VETTING SHORTLIST RECOGNITION",
-          subtitle: "Presented for Successful C-POC Technical Merit",
-          description: "This is to certify that this proposal has been successfully evaluated and shortlisted for passing C-POC Quality Vetting and meeting all local parameters.",
-          color: "border-sky-300 bg-linear-to-br from-sky-50 to-indigo-50",
-          accentColor: "text-indigo-700",
-          headerBg: "bg-linear-to-r from-cyan-800 to-indigo-900"
-        };
-      case "C-IRC Selection":
       case "Certificate of Selection":
         return {
           title: "CERTIFICATE OF SELECTION",
@@ -43,16 +24,6 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ idea, certType
           accentColor: "text-indigo-800",
           headerBg: "bg-linear-to-r from-indigo-900 to-violet-950"
         };
-      case "Winning Idea of the Quarter":
-        return {
-          title: "WINNING IDEA OF THE QUARTER",
-          subtitle: "Champion of Implementation & Business Outcome",
-          description: "Highest Honor awarded in Recognition of outstanding implementation, continuous execution excellence, measurable financial savings, and ultimate selection by the Senior Executive Leadership.",
-          color: "border-amber-400 bg-linear-to-br from-amber-50 to-orange-100",
-          accentColor: "text-amber-800",
-          headerBg: "bg-linear-to-r from-amber-950 via-yellow-900 to-orange-950"
-        };
-      case "Certificate of Achievement":
       case "Certificate of Contribution":
       default:
         return {
@@ -73,7 +44,7 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ idea, certType
   };
 
   // ─── Dedicated layout: Certificate of Idea Selection (per spec) ───────────
-  if (certType === "C-IRC Selection" || certType === "Certificate of Selection") {
+  if (certType === "Certificate of Selection") {
     const selectionDate = (() => {
       const raw =
         (idea.ircReviews && idea.ircReviews.length > 0
@@ -252,14 +223,10 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ idea, certType
           {/* Badge & Title */}
           <div className="text-center mb-6">
             <div className={`inline-flex items-center justify-center p-3 rounded-full mb-3 ${details.headerBg} text-white shadow-md`}>
-              {certType === "Winning Idea of the Quarter" ? (
-                <Flame className="w-6 h-6 animate-pulse text-amber-300" />
-              ) : certType === "C-IRC Selection" ? (
+              {certType === "Certificate of Selection" ? (
                 <Sparkles className="w-6 h-6 text-violet-300" />
-              ) : certType === "Certificate of Achievement" ? (
-                <Award className="w-6 h-6 text-emerald-300" />
               ) : (
-                <CheckCircle className="w-6 h-6 text-sky-200" />
+                <Award className="w-6 h-6 text-emerald-300" />
               )}
             </div>
 

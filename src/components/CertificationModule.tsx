@@ -13,7 +13,6 @@ import {
   Printer, 
   ShieldCheck, 
   Download, 
-  History, 
   Send, 
   Search, 
   BookmarkCheck, 
@@ -42,9 +41,8 @@ export const CertificationModule: React.FC<CertificationModuleProps> = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [certTypeFilter, setCertTypeFilter] = useState<string>("all");
   const [activeCert, setActiveCert] = useState<Idea | null>(selectedIdea || null);
-  const [activeCertType, setActiveCertType] = useState<"Thank-you" | "B-IRC Shortlisting" | "Certificate of Selection" | "Winning Idea of the Quarter" | "Certificate of Contribution">("Thank-you");
+  const [activeCertType, setActiveCertType] = useState<"Certificate of Selection" | "Certificate of Contribution">("Certificate of Selection");
   const [downloadProgress, setDownloadProgress] = useState<string | null>(null);
-  const [activeSubTab, setActiveSubTab] = useState<"registry" | "history">("registry");
 
   // Automatically sync with selectedIdea if it changes from parent
   React.useEffect(() => {
@@ -53,18 +51,8 @@ export const CertificationModule: React.FC<CertificationModuleProps> = ({
       // Determine default cert type based on status
       if (selectedIdea.status === IdeaStatus.Completed) {
         setActiveCertType("Certificate of Contribution");
-      } else if (
-        selectedIdea.status !== IdeaStatus.Submitted && 
-        selectedIdea.status !== IdeaStatus.ReturnedToEmployee && 
-        selectedIdea.status !== IdeaStatus.VettingLimitExceeded
-      ) {
-        if (selectedIdea.averageIrcScore && selectedIdea.averageIrcScore >= 17) {
-          setActiveCertType("Certificate of Selection");
-        } else {
-          setActiveCertType("B-IRC Shortlisting");
-        }
       } else {
-        setActiveCertType(persona.role === "Employee" ? "Certificate of Selection" : "Thank-you");
+        setActiveCertType("Certificate of Selection");
       }
     }
   }, [selectedIdea]);
@@ -77,7 +65,7 @@ export const CertificationModule: React.FC<CertificationModuleProps> = ({
     recipientName: string;
     recipientEmail: string;
     recipientDept: string;
-    type: "Thank-you" | "B-IRC Shortlisting" | "Certificate of Selection" | "Winning Idea of the Quarter" | "Certificate of Contribution";
+    type: "Certificate of Selection" | "Certificate of Contribution";
     issueDate: string;
     digitalSignatureHash: string;
     signatureStatus: "Digitally Signed & Secured" | "Pending Dynamic Keys";
@@ -86,51 +74,15 @@ export const CertificationModule: React.FC<CertificationModuleProps> = ({
   }[] = [];
 
   ideas.forEach((idea) => {
-    // 1. Thank-You appreciation for every submission
-    credentialsList.push({
-      id: `CERT-TY-${idea.id.split("-").pop()}`,
-      ideaId: idea.id,
-      ideaTitle: idea.title,
-      recipientName: idea.employeeName,
-      recipientEmail: idea.employeeEmail,
-      recipientDept: idea.department || "General Engineering",
-      type: "Thank-you",
-      issueDate: idea.submissionDate || idea.createdAt,
-      digitalSignatureHash: `SHA256:7e8a9f...${idea.id.replace(/-/g, "").toLowerCase()}`,
-      signatureStatus: "Digitally Signed & Secured",
-      emailStatus: "Sent Automatically via RIPPLE Zoho-SMTP",
-      associatedIdea: idea
-    });
-
-    // 2. Quality Vetting Shortlisting
-    const hasPassedVetting = idea.status !== IdeaStatus.Submitted && 
-                             idea.status !== IdeaStatus.ReturnedToEmployee && 
-                             idea.status !== IdeaStatus.VettingLimitExceeded;
-    if (hasPassedVetting) {
-      credentialsList.push({
-        id: `CERT-QV-${idea.id.split("-").pop()}`,
-        ideaId: idea.id,
-        ideaTitle: idea.title,
-        recipientName: idea.employeeName,
-        recipientEmail: idea.employeeEmail,
-        recipientDept: idea.department || "General Engineering",
-        type: "B-IRC Shortlisting",
-        issueDate: idea.cpocVettedDate || idea.createdAt,
-        digitalSignatureHash: `SHA256:a2b3c4...${idea.id.replace(/-/g, "").toLowerCase()}`,
-        signatureStatus: "Digitally Signed & Secured",
-        emailStatus: "Sent Automatically via RIPPLE Zoho-SMTP",
-        associatedIdea: idea
-      });
-    }
-
-    // 3. Certificate of Selection (IRC Selected)
-    const hasBeenSelected = idea.status !== IdeaStatus.Submitted && 
-                            idea.status !== IdeaStatus.ReturnedToEmployee && 
-                            idea.status !== IdeaStatus.VettingLimitExceeded &&
-                            idea.status !== IdeaStatus.ApprovedByCPOC &&
-                            idea.status !== IdeaStatus.UnderIRCEvaluation &&
-                            idea.status !== IdeaStatus.RejectedByIRC;
-    if (hasBeenSelected || idea.ircSelectionStatus === "Selected") {
+    // 1. Certificate of Selection (IRC Selected — issued automatically)
+    const hasBeenSelected = idea.ircSelectionStatus === "Selected" ||
+      (idea.status !== IdeaStatus.Submitted &&
+       idea.status !== IdeaStatus.ReturnedToEmployee &&
+       idea.status !== IdeaStatus.VettingLimitExceeded &&
+       idea.status !== IdeaStatus.ApprovedByCPOC &&
+       idea.status !== IdeaStatus.UnderIRCEvaluation &&
+       idea.status !== IdeaStatus.RejectedByIRC);
+    if (hasBeenSelected) {
       credentialsList.push({
         id: `CERT-SL-${idea.id.split("-").pop()}`,
         ideaId: idea.id,
@@ -147,24 +99,8 @@ export const CertificationModule: React.FC<CertificationModuleProps> = ({
       });
     }
 
-    // 4. Winning Idea of the Quarter (Completed & Marked as winner)
+    // 2. Certificate of Contribution (CFO sign-off — issued automatically)
     if (idea.status === IdeaStatus.Completed) {
-      credentialsList.push({
-        id: `CERT-WQ-${idea.id.split("-").pop()}`,
-        ideaId: idea.id,
-        ideaTitle: idea.title,
-        recipientName: idea.employeeName,
-        recipientEmail: idea.employeeEmail,
-        recipientDept: idea.department || "General Engineering",
-        type: "Winning Idea of the Quarter",
-        issueDate: idea.cfoSignOffDate || new Date().toISOString(),
-        digitalSignatureHash: `SHA256:8f9a0b...${idea.id.replace(/-/g, "").toLowerCase()}`,
-        signatureStatus: "Digitally Signed & Secured",
-        emailStatus: "Sent Automatically via RIPPLE Zoho-SMTP",
-        associatedIdea: idea
-      });
-
-      // 5. Certificate of Contribution
       credentialsList.push({
         id: `CERT-CT-${idea.id.split("-").pop()}`,
         ideaId: idea.id,
@@ -181,16 +117,12 @@ export const CertificationModule: React.FC<CertificationModuleProps> = ({
       });
     }
   });
-
-  // Filter based on persona role & email
+  // All roles see only the 2 valid certificate types
   const myCredentials = credentialsList.filter((cred) => {
     if (persona.role === "Employee") {
-      const isOwner = cred.recipientEmail.toLowerCase() === persona.email.toLowerCase();
-      // Employee only sees their 2 milestone certificates
-      const isValidType = cred.type === "Certificate of Selection" || cred.type === "Certificate of Contribution";
-      return isOwner && isValidType;
+      return cred.recipientEmail.toLowerCase() === persona.email.toLowerCase();
     }
-    return true; // Admins see all
+    return true;
   });
 
   const searchedCredentials = myCredentials.filter((cred) => {
@@ -310,52 +242,13 @@ Corporate Treasury & HR Audit Systems`;
                 className="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-700"
               >
                 <option value="all">All Certificate Types</option>
-                {persona.role === "Employee" ? (
-                  <>
-                    <option value="Certificate of Selection">Certificate of Selection</option>
-                    <option value="Certificate of Contribution">Certificate of Contribution</option>
-                  </>
-                ) : (
-                  <>
-                    <option value="Thank-you">Thank-You Appreciation</option>
-                    <option value="B-IRC Shortlisting">Quality Vetting Shortlist</option>
-                    <option value="Certificate of Selection">Certificate of Selection</option>
-                    <option value="Winning Idea of the Quarter">Quarterly Winner Badge</option>
-                    <option value="Certificate of Contribution">Certificate of Contribution</option>
-                  </>
-                )}
+                <option value="Certificate of Selection">Certificate of Selection</option>
+                <option value="Certificate of Contribution">Certificate of Contribution</option>
               </select>
             </div>
 
-            {/* Inner Sub Tabs for List/History View */}
-            <div className="flex border-b border-slate-100 gap-4">
-              <button
-                onClick={() => setActiveSubTab("registry")}
-                className={`pb-2 text-xs font-bold tracking-wide uppercase border-b-2 transition-all cursor-pointer ${
-                  activeSubTab === "registry"
-                    ? "border-indigo-650 text-indigo-700 font-extrabold"
-                    : "border-transparent text-slate-400 hover:text-slate-650"
-                }`}
-              >
-                Certificate Gallery ({searchedCredentials.length})
-              </button>
-              {persona.role !== "Employee" && (
-              <button
-                onClick={() => setActiveSubTab("history")}
-                className={`pb-2 text-xs font-bold tracking-wide uppercase border-b-2 transition-all cursor-pointer ${
-                  activeSubTab === "history"
-                    ? "border-indigo-650 text-indigo-700 font-extrabold"
-                    : "border-transparent text-slate-400 hover:text-slate-650"
-                }`}
-              >
-                Audit History Logs
-              </button>
-              )}
-            </div>
-
-            {/* Certification Gallery Cards */}
-            {activeSubTab === "registry" ? (
-              <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1">
+            {/* Certificate Gallery only — Audit History removed */}
+            <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1">
                 {searchedCredentials.length > 0 ? (
                   searchedCredentials.map((cred) => {
                     const isSelected = activeCert?.id === cred.ideaId && activeCertType === cred.type;
@@ -380,7 +273,7 @@ Corporate Treasury & HR Audit Systems`;
                               ? "bg-violet-50 text-violet-700 border border-violet-100"
                               : "bg-slate-100 text-slate-600"
                           }`}>
-                            {cred.type === "Certificate of Selection" ? "Selection" : cred.type === "Certificate of Contribution" ? "Contribution" : cred.type === "B-IRC Shortlisting" ? "Shortlisted" : "Participation"}
+                            {cred.type === "Certificate of Selection" ? "Selection" : "Contribution"}
                           </span>
                         </div>
 
@@ -437,38 +330,7 @@ Corporate Treasury & HR Audit Systems`;
                   </div>
                 )}
               </div>
-            ) : (
-              /* History / Audit list */
-              <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1">
-                <div className="text-[10px] text-slate-500 bg-indigo-50/40 p-2.5 rounded-xl border border-indigo-100 flex gap-2 items-start mb-2">
-                  <BookmarkCheck className="w-4 h-4 text-indigo-600 flex-shrink-0 mt-0.5" />
-                  <p className="leading-relaxed">
-                    This cryptographic ledger records all digital signature updates and automated email delivery timestamps. It guarantees enterprise transparency and non-repudiation.
-                  </p>
-                </div>
-
-                {searchedCredentials.map((cred) => (
-                  <div key={`hist-${cred.id}`} className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-[10.5px] font-mono text-slate-600 space-y-1.5 text-left">
-                    <div className="flex justify-between font-bold">
-                      <span className="text-slate-800">{cred.id} Issued</span>
-                      <span className="text-emerald-600 font-semibold">✓ EMAIL OK</span>
-                    </div>
-                    <div className="text-[9px] text-slate-500 uppercase font-bold tracking-wider">
-                      RECIPIENT: {cred.recipientName} ({cred.recipientDept})
-                    </div>
-                    <div className="text-[9.5px] bg-white p-1.5 border border-slate-100 rounded text-slate-400 truncate">
-                      SHA-256 Hash: {cred.digitalSignatureHash}
-                    </div>
-                    <div className="flex justify-between text-[9px] text-slate-400">
-                      <span>Status: {cred.signatureStatus}</span>
-                      <span>Logs: {new Date(cred.issueDate).toLocaleString()}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-          </div>
+            </div>
         </div>
 
         {/* Right Side: Active Certificate Display Pane */}
@@ -487,32 +349,8 @@ Corporate Treasury & HR Audit Systems`;
                 </div>
               </div>
 
-              {/* Certificate selector controls */}
+              {/* Certificate selector — 2 types only */}
               <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
-                {persona.role !== "Employee" && (
-                  <>
-                  <button
-                    onClick={() => setActiveCertType("Thank-you")}
-                    className={`px-2.5 py-1 text-[9.5px] font-bold rounded-lg border transition-all cursor-pointer whitespace-nowrap ${
-                      activeCertType === "Thank-you"
-                        ? "bg-indigo-600 text-white border-indigo-600"
-                        : "bg-slate-100 hover:bg-slate-200 text-slate-700"
-                    }`}
-                  >
-                    (1) Thank-You Appreciation
-                  </button>
-                  <button
-                    onClick={() => setActiveCertType("B-IRC Shortlisting")}
-                    className={`px-2.5 py-1 text-[9.5px] font-bold rounded-lg border transition-all cursor-pointer whitespace-nowrap ${
-                      activeCertType === "B-IRC Shortlisting"
-                        ? "bg-indigo-600 text-white border-indigo-600"
-                        : "bg-slate-100 hover:bg-slate-200 text-slate-700"
-                    }`}
-                  >
-                    (2) Shortlisted Certificate
-                  </button>
-                  </>
-                )}
                 <button
                   onClick={() => setActiveCertType("Certificate of Selection")}
                   className={`px-2.5 py-1 text-[9.5px] font-bold rounded-lg border transition-all cursor-pointer whitespace-nowrap ${
@@ -521,7 +359,7 @@ Corporate Treasury & HR Audit Systems`;
                       : "bg-slate-100 hover:bg-slate-200 text-slate-700"
                   }`}
                 >
-                  {persona.role === "Employee" ? "(1)" : "(3)"} Certificate of Selection
+                  (1) Certificate of Selection
                 </button>
                 {activeCert.status === IdeaStatus.Completed && (
                   <button
@@ -532,7 +370,7 @@ Corporate Treasury & HR Audit Systems`;
                         : "bg-slate-100 hover:bg-slate-200 text-slate-700"
                     }`}
                   >
-                    {persona.role === "Employee" ? "(2)" : "(4)"} Certificate of Contribution
+                    (2) Certificate of Contribution
                   </button>
                 )}
               </div>

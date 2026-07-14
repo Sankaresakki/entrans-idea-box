@@ -21,6 +21,7 @@ import { MonthlyTrackerModule } from "./components/MonthlyTrackerModule";
 import { MeetingManagementModule, OfflineMeeting as IOfflineMeeting } from "./components/MeetingManagementModule";
 import { EmployeeIdeaTracker } from "./components/EmployeeIdeaTracker";
 import { IdeaWorkflowPanel } from "./components/IdeaWorkflowPanel";
+import { EmployeeUserManual } from "./components/EmployeeUserManual";
 import { 
   Building2, Users, Mail, ClipboardCheck, Sparkles, Inbox, Award, 
   BookOpen, ChevronRight, Play, Loader2, Landmark, Clock,
@@ -80,6 +81,7 @@ export default function App() {
     | "actionplansubmission" | "finalreportsubmission"
     | "financetemplate"
     | "cfoapproval"
+    | "usermanual"
   >("dashboard");
   const [selectedCertType, setSelectedCertType] = useState<string | null>(null);
 
@@ -552,7 +554,7 @@ export default function App() {
               return r === currentPersona.email.toLowerCase();
             }).length;
 
-            if (role === "Employee") return (<>{T("submit","New Idea Proposal")}{T("mytracker","My Idea Tracker")}{T("certificates","Certificates")}</>);
+            if (role === "Employee") return (<>{T("submit","New Idea Proposal")}{T("mytracker","My Idea Tracker")}{T("certificates","Certificates")}{T("usermanual","Employee User Manual")}</>);
             if (role === "C-POC") return (<>{T("vetting","Idea Quality Vetting")}{T("fhassignment","FH Assignment")}{T("ircfinalization","Evaluation Finalization")}{T("monthlytracker","Monthly Tracker")}{T("meetings","Meetings Log")}</>);
             if (role === "IRC Member") return (<>{T("ircevaluation","Idea Evaluation")}</>);
             if (role === "Functional Head") return (<>{T("assignedideas","Assigned Ideas")}{T("actionplanapproval","Action Plan Approval")}{T("finalreportsapproval","Final Reports Approval")}</>);
@@ -816,6 +818,11 @@ export default function App() {
                     onUpdateIdea={handleUpdateIdea}
                     onAddNotification={handleAddNotification}
                   />
+                )}
+
+                {/* ── Employee: User Manual ── */}
+                {activeTab === "usermanual" && (
+                  <EmployeeUserManual />
                 )}
 
                 {/* ── CFO: Financial Impact Approval ── */}
