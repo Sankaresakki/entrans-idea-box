@@ -4,6 +4,74 @@
  */
 
 import { Idea, IdeaStatus } from "./types";
+import type { OfflineMeeting } from "./components/MeetingManagementModule";
+
+export const MOCK_MEETINGS: OfflineMeeting[] = [
+  {
+    id: "MEET-0001",
+    ideaId: "ION-2026-0002",
+    ideaTitle: "Nanocoated Biofouling-Resistant RO Membranes",
+    meetingType: "IRC_Proposer",
+    meetingTypeLabel: "IRC \u2194 Idea Proposer Meeting",
+    date: "2026-06-22",
+    time: "10:00",
+    participants: "Anita Desai, TM & OD CoE Lead, IRC Senior Advisory Panel, C-POC coordinator",
+    agenda: "Technical presentation of \"Nanocoated Biofouling-Resistant RO Membranes\" to the central IRC Advisory Jury to clarify scaling feasibility.",
+    mom: "Anita Desai presented the concept clearly. The IRC panel raised questions on CAPEX for coating infrastructure. A revised cost model to be submitted within 5 days.",
+    decisions: "Idea shortlisted for full IRC evaluation. Proposer to submit revised financial model.",
+    actionItems: "1. Anita Desai to share revised CAPEX estimate by 27-Jun-2026\n2. C-POC to schedule full IRC evaluation within 10 days\n3. TM&OD to circulate MoM to all participants",
+    followUpStatus: "Pending Action",
+    dateCreated: "2026-06-22T10:45:00Z"
+  },
+  {
+    id: "MEET-0002",
+    ideaId: "ION-2026-0005",
+    ideaTitle: "Auto-Calibrated pH Dosing via Inline Sensor Feedback Loop",
+    meetingType: "IRC_FH_Selection",
+    meetingTypeLabel: "IRC \u2194 Functional Head Selection",
+    date: "2026-06-28",
+    time: "14:00",
+    participants: "IRC Panel, C-POC Coordinator, Dr. Alok Gupta, TM & OD CoE Lead",
+    agenda: "IRC panel deliberation on selection of Functional Head for implementing \"Auto-Calibrated pH Dosing\" and confirming the implementation path.",
+    mom: "IRC panel unanimously agreed Dr. Alok Gupta (Chemical Division Head) is the appropriate Functional Head given the sensor calibration scope. Implementation pathway confirmed.",
+    decisions: "Dr. Alok Gupta formally assigned as Functional Head. Pilot implementation to begin in Q3 FY2026.",
+    actionItems: "1. C-POC to formally notify Dr. Alok Gupta of assignment\n2. Update platform status to WithFunctionalHead\n3. Schedule FH-Proposer alignment meeting within 2 weeks",
+    followUpStatus: "Resolved",
+    dateCreated: "2026-06-28T14:55:00Z"
+  },
+  {
+    id: "MEET-0003",
+    ideaId: "ION-2026-0003",
+    ideaTitle: "AI-Driven Smart Dosage Coagulant Injector",
+    meetingType: "FH_Proposer",
+    meetingTypeLabel: "Functional Head \u2194 Idea Proposer Presentation",
+    date: "2026-07-04",
+    time: "11:30",
+    participants: "Aditi Rao, Dr. Ravi Sharma, Project Pilot Lead (Kavita Sharma)",
+    agenda: "Reviewing 6-Month Pilot Implementation timeline, trial parameters, and milestone checkpoints for \"AI-Driven Smart Dosage Coagulant Injector\".",
+    mom: "Pilot plan reviewed. Milestone 1 (sensor installation) set for Aug-2026. Milestone 2 (AI model training data collection) set for Oct-2026.",
+    decisions: "Pilot approved. Action plan to be submitted by Aditi Rao by 10-Jul-2026.",
+    actionItems: "1. Aditi Rao to submit formal action plan by 10-Jul-2026\n2. Dr. Ravi Sharma to arrange lab access for sensor installation team\n3. Monthly tracker to be updated by 5th of each month",
+    followUpStatus: "In Progress",
+    dateCreated: "2026-07-04T12:15:00Z"
+  },
+  {
+    id: "MEET-0004",
+    ideaId: "ION-2026-0004",
+    ideaTitle: "Municipal Waste-to-Energy Anaerobic Digester Monitor",
+    meetingType: "FH_Finance",
+    meetingTypeLabel: "Functional Head \u2194 Finance Discussion",
+    date: "2026-07-10",
+    time: "15:00",
+    participants: "Dr. Pradeep Nair, Central Finance Admin, Corporate Treasury Auditor",
+    agenda: "Audit evaluation of verified utilities savings and cash equivalent calculations for final CFO disbursement.",
+    mom: "Finance team reviewed the verified savings report. Confirmed ₹4.2L in annual utility cost reduction. CFO sign-off to be obtained within 7 days.",
+    decisions: "Financial impact confirmed. Pending CFO formal sign-off for reward distribution.",
+    actionItems: "1. Finance Admin to prepare CFO briefing note by 14-Jul-2026\n2. CFO to sign off by 17-Jul-2026\n3. C-POC to initiate reward distribution post sign-off",
+    followUpStatus: "Pending Action",
+    dateCreated: "2026-07-10T15:45:00Z"
+  }
+];
 
 export const MOCK_IDEAS: Idea[] = [
   {

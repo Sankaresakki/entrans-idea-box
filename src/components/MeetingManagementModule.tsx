@@ -62,6 +62,13 @@ export const MeetingManagementModule: React.FC<MeetingManagementModuleProps> = (
   // Form states
   const [associatedIdeaId, setAssociatedIdeaId] = useState(ideas.length > 0 ? ideas[0].id : "");
   const [meetingType, setMeetingType] = useState<'IRC_Proposer' | 'IRC_FH_Selection' | 'FH_Proposer' | 'FH_Finance'>('IRC_Proposer');
+
+  // Sync associatedIdeaId when ideas load asynchronously after mount
+  React.useEffect(() => {
+    if (ideas.length > 0 && !associatedIdeaId) {
+      setAssociatedIdeaId(ideas[0].id);
+    }
+  }, [ideas.length]);
   const [date, setDate] = useState("2026-07-02");
   const [time, setTime] = useState("14:30");
   const [participants, setParticipants] = useState("");

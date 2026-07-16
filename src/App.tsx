@@ -6,6 +6,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Idea, IdeaStatus, UserPersona, NotificationLog, getAuthorizedIdeasForRole, OfflineMeeting } from "./types";
+import { MOCK_MEETINGS } from "./mockData";
 
 import * as db from "./lib/db";
 import { supabase, isSupabaseConfigured } from "./lib/supabase";
@@ -65,7 +66,7 @@ export default function App() {
     if (isSupabaseConfigured) return []; // loaded async on mount
     const saved = localStorage.getItem("ion_meetings");
     if (saved) return JSON.parse(saved);
-    return [];
+    return MOCK_MEETINGS; // seed demo data for local/offline mode
   });
 
 
@@ -126,7 +127,8 @@ export default function App() {
         // Seed mock data on first run (empty DB) — REMOVED for live mode
         setIdeas(ideasData);
         setNotificationLogs(notifsData);
-        setMeetings(meetingsData);
+        // Use demo meetings if Supabase meetings table is empty
+        setMeetings(meetingsData.length > 0 ? meetingsData : MOCK_MEETINGS);
       } catch (err) {
         console.error("[Supabase] Initial load failed — falling back to localStorage:", err);
         const savedIdeas = localStorage.getItem("ion_ideas");
