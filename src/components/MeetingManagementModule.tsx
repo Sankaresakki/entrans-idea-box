@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from "react";
-import { Idea, UserPersona } from "../types";
+import { Idea, IdeaStatus, UserPersona } from "../types";
 import { 
   Calendar, 
   Plus, 
@@ -220,6 +220,18 @@ Ion Exchange (India) Limited`;
     return matchesSearch && matchesType;
   });
 
+  // Show Schedule button only when ideas have progressed past quality vetting
+  const MEETING_ELIGIBLE_STATUSES = new Set<IdeaStatus>([
+    IdeaStatus.ApprovedByCPOC, IdeaStatus.UnderIRCEvaluation,
+    IdeaStatus.SelectedByIRC, IdeaStatus.WithFunctionalHead,
+    IdeaStatus.AwaitingActionPlan, IdeaStatus.ActionPlanSubmitted,
+    IdeaStatus.ActionPlanRevision, IdeaStatus.ActionPlanApproved,
+    IdeaStatus.ReportSubmitted, IdeaStatus.ReportRevision,
+    IdeaStatus.PendingFinanceEvaluation, IdeaStatus.FinanceRevision,
+    IdeaStatus.PendingCFOSignOff,
+  ]);
+  const hasMeetingRelevantIdeas = ideas.some(i => MEETING_ELIGIBLE_STATUSES.has(i.status));
+
   return (
     <div className="space-y-6 text-left">
       
@@ -237,7 +249,7 @@ Ion Exchange (India) Limited`;
           </p>
         </div>
         
-        {persona.role === "C-POC" && !showAddForm && (
+        {persona.role === "C-POC" && !showAddForm && hasMeetingRelevantIdeas && (
           <button
             onClick={() => setShowAddForm(true)}
             className="flex items-center gap-1 px-4 py-2.5 bg-indigo-650 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition-all shadow-xs cursor-pointer"
@@ -245,6 +257,11 @@ Ion Exchange (India) Limited`;
             <Plus className="w-4 h-4" />
             Schedule Offline Session
           </button>
+        )}
+        {persona.role === "C-POC" && !showAddForm && !hasMeetingRelevantIdeas && (
+          <div className="text-[10px] text-slate-400 italic px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-lg">
+            Scheduling available after ideas clear quality vetting.
+          </div>
         )}
       </div>
 

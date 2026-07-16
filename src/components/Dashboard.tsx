@@ -29,7 +29,7 @@ import {
   Mail,
   BarChart3,
   TrendingUp,
-  Printer,
+  Download,
   ChevronDown,
   ChevronUp
 } from "lucide-react";
@@ -307,6 +307,27 @@ export const Dashboard: React.FC<DashboardProps> = ({ ideas, onSelectIdea, selec
       oi_reports: "Project Reports Submitted", oi_financial: "Generated Financial Impact",
     };
 
+    const handleExportData = () => {
+      const headers = ["Idea ID","Title","Employee","Email","Business Unit","Area of Impact","Grade","Cadre","Division","Status","Submitted Date","FH Name","FH Email"];
+      const esc = (s: string) => `"${String(s || "").replace(/"/g, '""')}"`;
+      const rows = tableIdeas.map(i => [
+        i.id, esc(i.title), esc(i.employeeName), esc(i.employeeEmail),
+        esc(i.businessUnit), esc(i.areaOfImpact),
+        esc(i.grade || ""), esc(i.cadre || ""), esc(i.department || ""),
+        esc(i.status),
+        new Date(i.createdAt).toLocaleDateString("en-IN"),
+        esc(i.assignedFHName || ""), esc(i.assignedFHEmail || ""),
+      ].join(","));
+      const csv = "\uFEFF" + [headers.join(","), ...rows].join("\r\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `RIPPLE_IdeaData_${new Date().toISOString().slice(0,10)}.csv`;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    };
+
     const KpiCard = ({ k, label, value, color }: { k: string; label: string; value: number; color: string }) => (
       <button
         onClick={() => setCpocKpiFilter(cpocKpiFilter === k ? null : k)}
@@ -422,6 +443,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ ideas, onSelectIdea, selec
             </div>
             <div className="flex items-center gap-2">
               <span className="text-[10px] text-slate-400 font-mono">{tableIdeas.length} idea{tableIdeas.length !== 1 ? "s" : ""}</span>
+              <button onClick={handleExportData} className="flex items-center gap-1 px-2.5 py-1 bg-teal-700 hover:bg-teal-800 text-white text-[10px] font-bold rounded-lg cursor-pointer">
+                <Download className="w-3 h-3" /> Export Data
+              </button>
               {cpocKpiFilter && (
                 <button onClick={() => setCpocKpiFilter(null)} className="flex items-center gap-1 px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-600 text-[10px] font-bold rounded-lg hover:bg-slate-200 cursor-pointer">
                   <X className="w-3 h-3" /> Clear Filter

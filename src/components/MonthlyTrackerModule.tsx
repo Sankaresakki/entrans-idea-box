@@ -1,4 +1,4 @@
-﻿﻿﻿﻿/**
+﻿﻿﻿/**
  * ANNEXURE 9 â€” RIPPLE Monthly Project Progress Tracker
  * One row per active pilot idea.
  * C-POC fills and saves by the 5th of each month, then prints / shares with CHRO.
@@ -8,7 +8,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Idea, IdeaStatus, UserPersona } from "../types";
 import {
-  Printer,
+  Download,
   Save,
   CheckCircle2,
   Clock,
@@ -189,6 +189,32 @@ export const MonthlyTrackerModule: React.FC<MonthlyTrackerModuleProps> = ({
     if (el) document.head.removeChild(el);
   };
 
+  const handleExportCSV = () => {
+    const headers = ["Sr.No","Idea ID","Idea Title","Functional Head","Project Lead","Milestone Activities","Progress Achieved","Status","Remarks"];
+    const esc = (s: string) => `"${String(s || "").replace(/"/g, '""')}"`;
+    const rows = visibleIdeas.map((idea, idx) => {
+      const edit = rowEdits[idea.id] || emptyRow();
+      return [
+        idx + 1, idea.id,
+        esc(idea.fhProjectTitle || idea.title),
+        esc(idea.assignedFHName || ""),
+        esc(idea.projectLeadName || idea.employeeName),
+        esc(edit.milestoneActivities),
+        esc(edit.progressAchieved),
+        edit.status,
+        esc(edit.remarks),
+      ].join(",");
+    });
+    const csv = "\uFEFF" + [headers.join(","), ...rows].join("\r\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `RIPPLE_Tracker_${selectedMonth.replace(/ /g, "_")}.csv`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   // â”€â”€ Plan Owner form state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [selectedIdeaId, setSelectedIdeaId] = useState(""); // Require explicit selection
   const [poMonth, setPoMonth] = useState(formatMonth(new Date()));
@@ -230,6 +256,17 @@ export const MonthlyTrackerModule: React.FC<MonthlyTrackerModuleProps> = ({
   if (isPlanOwner) {
     const selectedIdea = ideas.find((i) => i.id === selectedIdeaId);
     const history = selectedIdea?.monthlyTrackers || [];
+    // Generate rolling 13-month window (12 past + current)
+    const MONTH_OPTIONS = (() => {
+      const opts: string[] = [];
+      const now = new Date();
+      for (let i = 12; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        opts.push(d.toLocaleString("en-IN", { month: "long", year: "numeric" }));
+      }
+      return opts;
+    })();
+    const submittedMonths = new Set((history || []).map(t => t.month));
 
     return (
       <div className="space-y-5">
@@ -295,6 +332,27 @@ export const MonthlyTrackerModule: React.FC<MonthlyTrackerModuleProps> = ({
                   </button>
                 )}
               </div>
+              {/* Month coverage indicators — green = submitted, red = missed, amber = current */}
+              {MONTH_OPTIONS.length > 0 && (
+                <div className="py-2 flex flex-wrap gap-1.5">
+                  {MONTH_OPTIONS.map((m, idx) => {
+                    const submitted = submittedMonths.has(m);
+                    const isCurrent = idx === MONTH_OPTIONS.length - 1;
+                    const isPastMonth = !isCurrent;
+                    const color = submitted
+                      ? "bg-emerald-100 text-emerald-700 border-emerald-300"
+                      : isPastMonth
+                      ? "bg-rose-100 text-rose-600 border-rose-300"
+                      : "bg-amber-100 text-amber-700 border-amber-300";
+                    return (
+                      <span key={m} title={submitted ? "Submitted" : isPastMonth ? "Missed — overdue submission" : "Current month — pending"}
+                        className={`px-2 py-0.5 text-[8.5px] font-bold border rounded-full whitespace-nowrap cursor-default ${color}`}>
+                        {m.slice(0, m.lastIndexOf(" "))} {submitted ? "✓" : isPastMonth ? "!" : "~"}
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
               {history.length === 0 ? (
                 <div className="py-10 text-center text-slate-400">
                   <p className="text-xs">No monthly updates submitted for this project yet.</p>
@@ -329,9 +387,12 @@ export const MonthlyTrackerModule: React.FC<MonthlyTrackerModuleProps> = ({
                       <label className="block text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-1.5">
                         Reporting Month <span className="text-rose-500">*</span>
                       </label>
-                      <input type="text" value={poMonth} onChange={(e) => setPoMonth(e.target.value)}
-                        placeholder="e.g. July 2026"
-                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:ring-2 focus:ring-teal-400 focus:outline-none" />
+                      <select value={poMonth} onChange={(e) => setPoMonth(e.target.value)}
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:ring-2 focus:ring-teal-400 focus:outline-none">
+                        {MONTH_OPTIONS.map(m => (
+                          <option key={m} value={m}>{m}{submittedMonths.has(m) ? " ✓ Submitted" : ""}</option>
+                        ))}
+                      </select>
                     </div>
                     <div>
                       <label className="block text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-1.5">
@@ -409,7 +470,7 @@ export const MonthlyTrackerModule: React.FC<MonthlyTrackerModuleProps> = ({
               Monthly Project Progress Tracker
             </h2>
             <p className="text-slate-500 text-xs mt-0.5">
-              Select a project first, then update by the 5th of each month.
+              All active pilot projects — update by the 5th of each month. Export to CSV for offline analysis.
             </p>
           </div>
           <div className="flex items-end gap-3 flex-wrap">
@@ -420,28 +481,10 @@ export const MonthlyTrackerModule: React.FC<MonthlyTrackerModuleProps> = ({
               <input type="text" value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)}
                 className="px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-400 w-44" />
             </div>
-            <button onClick={handlePrint}
-              className="flex items-center gap-1.5 px-4 py-2.5 bg-slate-800 hover:bg-slate-900 text-white text-[10px] font-bold rounded-xl cursor-pointer transition-all">
-              <Printer className="w-3.5 h-3.5" /> Print
+            <button onClick={handleExportCSV}
+              className="flex items-center gap-1.5 px-4 py-2.5 bg-teal-700 hover:bg-teal-800 text-white text-[10px] font-bold rounded-xl cursor-pointer transition-all">
+              <Download className="w-3.5 h-3.5" /> Export CSV
             </button>
-          </div>
-        </div>
-        {/* Idea selector */}
-        <div className="flex flex-col sm:flex-row gap-3 items-end border-t border-slate-100 pt-4">
-          <div className="flex-1">
-            <label className="block text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-1.5">
-              Select Project (Idea ID) <span className="text-rose-500">*</span>
-            </label>
-            <select
-              value={cpocSelectedIdeaId}
-              onChange={(e) => setCpocSelectedIdeaId(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-400"
-            >
-              <option value="">-- Select an Idea ID to load its tracker --</option>
-              {activeIdeas.map((i) => (
-                <option key={i.id} value={i.id}>{i.id} — {i.fhProjectTitle || i.title}</option>
-              ))}
-            </select>
           </div>
         </div>
       </div>
@@ -478,13 +521,7 @@ export const MonthlyTrackerModule: React.FC<MonthlyTrackerModuleProps> = ({
           </p>
         </div>
 
-        {!cpocSelectedIdeaId ? (
-          <div className="no-print p-12 text-center text-slate-400 bg-white border border-slate-200 rounded-2xl">
-            <Clock className="w-10 h-10 opacity-20 mx-auto mb-2" />
-            <p className="font-bold text-slate-700 text-sm">Select a Project to Load the Tracker</p>
-            <p className="text-[11px] mt-1">Choose an Idea ID from the selector above to view and edit that project's monthly tracker.</p>
-          </div>
-        ) : visibleIdeas.length === 0 ? (
+        {visibleIdeas.length === 0 ? (
           <div className="no-print p-12 text-center text-slate-400 bg-white border border-slate-200 rounded-2xl">
             <Clock className="w-10 h-10 opacity-20 mx-auto mb-2" />
             <p className="font-bold text-slate-700 text-sm">No active pilot projects to track yet.</p>
@@ -510,7 +547,7 @@ export const MonthlyTrackerModule: React.FC<MonthlyTrackerModuleProps> = ({
                 </tr>
               </thead>
               <tbody>
-                {visibleIdeas.filter(i => !cpocSelectedIdeaId || i.id === cpocSelectedIdeaId).map((idea, idx) => {
+                {visibleIdeas.map((idea, idx) => {
                   const edit = rowEdits[idea.id] || emptyRow();
                   const isSaved = savedRows.has(idea.id);
                   return (
