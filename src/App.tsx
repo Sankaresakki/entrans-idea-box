@@ -238,7 +238,60 @@ export default function App() {
   }, [selectedIdea?.id]);
 
   // Callback to update idea state — optimistic local + async Supabase write
+  // Auto-creates meeting records on key workflow status transitions
   const handleUpdateIdea = (updatedIdea: Idea) => {
+    // Detect status transitions for auto-meeting creation
+    const prevIdea = ideas.find(i => i.id === updatedIdea.id);
+    if (prevIdea && prevIdea.status !== updatedIdea.status) {
+      // CPOC approves idea for IRC → auto-create IRC ↔ Proposer meeting
+      if (updatedIdea.status === IdeaStatus.ApprovedByCPOC) {
+        const alreadyExists = meetings.some(m => m.ideaId === updatedIdea.id && m.meetingType === "IRC_Proposer");
+        if (!alreadyExists) {
+          const autoMeeting: IOfflineMeeting = {
+            id: `MEET-AUTO-${updatedIdea.id}`,
+            ideaId: updatedIdea.id,
+            ideaTitle: updatedIdea.title,
+            meetingType: "IRC_Proposer",
+            meetingTypeLabel: "IRC ↔ Idea Proposer Meeting",
+            date: "",
+            time: "",
+            participants: `${updatedIdea.employeeName}, TM & OD CoE Lead, IRC Senior Advisory Panel, C-POC Coordinator`,
+            agenda: `Technical presentation of "${updatedIdea.title}" to the IRC Advisory Jury for evaluation.`,
+            mom: "",
+            decisions: "",
+            actionItems: "",
+            followUpStatus: "Scheduled",
+            dateCreated: new Date().toISOString()
+          };
+          setMeetings(prev => [autoMeeting, ...prev]);
+          db.upsertMeeting(autoMeeting).catch(console.error);
+        }
+      }
+      // IRC selects idea → auto-create FH ↔ Proposer meeting
+      if (updatedIdea.status === IdeaStatus.SelectedByIRC) {
+        const alreadyExists = meetings.some(m => m.ideaId === updatedIdea.id && m.meetingType === "FH_Proposer");
+        if (!alreadyExists) {
+          const autoMeeting: IOfflineMeeting = {
+            id: `MEET-FH-${updatedIdea.id}`,
+            ideaId: updatedIdea.id,
+            ideaTitle: updatedIdea.title,
+            meetingType: "FH_Proposer",
+            meetingTypeLabel: "Functional Head ↔ Idea Proposer Presentation",
+            date: "",
+            time: "",
+            participants: `${updatedIdea.employeeName}, ${updatedIdea.assignedFHName || "Functional Head TBD"}, C-POC Coordinator`,
+            agenda: `Pilot implementation scope review for "${updatedIdea.title}".`,
+            mom: "",
+            decisions: "",
+            actionItems: "",
+            followUpStatus: "Scheduled",
+            dateCreated: new Date().toISOString()
+          };
+          setMeetings(prev => [autoMeeting, ...prev]);
+          db.upsertMeeting(autoMeeting).catch(console.error);
+        }
+      }
+    }
     setIdeas(prev => prev.map(item => item.id === updatedIdea.id ? updatedIdea : item));
     db.upsertIdea(updatedIdea).catch(err => console.error("[db] upsertIdea:", err));
   };
@@ -671,6 +724,10 @@ export default function App() {
                     meetings={meetings}
                     onAddMeeting={(m) => {
                       setMeetings(prev => [m, ...prev]);
+                      db.upsertMeeting(m).catch(console.error);
+                    }}
+                    onUpdateMeeting={(m) => {
+                      setMeetings(prev => prev.map(item => item.id === m.id ? m : item));
                       db.upsertMeeting(m).catch(console.error);
                     }}
                     onAddNotification={handleAddNotification}

@@ -45,6 +45,7 @@ interface MeetingManagementModuleProps {
   persona: UserPersona;
   meetings: OfflineMeeting[];
   onAddMeeting: (meeting: OfflineMeeting) => void;
+  onUpdateMeeting: (meeting: OfflineMeeting) => void;
   onAddNotification: (recipient: string, subject: string, message: string) => void;
 }
 
@@ -53,6 +54,7 @@ export const MeetingManagementModule: React.FC<MeetingManagementModuleProps> = (
   persona,
   meetings,
   onAddMeeting,
+  onUpdateMeeting,
   onAddNotification
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -77,6 +79,7 @@ export const MeetingManagementModule: React.FC<MeetingManagementModuleProps> = (
   const [decisions, setDecisions] = useState("");
   const [actionItems, setActionItems] = useState("");
   const [followUpStatus, setFollowUpStatus] = useState<'Scheduled' | 'Pending Action' | 'In Progress' | 'Resolved'>('Scheduled');
+  const [editingMeetingId, setEditingMeetingId] = useState<string | null>(null);
 
   // Set default participants when meetingType changes
   React.useEffect(() => {
@@ -99,6 +102,21 @@ export const MeetingManagementModule: React.FC<MeetingManagementModuleProps> = (
     }
   }, [meetingType, associatedIdeaId]);
 
+  const handleEditMeeting = (meet: OfflineMeeting) => {
+    setAssociatedIdeaId(meet.ideaId);
+    setMeetingType(meet.meetingType);
+    setDate(meet.date || "");
+    setTime(meet.time || "");
+    setParticipants(meet.participants || "");
+    setAgenda(meet.agenda || "");
+    setMom(meet.mom || "");
+    setDecisions(meet.decisions || "");
+    setActionItems(meet.actionItems || "");
+    setFollowUpStatus(meet.followUpStatus);
+    setEditingMeetingId(meet.id);
+    setShowAddForm(true);
+  };
+
   const handleSubmitMeeting = (e: React.FormEvent) => {
     e.preventDefault();
     const selectedIdea = ideas.find(i => i.id === associatedIdeaId);
@@ -115,7 +133,7 @@ export const MeetingManagementModule: React.FC<MeetingManagementModuleProps> = (
     };
 
     const newMeeting: OfflineMeeting = {
-      id: `MEET-${String(meetings.length + 1).padStart(4, "0")}`,
+      id: `MEET-${String(Date.now()).slice(-7)}`,
       ideaId: associatedIdeaId,
       ideaTitle: selectedIdea.title,
       meetingType,
@@ -131,7 +149,12 @@ export const MeetingManagementModule: React.FC<MeetingManagementModuleProps> = (
       dateCreated: new Date().toISOString()
     };
 
-    onAddMeeting(newMeeting);
+    if (editingMeetingId) {
+      const originalDate = meetings.find(m => m.id === editingMeetingId)?.dateCreated || newMeeting.dateCreated;
+      onUpdateMeeting({ ...newMeeting, id: editingMeetingId, dateCreated: originalDate });
+    } else {
+      onAddMeeting(newMeeting);
+    }
 
     // Dynamic Notifications delivery to Zoho Mail for all participants
     const emailSubject = `[RIPPLE MoM] Minutes of Meeting Logged - ${newMeeting.id}`;
@@ -176,8 +199,9 @@ Ion Exchange (India) Limited`;
     setMom("");
     setDecisions("");
     setActionItems("");
+    setEditingMeetingId(null);
     setShowAddForm(false);
-    alert(`Success: Alignment meeting logged! Automated Email Notification dispatched via Zoho Mail to recipients.`);
+    alert(editingMeetingId ? "Meeting record updated successfully." : `Success: Alignment meeting logged! Automated Email Notification dispatched via Zoho Mail to recipients.`);
   };
 
   const getStatusColor = (status: string) => {
@@ -300,11 +324,21 @@ Ion Exchange (India) Limited`;
             {/* List timeline */}
             <div className="space-y-5 max-h-[600px] overflow-y-auto pr-1">
               {filteredMeetings.length > 0 ? (
-                filteredMeetings.map((meet, idx) => (
+                [...filteredMeetings].sort((a, b) => {
+                  if (!a.date && b.date) return -1;
+                  if (a.date && !b.date) return 1;
+                  return new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime();
+                }).map((meet, idx) => (
                   <div 
                     key={meet.id} 
-                    className="p-4 border border-slate-200 hover:border-slate-350 bg-slate-50/20 hover:bg-white rounded-xl transition-all duration-200 text-left relative"
+                    className={`p-4 border rounded-xl transition-all duration-200 text-left relative ${!meet.date ? "border-amber-200 bg-amber-50/30" : "border-slate-200 hover:border-slate-350 bg-slate-50/20 hover:bg-white"}`}
                   >
+                    {!meet.date && (
+                      <div className="mb-3 px-3 py-2 bg-amber-100 border border-amber-300 rounded-lg text-[9.5px] font-bold text-amber-800 flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5 flex-shrink-0" />
+                        Pending — C-POC must log the actual meeting date and details. Click "Log Details" below.
+                      </div>
+                    )}
                     {/* Header line */}
                     <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-2.5">
                       <div className="flex items-center gap-2">
@@ -324,7 +358,10 @@ Ion Exchange (India) Limited`;
                     <div className="grid grid-cols-2 gap-3 my-3 text-[10px] text-slate-500 font-mono">
                       <div className="flex items-center gap-1.5">
                         <Calendar className="w-3.5 h-3.5 text-indigo-600" />
-                        <span>{new Date(meet.date).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })} at {meet.time}</span>
+                        <span>{meet.date
+                          ? new Date(meet.date).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) + (meet.time ? ` at ${meet.time}` : "")
+                          : "⏳ TBD — Pending Log"}
+                        </span>
                       </div>
                       <div className="flex items-center gap-1.5 truncate">
                         <Users className="w-3.5 h-3.5 text-indigo-600" />
@@ -366,7 +403,15 @@ Ion Exchange (India) Limited`;
                     {/* Footer stamp */}
                     <div className="mt-3.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[8px] font-mono text-slate-400">
                       <span>ORGANIZED BY: CENTRAL C-POC ROSTER</span>
-                      <span>EMITTED: {new Date(meet.dateCreated).toLocaleString()}</span>
+                      <div className="flex items-center gap-2">
+                        {persona.role === "C-POC" && (
+                          <button onClick={() => handleEditMeeting(meet)}
+                            className="flex items-center gap-1 px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-[9px] font-bold rounded-lg cursor-pointer transition-all normal-case tracking-normal">
+                            {!meet.date ? "Log Details" : "Edit Record"}
+                          </button>
+                        )}
+                        <span>EMITTED: {new Date(meet.dateCreated).toLocaleString()}</span>
+                      </div>
                     </div>
 
                   </div>
@@ -390,10 +435,10 @@ Ion Exchange (India) Limited`;
               <div className="flex justify-between items-center border-b border-slate-100 pb-3 mb-4">
                 <h3 className="font-display font-extrabold text-slate-800 text-xs uppercase tracking-wider flex items-center gap-1.5">
                   <Plus className="w-4 h-4 text-indigo-600" />
-                  Log Offline Meeting Report
+                  {editingMeetingId ? "Edit Meeting Record" : "Log Offline Meeting Report"}
                 </h3>
                 <button 
-                  onClick={() => setShowAddForm(false)}
+                  onClick={() => { setShowAddForm(false); setEditingMeetingId(null); }}
                   className="text-[10px] text-slate-400 hover:text-slate-650 font-bold"
                 >
                   Cancel
@@ -547,7 +592,7 @@ Ion Exchange (India) Limited`;
                   className="w-full flex items-center justify-center gap-1.5 px-4 py-2.5 bg-indigo-650 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all shadow-xs cursor-pointer"
                 >
                   <CheckSquare className="w-4 h-4" />
-                  Save alignment meeting minutes
+                  {editingMeetingId ? "Update Meeting Record" : "Save alignment meeting minutes"}
                 </button>
 
               </form>
