@@ -52,6 +52,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ ideas, onSelectIdea, selec
   const [activeWorkspaceTab, setActiveWorkspaceTab] = useState<"pending" | "all">("pending");
   const [showQuarterly, setShowQuarterly] = useState(false);
   const [viewingDetailIdea, setViewingDetailIdea] = useState<Idea | null>(null);
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+  const [cpocKpiFilter, setCpocKpiFilter] = useState<string | null>(null);
 
   // Helper: map a status to the required role responsible for processing the stage-gate
   const getRequiredRoleForStatus = (status: IdeaStatus): string => {
@@ -226,6 +229,277 @@ export const Dashboard: React.FC<DashboardProps> = ({ ideas, onSelectIdea, selec
   const completionRate = ircSelectedCount > 0 ? Math.round((winnerCount / ircSelectedCount) * 100) : 0;
 
   const activeDisplayList = activeWorkspaceTab === "pending" ? pendingInboxIdeas : allRegistryIdeas;
+
+  // ── CPOC / Super Admin: dedicated indicator-only dashboard ─────────────────
+  if (persona.role === "C-POC" || persona.role === "Super Admin") {
+    const cpocBase = authorizedIdeas.filter(idea => {
+      const matchBU     = buFilter     ? idea.businessUnit  === buFilter     : true;
+      const matchImpact = impactFilter ? idea.areaOfImpact  === impactFilter : true;
+      const matchGrade  = gradeFilter  ? idea.grade         === gradeFilter  : true;
+      const matchCadre  = cadreFilter  ? idea.cadre         === cadreFilter  : true;
+      const matchDiv    = divisionFilter ? idea.department  === divisionFilter : true;
+      const matchFrom   = fromDate ? new Date(idea.createdAt) >= new Date(fromDate) : true;
+      const matchTo     = toDate   ? new Date(idea.createdAt) <= new Date(toDate + "T23:59:59") : true;
+      return matchBU && matchImpact && matchGrade && matchCadre && matchDiv && matchFrom && matchTo;
+    });
+
+    // ── Process Indicators ──────────────────────────────────────────────────
+    const pi_total      = cpocBase.length;
+    const pi_qc         = cpocBase.filter(i => i.status === IdeaStatus.Submitted || i.status === IdeaStatus.ReturnedToEmployee).length;
+    const pi_irc        = cpocBase.filter(i => i.status === IdeaStatus.ApprovedByCPOC || i.status === IdeaStatus.UnderIRCEvaluation).length;
+    const pi_fh         = cpocBase.filter(i => i.status === IdeaStatus.SelectedByIRC || i.status === IdeaStatus.WithFunctionalHead).length;
+    const pi_ap         = cpocBase.filter(i => i.status === IdeaStatus.AwaitingActionPlan || i.status === IdeaStatus.ActionPlanSubmitted || i.status === IdeaStatus.ActionPlanRevision).length;
+    const pi_report     = cpocBase.filter(i => i.status === IdeaStatus.ActionPlanApproved || i.status === IdeaStatus.ReportRevision).length;
+    const pi_finance    = cpocBase.filter(i => i.status === IdeaStatus.ReportSubmitted || i.status === IdeaStatus.PendingFinanceEvaluation || i.status === IdeaStatus.FinanceRevision || i.status === IdeaStatus.PendingCFOSignOff).length;
+
+    // ── Outcome Indicators ──────────────────────────────────────────────────
+    const oi_shortlisted = cpocBase.filter(i => {
+      const s = i.status;
+      return s !== IdeaStatus.Submitted && s !== IdeaStatus.ReturnedToEmployee && s !== IdeaStatus.VettingLimitExceeded;
+    }).length;
+    const oi_ircSelected = cpocBase.filter(i => {
+      const s = i.status;
+      return s === IdeaStatus.SelectedByIRC || s === IdeaStatus.WithFunctionalHead || s === IdeaStatus.DeclinedByFH ||
+             s === IdeaStatus.AwaitingActionPlan || s === IdeaStatus.ActionPlanSubmitted || s === IdeaStatus.ActionPlanRevision ||
+             s === IdeaStatus.ActionPlanApproved || s === IdeaStatus.ActionPlanRejected || s === IdeaStatus.ReportSubmitted ||
+             s === IdeaStatus.ReportRevision || s === IdeaStatus.ReportRejected || s === IdeaStatus.PendingFinanceEvaluation ||
+             s === IdeaStatus.FinanceRevision || s === IdeaStatus.FinanceRevisionLimitExceeded ||
+             s === IdeaStatus.NoQuantifiableFinancialBenefit || s === IdeaStatus.PendingCFOSignOff || s === IdeaStatus.Completed;
+    }).length;
+    const oi_implementation = cpocBase.filter(i => {
+      const s = i.status;
+      return s === IdeaStatus.WithFunctionalHead || s === IdeaStatus.AwaitingActionPlan || s === IdeaStatus.ActionPlanSubmitted ||
+             s === IdeaStatus.ActionPlanRevision || s === IdeaStatus.ActionPlanApproved || s === IdeaStatus.ReportRevision ||
+             s === IdeaStatus.ReportSubmitted || s === IdeaStatus.PendingFinanceEvaluation || s === IdeaStatus.FinanceRevision ||
+             s === IdeaStatus.PendingCFOSignOff;
+    }).length;
+    const oi_reports = cpocBase.filter(i => {
+      const s = i.status;
+      return s === IdeaStatus.ReportSubmitted || s === IdeaStatus.ReportRevision || s === IdeaStatus.ReportRejected ||
+             s === IdeaStatus.PendingFinanceEvaluation || s === IdeaStatus.FinanceRevision ||
+             s === IdeaStatus.FinanceRevisionLimitExceeded || s === IdeaStatus.NoQuantifiableFinancialBenefit ||
+             s === IdeaStatus.PendingCFOSignOff || s === IdeaStatus.Completed;
+    }).length;
+    const oi_financial = cpocBase.filter(i => i.status === IdeaStatus.PendingCFOSignOff || i.status === IdeaStatus.Completed).length;
+
+    // ── KPI filter → subset for drill-down table ────────────────────────────
+    const kpiIdeasMap: Record<string, Idea[]> = {
+      pi_total:          cpocBase,
+      pi_qc:             cpocBase.filter(i => i.status === IdeaStatus.Submitted || i.status === IdeaStatus.ReturnedToEmployee),
+      pi_irc:            cpocBase.filter(i => i.status === IdeaStatus.ApprovedByCPOC || i.status === IdeaStatus.UnderIRCEvaluation),
+      pi_fh:             cpocBase.filter(i => i.status === IdeaStatus.SelectedByIRC || i.status === IdeaStatus.WithFunctionalHead),
+      pi_ap:             cpocBase.filter(i => i.status === IdeaStatus.AwaitingActionPlan || i.status === IdeaStatus.ActionPlanSubmitted || i.status === IdeaStatus.ActionPlanRevision),
+      pi_report:         cpocBase.filter(i => i.status === IdeaStatus.ActionPlanApproved || i.status === IdeaStatus.ReportRevision),
+      pi_finance:        cpocBase.filter(i => i.status === IdeaStatus.ReportSubmitted || i.status === IdeaStatus.PendingFinanceEvaluation || i.status === IdeaStatus.FinanceRevision || i.status === IdeaStatus.PendingCFOSignOff),
+      oi_shortlisted:    cpocBase.filter(i => i.status !== IdeaStatus.Submitted && i.status !== IdeaStatus.ReturnedToEmployee && i.status !== IdeaStatus.VettingLimitExceeded),
+      oi_ircSelected:    cpocBase.filter(i => { const s = i.status; return s === IdeaStatus.SelectedByIRC || s === IdeaStatus.WithFunctionalHead || s === IdeaStatus.DeclinedByFH || s === IdeaStatus.AwaitingActionPlan || s === IdeaStatus.ActionPlanSubmitted || s === IdeaStatus.ActionPlanRevision || s === IdeaStatus.ActionPlanApproved || s === IdeaStatus.ActionPlanRejected || s === IdeaStatus.ReportSubmitted || s === IdeaStatus.ReportRevision || s === IdeaStatus.ReportRejected || s === IdeaStatus.PendingFinanceEvaluation || s === IdeaStatus.FinanceRevision || s === IdeaStatus.FinanceRevisionLimitExceeded || s === IdeaStatus.NoQuantifiableFinancialBenefit || s === IdeaStatus.PendingCFOSignOff || s === IdeaStatus.Completed; }),
+      oi_implementation: cpocBase.filter(i => { const s = i.status; return s === IdeaStatus.WithFunctionalHead || s === IdeaStatus.AwaitingActionPlan || s === IdeaStatus.ActionPlanSubmitted || s === IdeaStatus.ActionPlanRevision || s === IdeaStatus.ActionPlanApproved || s === IdeaStatus.ReportRevision || s === IdeaStatus.ReportSubmitted || s === IdeaStatus.PendingFinanceEvaluation || s === IdeaStatus.FinanceRevision || s === IdeaStatus.PendingCFOSignOff; }),
+      oi_reports:        cpocBase.filter(i => { const s = i.status; return s === IdeaStatus.ReportSubmitted || s === IdeaStatus.ReportRevision || s === IdeaStatus.ReportRejected || s === IdeaStatus.PendingFinanceEvaluation || s === IdeaStatus.FinanceRevision || s === IdeaStatus.FinanceRevisionLimitExceeded || s === IdeaStatus.NoQuantifiableFinancialBenefit || s === IdeaStatus.PendingCFOSignOff || s === IdeaStatus.Completed; }),
+      oi_financial:      cpocBase.filter(i => i.status === IdeaStatus.PendingCFOSignOff || i.status === IdeaStatus.Completed),
+    };
+    const tableIdeas = cpocKpiFilter ? (kpiIdeasMap[cpocKpiFilter] ?? cpocBase) : cpocBase;
+
+    const kpiLabels: Record<string, string> = {
+      pi_total: "All Ideas", pi_qc: "Pending Quality Check", pi_irc: "Pending IRC Review",
+      pi_fh: "Pending FH Decision", pi_ap: "Pending Action Plan", pi_report: "Pending Project Report",
+      pi_finance: "Pending Financial Impact", oi_shortlisted: "Shortlisted for IRC",
+      oi_ircSelected: "Selected by IRC", oi_implementation: "In Implementation",
+      oi_reports: "Project Reports Submitted", oi_financial: "Generated Financial Impact",
+    };
+
+    const KpiCard = ({ k, label, value, color }: { k: string; label: string; value: number; color: string }) => (
+      <button
+        onClick={() => setCpocKpiFilter(cpocKpiFilter === k ? null : k)}
+        className={`p-4 rounded-2xl border text-left w-full transition-all duration-200 ${cpocKpiFilter === k ? "ring-2 ring-offset-1 ring-teal-500 border-teal-400 bg-teal-50" : "bg-white border-slate-200 hover:border-teal-300 hover:shadow-md"}`}
+      >
+        <p className={`text-[9px] font-bold uppercase tracking-widest font-mono leading-tight ${color}`}>{label}</p>
+        <p className="text-3xl font-extrabold text-slate-900 font-display tracking-tight mt-2">{value}</p>
+        <p className="text-[9.5px] text-slate-400 mt-1">{cpocKpiFilter === k ? "Click to clear" : "Click to drill down"}</p>
+      </button>
+    );
+
+    const statusColor = (s: IdeaStatus) => {
+      if (s === IdeaStatus.Completed) return "bg-emerald-100 text-emerald-800";
+      if (s.startsWith("Closed") || s.startsWith("Journey")) return "bg-rose-100 text-rose-700";
+      if (s.includes("Selected")) return "bg-teal-100 text-teal-800";
+      if (s.includes("IRC") || s.includes("Awaiting")) return "bg-indigo-100 text-indigo-800";
+      if (s.includes("Finance") || s.includes("CFO")) return "bg-purple-100 text-purple-800";
+      return "bg-amber-100 text-amber-800";
+    };
+
+    return (
+      <div className="space-y-6">
+
+        {/* ── Slicers ───────────────────────────────────────────────────── */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <Filter className="w-3.5 h-3.5 text-teal-600" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-700">Dashboard Filters</span>
+            {(buFilter || impactFilter || gradeFilter || cadreFilter || divisionFilter || fromDate || toDate) && (
+              <button onClick={() => { setBuFilter(""); setImpactFilter(""); setGradeFilter(""); setCadreFilter(""); setDivisionFilter(""); setFromDate(""); setToDate(""); setCpocKpiFilter(null); }}
+                className="ml-auto flex items-center gap-1 px-2.5 py-1 bg-rose-50 border border-rose-200 text-rose-600 text-[10px] font-bold rounded-lg hover:bg-rose-100 cursor-pointer">
+                <X className="w-3 h-3" /> Clear All
+              </button>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <select value={buFilter} onChange={e => setBuFilter(e.target.value)} className="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-400 text-slate-700">
+              <option value="">All Business Units</option>
+              {BUSINESS_UNITS.map(b => <option key={b} value={b}>{b}</option>)}
+            </select>
+            <select value={impactFilter} onChange={e => setImpactFilter(e.target.value)} className="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-400 text-slate-700">
+              <option value="">All Areas of Impact</option>
+              {AREA_OF_IMPACT_THEMES.map(t => <option key={t} value={t}>{t}</option>)}
+            </select>
+            <select value={cadreFilter} onChange={e => setCadreFilter(e.target.value)} className="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-400 text-slate-700">
+              <option value="">All Cadres</option>
+              {[...new Set(authorizedIdeas.map(i => i.cadre).filter(Boolean))].sort().map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+            <select value={gradeFilter} onChange={e => setGradeFilter(e.target.value)} className="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-400 text-slate-700">
+              <option value="">All Grades</option>
+              {[...new Set(authorizedIdeas.map(i => i.grade).filter(Boolean))].sort().map(g => <option key={g} value={g}>{g}</option>)}
+            </select>
+            <select value={divisionFilter} onChange={e => setDivisionFilter(e.target.value)} className="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-400 text-slate-700">
+              <option value="">All Divisions</option>
+              {[...new Set(authorizedIdeas.map(i => i.department).filter(Boolean))].sort().map(d => <option key={d} value={d}>{d}</option>)}
+            </select>
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl">
+              <Calendar className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+              <input type="date" value={fromDate} onChange={e => setFromDate(e.target.value)} className="text-xs bg-transparent focus:outline-none text-slate-700 w-32" />
+              <span className="text-[10px] text-slate-400">to</span>
+              <input type="date" value={toDate} onChange={e => setToDate(e.target.value)} className="text-xs bg-transparent focus:outline-none text-slate-700 w-32" />
+            </div>
+          </div>
+        </div>
+
+        {/* ── Process Indicators ────────────────────────────────────────── */}
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <BarChart3 className="w-4 h-4 text-indigo-500" />
+            <h2 className="text-[11px] font-black uppercase tracking-widest text-slate-800">Process Indicators</h2>
+            <span className="text-[9px] text-slate-400 font-mono ml-1">— pipeline health across all stages</span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3">
+            <KpiCard k="pi_total"   label="Total Submitted"              value={pi_total}   color="text-slate-500" />
+            <KpiCard k="pi_qc"      label="Pending Quality Check"        value={pi_qc}      color="text-amber-500" />
+            <KpiCard k="pi_irc"     label="Pending IRC Review"           value={pi_irc}     color="text-indigo-500" />
+            <KpiCard k="pi_fh"      label="Pending FH Decision"          value={pi_fh}      color="text-violet-600" />
+            <KpiCard k="pi_ap"      label="Pending Action Plan"          value={pi_ap}      color="text-orange-500" />
+            <KpiCard k="pi_report"  label="Pending Project Report"       value={pi_report}  color="text-sky-600" />
+            <KpiCard k="pi_finance" label="Pending Financial Approval"   value={pi_finance} color="text-purple-600" />
+          </div>
+        </div>
+
+        {/* ── Outcome Indicators ────────────────────────────────────────── */}
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <TrendingUp className="w-4 h-4 text-emerald-500" />
+            <h2 className="text-[11px] font-black uppercase tracking-widest text-slate-800">Outcome Indicators</h2>
+            <span className="text-[9px] text-slate-400 font-mono ml-1">— programme impact and results</span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            <KpiCard k="oi_shortlisted"    label="Shortlisted for IRC Review"          value={oi_shortlisted}    color="text-teal-600" />
+            <KpiCard k="oi_ircSelected"    label="Selected by IRC"                     value={oi_ircSelected}    color="text-teal-700" />
+            <KpiCard k="oi_implementation" label="In Implementation with FH"           value={oi_implementation} color="text-emerald-600" />
+            <KpiCard k="oi_reports"        label="Project Reports Submitted"           value={oi_reports}        color="text-sky-700" />
+            <KpiCard k="oi_financial"      label="Generated Financial Impact"          value={oi_financial}      color="text-violet-700" />
+          </div>
+        </div>
+
+        {/* ── Ideas Table ───────────────────────────────────────────────── */}
+        <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100 bg-slate-50">
+            <div className="flex items-center gap-2">
+              <Database className="w-3.5 h-3.5 text-slate-400" />
+              <span className="text-[11px] font-black uppercase tracking-widest text-slate-700">
+                Idea Registry
+              </span>
+              {cpocKpiFilter && (
+                <span className="ml-1 px-2 py-0.5 bg-teal-100 text-teal-800 text-[9px] font-bold rounded-full border border-teal-200 font-mono">
+                  Filtered: {kpiLabels[cpocKpiFilter]}
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] text-slate-400 font-mono">{tableIdeas.length} idea{tableIdeas.length !== 1 ? "s" : ""}</span>
+              {cpocKpiFilter && (
+                <button onClick={() => setCpocKpiFilter(null)} className="flex items-center gap-1 px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-600 text-[10px] font-bold rounded-lg hover:bg-slate-200 cursor-pointer">
+                  <X className="w-3 h-3" /> Clear Filter
+                </button>
+              )}
+            </div>
+          </div>
+
+          {tableIdeas.length === 0 ? (
+            <div className="p-14 text-center text-slate-400">
+              <Database className="w-8 h-8 opacity-20 mx-auto mb-2" />
+              <p className="text-sm font-bold text-slate-600">No ideas match the selected filters.</p>
+              <p className="text-xs mt-1">Adjust the slicers above or clear the KPI filter.</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs border-collapse">
+                <thead>
+                  <tr className="bg-slate-800 text-white">
+                    <th className="px-3 py-3 text-[8.5px] font-black uppercase tracking-widest text-left w-28">Idea ID</th>
+                    <th className="px-3 py-3 text-[8.5px] font-black uppercase tracking-widest text-left">Idea Title</th>
+                    <th className="px-3 py-3 text-[8.5px] font-black uppercase tracking-widest text-left w-36">Submitted By</th>
+                    <th className="px-3 py-3 text-[8.5px] font-black uppercase tracking-widest text-left w-28">Business Unit</th>
+                    <th className="px-3 py-3 text-[8.5px] font-black uppercase tracking-widest text-left w-24">Grade / Cadre</th>
+                    <th className="px-3 py-3 text-[8.5px] font-black uppercase tracking-widest text-left w-28">Functional Head</th>
+                    <th className="px-3 py-3 text-[8.5px] font-black uppercase tracking-widest text-left w-24">Submitted</th>
+                    <th className="px-3 py-3 text-[8.5px] font-black uppercase tracking-widest text-left">Progress Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {tableIdeas.map((idea, idx) => (
+                    <tr key={idea.id} className={`${idx % 2 === 0 ? "bg-white" : "bg-slate-50/60"} hover:bg-teal-50/20 transition-colors border-b border-slate-100`}>
+                      <td className="px-3 py-3 align-top">
+                        <span className="font-mono text-[9.5px] font-bold text-teal-700">{idea.id}</span>
+                      </td>
+                      <td className="px-3 py-3 align-top max-w-[200px]">
+                        <p className="text-[11px] text-slate-800 leading-snug font-semibold line-clamp-2">{idea.title}</p>
+                        <p className="text-[9.5px] text-slate-400 mt-0.5">{idea.areaOfImpact}</p>
+                      </td>
+                      <td className="px-3 py-3 align-top">
+                        <p className="text-[10.5px] text-slate-700 font-medium">{idea.employeeName}</p>
+                        <a href={`mailto:${idea.employeeEmail}`} className="text-[9.5px] text-teal-600 hover:underline font-mono">{idea.employeeEmail}</a>
+                      </td>
+                      <td className="px-3 py-3 align-top">
+                        <span className="text-[10px] text-slate-600">{idea.businessUnit}</span>
+                      </td>
+                      <td className="px-3 py-3 align-top">
+                        <span className="text-[9.5px] text-slate-500 font-mono">{idea.grade || "—"}</span>
+                        {idea.cadre && <p className="text-[9px] text-slate-400">{idea.cadre}</p>}
+                      </td>
+                      <td className="px-3 py-3 align-top">
+                        {idea.assignedFHName ? (
+                          <>
+                            <p className="text-[10px] text-slate-700 font-medium">{idea.assignedFHName}</p>
+                            {idea.assignedFHEmail && <a href={`mailto:${idea.assignedFHEmail}`} className="text-[9px] text-teal-600 hover:underline font-mono">{idea.assignedFHEmail}</a>}
+                          </>
+                        ) : <span className="text-[9.5px] text-slate-300 italic">Not assigned</span>}
+                      </td>
+                      <td className="px-3 py-3 align-top">
+                        <span className="text-[9.5px] text-slate-500 font-mono">{new Date(idea.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</span>
+                      </td>
+                      <td className="px-3 py-3 align-top">
+                        <span className={`inline-block px-2 py-0.5 text-[9px] font-bold rounded-full whitespace-nowrap ${statusColor(idea.status)}`}>
+                          {idea.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+      </div>
+    );
+  }
+  // ── End CPOC Dashboard ─────────────────────────────────────────────────────
 
   return (
     <div className="space-y-6">
