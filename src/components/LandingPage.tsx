@@ -214,7 +214,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
         <div className="relative max-w-7xl mx-auto px-6 pt-24 pb-20 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           {/* Left Text */}
           <div className="text-white space-y-8">
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.05]">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.05]">
               One Small{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-violet-300 to-pink-300">
                 Idea,
