@@ -6,8 +6,8 @@
 import React from "react";
 import { Idea, IdeaStatus } from "../types";
 import { Award, Sparkles, Printer } from "lucide-react";
-import ionLogo from "/assets/ion_logo.png";
-import rightLogo from "/assets/image001.png";
+import ionLogo from "../../assets/ion_logo.png";
+import rightLogo from "../../assets/image001.png";
 
 interface CertificateViewProps {
   idea: Idea;
