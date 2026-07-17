@@ -420,44 +420,16 @@ export default function App() {
   return (
     <div className="min-h-screen flex flex-col font-sans select-none antialiased bg-slate-50 text-slate-800">
       
-      {/* Dynamic Header */}
-      <header className="bg-white border-b border-slate-200 text-slate-900 py-4 px-6 sticky top-0 z-10 shadow-xs">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
-          
-          {/* Logo */}
-          <div>
-            <img src="/ripple.png" className="h-10 w-auto" alt="Ripple" />
-          </div>
-
-          {/* Quick Resolute buttons */}
-          <div className="flex items-center gap-2">
-
-            <div className={`flex items-center border px-2.5 py-1 rounded-full text-[10px] font-semibold ${
-              realtimeStatus === "connected"
-                ? "bg-emerald-50 border-emerald-200/60 text-emerald-700"
-                : realtimeStatus === "connecting"
-                ? "bg-amber-50 border-amber-200/60 text-amber-700"
-                : "bg-slate-100 border-slate-200 text-slate-500"
-            }`}>
-              <div className={`w-2 h-2 rounded-full mr-1.5 ${
-                realtimeStatus === "connected" ? "bg-emerald-500 animate-pulse"
-                : realtimeStatus === "connecting" ? "bg-amber-400 animate-pulse"
-                : "bg-slate-400"
-              }`} />
-              <span>
-                {realtimeStatus === "connected" ? "Live — Real-time"
-                : realtimeStatus === "connecting" ? "Connecting…"
-                : "Offline (localStorage)"}
-              </span>
-            </div>
-          </div>
-
+      {/* Dynamic Header — Row 1: Centered Logo */}
+      <header className="bg-white border-b border-slate-200 text-slate-900 py-3 px-6 sticky top-0 z-10 shadow-xs">
+        <div className="max-w-7xl mx-auto flex items-center justify-center">
+          <img src="/image001.png" className="h-20 w-auto object-contain" alt="Ripple" />
         </div>
       </header>
 
-      {/* Active Secure Persona Workspace Segment */}
-      <section className="bg-white border-b border-slate-200 py-3 px-6 shadow-sm relative text-slate-900">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      {/* Row 2: User info + Nav Tabs + Action Buttons */}
+      <section className="bg-white border-b border-slate-200 py-2 px-6 shadow-sm relative text-slate-900 sticky top-[86px] z-10">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
           
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-full bg-[#0098DB]/10 border border-[#0098DB]/30 flex items-center justify-center font-bold text-xs text-[#0098DB] font-mono shadow-xs animate-pulse">
@@ -573,16 +545,30 @@ export default function App() {
               <LogOut className="w-3.5 h-3.5" />
               <span>Log Out</span>
             </button>
+
+            {/* Live status badge */}
+            <div className={`flex items-center border px-2.5 py-1 rounded-full text-[10px] font-semibold ${
+              realtimeStatus === "connected"
+                ? "bg-emerald-50 border-emerald-200/60 text-emerald-700"
+                : realtimeStatus === "connecting"
+                ? "bg-amber-50 border-amber-200/60 text-amber-700"
+                : "bg-slate-100 border-slate-200 text-slate-500"
+            }`}>
+              <div className={`w-2 h-2 rounded-full mr-1.5 ${
+                realtimeStatus === "connected" ? "bg-emerald-500 animate-pulse"
+                : realtimeStatus === "connecting" ? "bg-amber-400 animate-pulse"
+                : "bg-slate-400"
+              }`} />
+              <span>
+                {realtimeStatus === "connected" ? "Live — Real-time"
+                : realtimeStatus === "connecting" ? "Connecting…"
+                : "Offline (localStorage)"}
+              </span>
+            </div>
           </div>
 
-        </div>
-      </section>
-
-      {/* Main Tab Controller navigation */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-6">
-        
-        {/* Navigation Tabs Bar — role-specific */}
-        <div className="flex border-b border-slate-200 mb-6 flex-wrap gap-1">
+          {/* Navigation Tabs Bar — role-specific, inline in header */}
+          <div className="w-full flex border-t border-slate-100 pt-2 flex-wrap gap-1">
           {/* Helper: tab button */}
           {(() => {
             const T = (tabId: typeof activeTab, label: string, badge?: number) => (
@@ -619,8 +605,14 @@ export default function App() {
             if (role === "Super Admin") return (<>{T("dashboard","Dashboard")}{T("taskcenter","All Workflows")}{T("certificates","Certificates")}{T("monthlytracker","Monthly Tracker")}{T("meetings","Meetings Log")}{T("zohomail","Notifications", notifCount)}</>);
             return null;
           })()}
-        </div>
+          </div>
 
+        </div>
+      </section>
+
+      {/* Main Tab Content */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-6">
+        
         {/* Tab Contents Frame */}
         {(() => {
           const FULL_WIDTH_TABS = ["vetting","fhassignment","ircfinalization","ircevaluation","assignedideas","actionplanapproval","finalreportsapproval","actionplansubmission","finalreportsubmission","financetemplate","cfoapproval","mytracker"] as const;
