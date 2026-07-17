@@ -6,6 +6,8 @@
 import React from "react";
 import { Idea, IdeaStatus } from "../types";
 import { Award, Sparkles, Printer } from "lucide-react";
+import ionLogo from "/assets/ion_logo.png";
+import rightLogo from "/assets/image001.png";
 
 interface CertificateViewProps {
   idea: Idea;
@@ -85,25 +87,11 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ idea, certType
           <div className="mx-[22px] mt-[22px] mb-0 border border-blue-900/30">
 
             {/* ── Header: Logos row ──────────────────────────────────────── */}
-            <div className="flex items-start justify-between px-8 pt-6 pb-4">
-              {/* ION EXCHANGE – left */}
-              <div className="flex flex-col items-start gap-1">
-                <span style={{fontFamily:"'Georgia','Times New Roman',serif", letterSpacing:"0.18em"}} className="text-blue-900 font-black text-[17px] uppercase leading-none">
-                  ION EXCHANGE
-                </span>
-                <span className="text-slate-500 text-[9px] tracking-widest font-medium" style={{fontFamily:"Georgia,serif", fontStyle:"italic"}}>
-                  Refreshing the Planet
-                </span>
-              </div>
-              {/* RIPPLE – right */}
-              <div className="flex flex-col items-end gap-1">
-                <span style={{fontFamily:"'Georgia','Times New Roman',serif", letterSpacing:"0.22em"}} className="text-blue-900 font-black text-[17px] uppercase leading-none">
-                  RIPPLE
-                </span>
-                <span className="text-slate-500 text-[9px] tracking-widest font-medium" style={{fontFamily:"Georgia,serif", fontStyle:"italic"}}>
-                  Employee Innovation Programme
-                </span>
-              </div>
+            <div className="flex items-center justify-between px-8 pt-6 pb-4">
+              {/* ION EXCHANGE logo – left */}
+              <img src={ionLogo} alt="Ion Exchange Logo" className="h-14 w-auto object-contain" />
+              {/* Right logo */}
+              <img src={rightLogo} alt="Right Logo" className="h-14 w-auto object-contain" />
             </div>
 
             {/* Top title divider */}
@@ -210,14 +198,20 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ idea, certType
         {/* Certificate Border Line */}
         <div className="border border-slate-300/60 p-6 rounded-lg pointer-events-none">
           {/* Header */}
-          <div className="text-center mb-6">
-            <span className="text-[10px] tracking-widest font-bold text-slate-500 uppercase block mb-1">
-              Ion Exchange (India) Limited
-            </span>
-            <h2 className="text-xl font-extrabold text-slate-800 font-display tracking-tight uppercase">
-              One Ion — Idea Box
-            </h2>
-            <div className="h-[2px] w-16 bg-sky-500 mx-auto mt-2" />
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-3">
+              <img src={ionLogo} alt="Ion Exchange Logo" className="h-12 w-auto object-contain" />
+              <img src={rightLogo} alt="Right Logo" className="h-12 w-auto object-contain" />
+            </div>
+            <div className="text-center">
+              <span className="text-[10px] tracking-widest font-bold text-slate-500 uppercase block mb-1">
+                Ion Exchange (India) Limited
+              </span>
+              <h2 className="text-xl font-extrabold text-slate-800 font-display tracking-tight uppercase">
+                One Ion — Idea Box
+              </h2>
+              <div className="h-[2px] w-16 bg-sky-500 mx-auto mt-2" />
+            </div>
           </div>
 
           {/* Badge & Title */}
