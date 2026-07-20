@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef } from "react";
+import { motion } from "motion/react";
 
 interface LandingPageProps {
   onSignIn: () => void;
@@ -132,7 +133,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
     <div className="min-h-screen bg-white font-sans text-slate-900 overflow-x-hidden">
 
       {/* ── NAVIGATION ──────────────────────────────────────────────── */}
-      <nav
+      <motion.nav
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: "easeOut" }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
             ? "bg-white/95 backdrop-blur-md shadow-sm border-b border-slate-200/80"
@@ -199,10 +203,21 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
             ))}
           </div>
         )}
-      </nav>
+      </motion.nav>
 
       {/* ── HERO ────────────────────────────────────────────────────── */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#003350] via-[#004a69] to-[#0098DB]">
+      <style>{`
+        @keyframes kenBurns {
+          0%   { transform: scale(1)    translateX(0)      translateY(0); }
+          50%  { transform: scale(1.06) translateX(-1%)    translateY(-0.5%); }
+          100% { transform: scale(1.1)  translateX(0.5%)   translateY(-1%); }
+        }
+        .ken-burns { animation: kenBurns 12s ease-in-out infinite alternate; }
+      `}</style>
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+
+        {/* Ken Burns background */}
+        <div className="ken-burns absolute inset-0 bg-gradient-to-br from-[#003350] via-[#004a69] to-[#0098DB]" />
 
         {/* Decorative background rings */}
         <div className="absolute inset-0 pointer-events-none">
@@ -217,7 +232,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
         <div className="relative max-w-7xl mx-auto px-6 pt-44 pb-20 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           {/* Left Text */}
           <div className="text-white space-y-8">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.05]">
+
+            <motion.h1
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, ease: "easeOut", delay: 0.1 }}
+              className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.05]"
+            >
               One Small{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-violet-300 to-pink-300">
                 Idea,
@@ -227,14 +248,24 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-sky-300">
                 Impact.
               </span>
-            </h1>
+            </motion.h1>
 
-            <p className="text-lg text-indigo-200 leading-relaxed max-w-lg">
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, ease: "easeOut", delay: 0.35 }}
+              className="text-lg text-indigo-200 leading-relaxed max-w-lg"
+            >
               Ripple is a structured employee ideation platform designed to capture, evaluate,
               and implement high-value ideas that drive innovation and growth.
-            </p>
+            </motion.p>
 
-            <div className="flex flex-wrap gap-4">
+            <motion.div
+              initial={{ opacity: 0, y: 25 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, ease: "easeOut", delay: 0.55 }}
+              className="flex flex-wrap gap-4"
+            >
               <button
                 onClick={onSignIn}
                 className="px-7 py-3.5 bg-white text-indigo-900 font-bold rounded-full text-base shadow-xl hover:shadow-2xl hover:bg-indigo-50 transition-all cursor-pointer flex items-center gap-2"
@@ -253,10 +284,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
-            </div>
+            </motion.div>
 
-            {/* Innovation highlights (no numbers) */}
-            <div className="flex flex-wrap gap-3 pt-4 border-t border-white/10">
+            {/* Innovation highlights */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, ease: "easeOut", delay: 0.75 }}
+              className="flex flex-wrap gap-3 pt-4 border-t border-white/10"
+            >
               {[
                 { icon: "💡", text: "Employee-Driven Innovation" },
                 { icon: "🎯", text: "Structured Evaluation Process" },
@@ -267,7 +303,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
                   {item.text}
                 </div>
               ))}
-            </div>
+            </motion.div>
           </div>
 
           {/* Right — Creative Innovation Imagery */}
