@@ -139,47 +139,49 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
             : "bg-transparent"
         }`}
       >
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          {/* Logo */}
-          <div className="flex items-center gap-2.5">
+        <div className="max-w-7xl mx-auto px-6">
+          {/* Row 1: Centered Logo */}
+          <div className="flex items-center justify-center py-3 border-b border-white/10">
             <img src="/image001.png" className="h-20 w-auto object-contain" alt="Ripple" />
           </div>
 
-          {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-6">
-            {NAV_LINKS.map(link => (
-              <button
-                key={link.href}
-                onClick={() => scrollTo(link.href)}
-                className={`text-sm font-medium transition-colors cursor-pointer hover:opacity-100 ${
-                  scrolled ? "text-slate-600 hover:text-indigo-600" : "text-white/80 hover:text-white"
-                }`}
-              >
-                {link.label}
-              </button>
-            ))}
-          </div>
+          {/* Row 2: Nav Menu + Sign In */}
+          <div className="flex items-center justify-between py-2">
+            {/* Desktop Nav */}
+            <div className="hidden md:flex items-center gap-6 flex-1 justify-center">
+              {NAV_LINKS.map(link => (
+                <button
+                  key={link.href}
+                  onClick={() => scrollTo(link.href)}
+                  className={`text-sm font-medium transition-colors cursor-pointer hover:opacity-100 ${
+                    scrolled ? "text-slate-600 hover:text-indigo-600" : "text-white/80 hover:text-white"
+                  }`}
+                >
+                  {link.label}
+                </button>
+              ))}
+            </div>
 
-          {/* Sign In */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={onSignIn}
-              className="px-5 py-2 rounded-full text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md hover:shadow-lg transition-all cursor-pointer"
-            >
-              Sign In
-            </button>
-            {/* Mobile Menu Toggle */}
-            <button
-              className="md:hidden p-2 rounded-lg cursor-pointer"
-              onClick={() => setMobileMenuOpen(v => !v)}
-              aria-label="Menu"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke={scrolled ? "#1e293b" : "#fff"} strokeWidth="2" className="w-5 h-5">
-                {mobileMenuOpen
-                  ? <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-                  : <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />}
-              </svg>
-            </button>
+            {/* Sign In + Mobile Toggle */}
+            <div className="flex items-center gap-3 ml-auto">
+              <button
+                onClick={onSignIn}
+                className="px-5 py-2 rounded-full text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md hover:shadow-lg transition-all cursor-pointer"
+              >
+                Sign In
+              </button>
+              <button
+                className="md:hidden p-2 rounded-lg cursor-pointer"
+                onClick={() => setMobileMenuOpen(v => !v)}
+                aria-label="Menu"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke={scrolled ? "#1e293b" : "#fff"} strokeWidth="2" className="w-5 h-5">
+                  {mobileMenuOpen
+                    ? <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                    : <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />}
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
 
