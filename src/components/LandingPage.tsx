@@ -142,7 +142,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-2.5">
-            <img src="/ripple.png" className="h-20 w-auto" alt="Ripple" />
+            <img src="/image001.png" className="h-20 w-auto object-contain" alt="Ripple" />
           </div>
 
           {/* Desktop Nav */}

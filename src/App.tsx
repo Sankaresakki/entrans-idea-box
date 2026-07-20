@@ -407,7 +407,7 @@ export default function App() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center gap-5 text-white">
-        <img src="/ripple.png" className="h-14 w-auto" alt="Ripple" />
+        <img src="/image001.png" className="h-14 w-auto object-contain" alt="Ripple" />
         <div className="flex items-center gap-3 text-sm font-medium text-slate-300">
           <Loader2 className="w-5 h-5 animate-spin text-indigo-400" />
           Connecting to Supabase — loading live data…
