@@ -14,7 +14,7 @@ const NAV_LINKS = [
   { label: "What is Ripple?", href: "#what-is-ripple" },
   { label: "Our Objectives",  href: "#objectives" },
   { label: "The Workflow",    href: "#workflow" },
-  { label: "Employee Manual", href: "#manual" },
+
   { label: "Get Started",     href: "#cta" },
 ];
 
@@ -512,16 +512,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
               Download the full guide PDF or log in to access the interactive manual.
             </p>
             <div className="flex flex-wrap gap-3 justify-center pt-2">
-              <a
-                href="/employee-manual.pdf"
-                download
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white text-sm font-semibold rounded-full shadow hover:bg-indigo-700 transition-all cursor-pointer"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1m-4-4-4 4m0 0-4-4m4 4V4" />
-                </svg>
-                Download PDF Guide
-              </a>
               <button
                 onClick={onSignIn}
                 className="inline-flex items-center gap-2 px-5 py-2.5 border border-indigo-200 text-indigo-700 text-sm font-semibold rounded-full hover:bg-indigo-50 transition-all cursor-pointer"
