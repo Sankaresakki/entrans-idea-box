@@ -217,6 +217,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
           50%     { box-shadow: 0 0 70px 20px rgba(255,255,255,0.18), 0 25px 60px rgba(0,0,0,0.35); }
         }
         .logo-glow { animation: logoGlow 3.5s ease-in-out infinite; }
+        @keyframes orbit-a { from{transform:rotate(0deg)   translateX(230px) rotate(0deg)}   to{transform:rotate(360deg)  translateX(230px) rotate(-360deg)} }
+        @keyframes orbit-b { from{transform:rotate(72deg)  translateX(220px) rotate(-72deg)}  to{transform:rotate(432deg)  translateX(220px) rotate(-432deg)} }
+        @keyframes orbit-c { from{transform:rotate(144deg) translateX(235px) rotate(-144deg)} to{transform:rotate(504deg)  translateX(235px) rotate(-504deg)} }
+        @keyframes orbit-d { from{transform:rotate(216deg) translateX(225px) rotate(-216deg)} to{transform:rotate(576deg)  translateX(225px) rotate(-576deg)} }
+        @keyframes orbit-e { from{transform:rotate(288deg) translateX(228px) rotate(-288deg)} to{transform:rotate(648deg)  translateX(228px) rotate(-648deg)} }
       `}</style>
       <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
 
@@ -236,25 +241,61 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
         {/* ─── CENTERED HERO CONTENT ─── */}
         <div className="relative z-10 flex flex-col items-center text-center px-6 pt-20 pb-16 max-w-3xl mx-auto w-full">
 
-          {/* ══ LOGO — THE HIGHLIGHT ══ */}
+          {/* ══ LOGO — THE HIGHLIGHT (Saturn Orbit) ══ */}
           <motion.div
             initial={{ opacity: 0, scale: 0.75, y: -24 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 1.1, ease: [0.34, 1.56, 0.64, 1] }}
-            className="mb-8 relative"
+            className="mb-4 relative flex items-center justify-center flex-shrink-0"
+            style={{ width: 500, height: 500 }}
           >
-            {/* Outer halo */}
-            <div className="absolute -inset-8 rounded-[3rem] bg-white/8 blur-2xl" />
-            {/* White logo card */}
-            <div className="logo-glow relative bg-white rounded-[2.25rem] px-14 py-8 shadow-2xl border border-white/30">
-              <img src="/image001.png" className="h-28 w-auto object-contain" alt="Ripple — One Idea Many Ripples" />
+            {/* ── Saturn rings — behind logo ── */}
+            <div
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[18deg] w-[450px] h-[145px] rounded-[50%] border-2 border-white/[0.22] pointer-events-none"
+              style={{ zIndex: 1 }}
+            />
+            <div
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[18deg] w-[475px] h-[160px] rounded-[50%] border border-white/[0.10] pointer-events-none"
+              style={{ zIndex: 1 }}
+            />
+
+            {/* ── Orbiting icons ── */}
+            {([
+              { anim: 'orbit-a', dur: '10s', emoji: '💡', label: 'Idea'     },
+              { anim: 'orbit-b', dur: '14s', emoji: '🎯', label: 'Evaluate' },
+              { anim: 'orbit-c', dur: '9s',  emoji: '🚀', label: 'Execute'  },
+              { anim: 'orbit-d', dur: '16s', emoji: '🏆', label: 'Impact'   },
+              { anim: 'orbit-e', dur: '12s', emoji: '⚡', label: 'Action'   },
+            ] as const).map(item => (
+              <div
+                key={item.label}
+                title={item.label}
+                className="absolute top-1/2 left-1/2 -mt-5 -ml-5 w-10 h-10 bg-white/15 backdrop-blur-sm border border-white/30 rounded-full flex items-center justify-center text-lg shadow-lg shadow-black/20 pointer-events-none"
+                style={{ animation: `${item.anim} ${item.dur} linear infinite`, zIndex: 2 }}
+              >
+                {item.emoji}
+              </div>
+            ))}
+
+            {/* ── Logo glow halo ── */}
+            <div
+              className="absolute w-64 h-44 bg-white/10 blur-3xl rounded-full pointer-events-none"
+              style={{ zIndex: 2 }}
+            />
+
+            {/* ── White logo card ── */}
+            <div
+              className="logo-glow relative bg-white rounded-[2rem] px-10 py-6 shadow-2xl border border-white/30"
+              style={{ zIndex: 3 }}
+            >
+              <img src="/image001.png" className="h-20 w-auto object-contain" alt="Ripple — One Idea Many Ripples" />
             </div>
-            {/* Accent dot */}
-            <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
-              <span className="w-2 h-2 bg-sky-400 rounded-full shadow-md shadow-sky-400/60" />
-              <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full opacity-60 mt-0.5" />
-              <span className="w-1 h-1 bg-violet-400 rounded-full opacity-40 mt-1" />
-            </div>
+
+            {/* ── Saturn ring — front arc (lower portion, in front of logo) ── */}
+            <div
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[18deg] w-[450px] h-[145px] rounded-[50%] border-2 border-white/[0.18] pointer-events-none"
+              style={{ zIndex: 4, clipPath: 'polygon(0 52%, 100% 52%, 100% 100%, 0 100%)' }}
+            />
           </motion.div>
 
           {/* Live badge */}
@@ -319,26 +360,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
               </svg>
             </button>
-          </motion.div>
-
-          {/* Feature pills */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, ease: "easeOut", delay: 1.02 }}
-            className="flex flex-wrap gap-x-8 gap-y-3 pt-5 border-t border-white/10 justify-center"
-          >
-            {[
-              { icon: "💡", text: "Employee-Driven Innovation" },
-              { icon: "🎯", text: "Structured Evaluation" },
-              { icon: "🚀", text: "Real Business Impact" },
-              { icon: "🏆", text: "Recognised & Rewarded" },
-            ].map(item => (
-              <div key={item.text} className="flex items-center gap-2 text-sm text-sky-200/80 font-medium">
-                <span className="text-base">{item.icon}</span>
-                {item.text}
-              </div>
-            ))}
           </motion.div>
         </div>
 
