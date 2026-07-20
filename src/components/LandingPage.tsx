@@ -213,7 +213,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
           <div className="absolute bottom-1/4 left-1/4 w-80 h-80 bg-indigo-500/20 rounded-full blur-3xl" />
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-6 pt-24 pb-20 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div className="relative max-w-7xl mx-auto px-6 pt-44 pb-20 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           {/* Left Text */}
           <div className="text-white space-y-8">
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.05]">
