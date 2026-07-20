@@ -554,37 +554,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
             ))}
           </div>
 
-          {/* Embedded PDF viewer — visible once /public/employee-manual.pdf is placed */}
-          <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
-            <div className="flex items-center gap-2 px-5 py-3 border-b border-slate-100 bg-slate-50">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-4 h-4 text-indigo-500">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z" />
-              </svg>
-              <span className="text-xs font-semibold text-slate-700">Employee Platform Guide — Ripple PDF</span>
-              <a href="/employee-manual.pdf" download className="ml-auto text-[10px] text-indigo-600 font-bold hover:underline flex items-center gap-1">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3 h-3">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1m-4-4-4 4m0 0-4-4m4 4V4" />
-                </svg>
-                Download
-              </a>
-            </div>
-            <div className="bg-slate-100 flex items-center justify-center" style={{ height: '480px' }}>
-              <object
-                data="/employee-manual.pdf"
-                type="application/pdf"
-                className="w-full h-full"
-              >
-                <div className="flex flex-col items-center justify-center gap-4 p-8 text-center">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-12 h-12 text-slate-300">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z" />
-                  </svg>
-                  <p className="text-sm font-semibold text-slate-500">PDF guide not yet uploaded</p>
-                  <p className="text-xs text-slate-400 max-w-sm">Place <code className="bg-slate-200 px-1 rounded">employee-manual.pdf</code> in the <code className="bg-slate-200 px-1 rounded">/public</code> folder to display here.</p>
-                </div>
-              </object>
-            </div>
-          </div>
-
         </div>
       </section>
 
