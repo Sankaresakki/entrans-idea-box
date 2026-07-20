@@ -427,31 +427,48 @@ export default function App() {
         </div>
       </header>
 
-      {/* Row 2: User info + Nav Tabs + Action Buttons */}
-      <section className="bg-white border-b border-slate-200 py-2 px-6 shadow-sm relative text-slate-900 sticky top-[86px] z-10">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
-          
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-[#0098DB]/10 border border-[#0098DB]/30 flex items-center justify-center font-bold text-xs text-[#0098DB] font-mono shadow-xs animate-pulse">
-              {currentPersona.name.split(" ").map(n => n[0]).join("")}
-            </div>
-            <div className="text-left">
-              <div className="flex items-center gap-2">
-                <span className="text-[9px] uppercase tracking-widest font-bold text-[#0098DB] font-mono">
-                  Active Session
-                </span>
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              </div>
-              <div className="text-xs font-bold font-display text-slate-900 mt-0.5">
-                {currentPersona.name} &bull; <span className="text-[#0098DB] font-mono">[{currentPersona.role}]</span>
-              </div>
-              <div className="text-[10px] text-slate-500 leading-none mt-1">
-                {currentPersona.email} {currentPersona.businessUnit ? `| ${currentPersona.businessUnit}` : ""}
-              </div>
-            </div>
+      {/* Row 2: Nav Tabs (left) + Action Buttons (right) */}
+      <section className="bg-white border-b border-slate-200 px-6 shadow-sm relative text-slate-900 sticky top-[86px] z-10">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+
+          {/* Navigation Tabs — left side */}
+          <div className="flex flex-wrap gap-1 flex-1 overflow-x-auto">
+          {(() => {
+            const T = (tabId: typeof activeTab, label: string, badge?: number) => (
+              <button
+                key={tabId}
+                onClick={() => setActiveTab(tabId)}
+                style={activeTab === tabId ? { borderBottomColor: "#0098DB", color: "#0098DB" } : {}}
+                className={`px-4 py-3 text-xs font-bold font-display uppercase tracking-wider border-b-2 transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
+                  activeTab === tabId ? "bg-sky-50/30" : "border-transparent text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                {label}
+                {badge != null && badge > 0 && (
+                  <span className="bg-[#0098DB]/15 text-[#0098DB] font-mono px-1.5 py-0.5 text-[9px] rounded-full font-bold">{badge}</span>
+                )}
+              </button>
+            );
+            const role = currentPersona.role;
+            const notifCount = notificationLogs.filter(log => {
+              const r = log.recipient.toLowerCase();
+              if (role === "Super Admin") return true;
+              return r === currentPersona.email.toLowerCase();
+            }).length;
+            if (role === "Employee") return (<>{T("submit","New Idea Proposal")}{T("mytracker","My Idea Tracker")}{T("certificates","Certificates")}{T("usermanual","Employee User Manual")}</>);
+            if (role === "C-POC") return (<>{T("dashboard","Dashboard")}{T("vetting","Idea Quality Vetting")}{T("fhassignment","FH Assignment")}{T("ircfinalization","Evaluation Finalization")}{T("monthlytracker","Monthly Tracker")}{T("meetings","Meetings Log")}</>);
+            if (role === "IRC Member") return (<>{T("ircevaluation","Idea Evaluation")}</>);
+            if (role === "Functional Head") return (<>{T("assignedideas","Assigned Ideas")}{T("actionplanapproval","Action Plan Approval")}{T("finalreportsapproval","Final Reports Approval")}</>);
+            if (role === "Plan Owner") return (<>{T("actionplansubmission","Action Plan Submission")}{T("finalreportsubmission","Final Report Submission")}</>);
+            if (role === "Finance") return (<>{T("financetemplate","Finance Impact Template")}</>);
+            if (role === "CFO") return (<>{T("cfoapproval","Financial Impact Approval")}</>);
+            if (role === "Super Admin") return (<>{T("dashboard","Dashboard")}{T("taskcenter","All Workflows")}{T("certificates","Certificates")}{T("monthlytracker","Monthly Tracker")}{T("meetings","Meetings Log")}{T("zohomail","Notifications", notifCount)}</>);
+            return null;
+          })()}
           </div>
 
-          <div className="flex items-center gap-2 w-full md:w-auto justify-end">
+          {/* Action Buttons — right side */}
+          <div className="flex items-center gap-2 shrink-0 py-2">
             
             {/* Quick Switch Dropdown — hidden for Employee role */}
             {currentPersona.role !== "Employee" && (
@@ -565,46 +582,6 @@ export default function App() {
                 : "Offline (localStorage)"}
               </span>
             </div>
-          </div>
-
-          {/* Navigation Tabs Bar — role-specific, inline in header */}
-          <div className="w-full flex border-t border-slate-100 pt-2 flex-wrap gap-1">
-          {/* Helper: tab button */}
-          {(() => {
-            const T = (tabId: typeof activeTab, label: string, badge?: number) => (
-              <button
-                key={tabId}
-                onClick={() => setActiveTab(tabId)}
-                style={activeTab === tabId ? { borderBottomColor: "#0098DB", color: "#0098DB" } : {}}
-                className={`px-4 py-2.5 text-xs font-bold font-display uppercase tracking-wider border-b-2 transition-all cursor-pointer flex items-center gap-1.5 ${
-                  activeTab === tabId ? "bg-sky-50/30" : "border-transparent text-slate-500 hover:text-slate-800"
-                }`}
-              >
-                {label}
-                {badge != null && badge > 0 && (
-                  <span className="bg-[#0098DB]/15 text-[#0098DB] font-mono px-1.5 py-0.5 text-[9px] rounded-full font-bold">{badge}</span>
-                )}
-              </button>
-            );
-
-            const role = currentPersona.role;
-
-            const notifCount = notificationLogs.filter(log => {
-              const r = log.recipient.toLowerCase();
-              if (role === "Super Admin") return true;
-              return r === currentPersona.email.toLowerCase();
-            }).length;
-
-            if (role === "Employee") return (<>{T("submit","New Idea Proposal")}{T("mytracker","My Idea Tracker")}{T("certificates","Certificates")}{T("usermanual","Employee User Manual")}</>);
-            if (role === "C-POC") return (<>{T("dashboard","Dashboard")}{T("vetting","Idea Quality Vetting")}{T("fhassignment","FH Assignment")}{T("ircfinalization","Evaluation Finalization")}{T("monthlytracker","Monthly Tracker")}{T("meetings","Meetings Log")}</>);
-            if (role === "IRC Member") return (<>{T("ircevaluation","Idea Evaluation")}</>);
-            if (role === "Functional Head") return (<>{T("assignedideas","Assigned Ideas")}{T("actionplanapproval","Action Plan Approval")}{T("finalreportsapproval","Final Reports Approval")}</>);
-            if (role === "Plan Owner") return (<>{T("actionplansubmission","Action Plan Submission")}{T("finalreportsubmission","Final Report Submission")}</>);
-            if (role === "Finance") return (<>{T("financetemplate","Finance Impact Template")}</>);
-            if (role === "CFO") return (<>{T("cfoapproval","Financial Impact Approval")}</>);
-            if (role === "Super Admin") return (<>{T("dashboard","Dashboard")}{T("taskcenter","All Workflows")}{T("certificates","Certificates")}{T("monthlytracker","Monthly Tracker")}{T("meetings","Meetings Log")}{T("zohomail","Notifications", notifCount)}</>);
-            return null;
-          })()}
           </div>
 
         </div>
