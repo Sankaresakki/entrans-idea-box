@@ -203,6 +203,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
 
       {/* ── HERO ────────────────────────────────────────────────────── */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#003350] via-[#004a69] to-[#0098DB]">
+
+        {/* Banner image — centered, big, above decorative rings */}
+        <div className="absolute top-[160px] left-1/2 -translate-x-1/2 z-10 pointer-events-none w-full flex justify-center px-6">
+          <img src="/image001.png" alt="Ripple Banner" className="w-full max-w-2xl h-auto object-contain opacity-90" />
+        </div>
+
         {/* Decorative background rings */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full border border-white/5" />
