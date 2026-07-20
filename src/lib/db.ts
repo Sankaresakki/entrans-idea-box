@@ -80,7 +80,7 @@ export const fetchNotifications = async (): Promise<NotificationLog[]> => {
   const { data, error } = await supabase
     .from("notifications")
     .select("*")
-    .order("timestamp", { ascending: false })
+    .order("id", { ascending: false })
     .limit(500);
   if (error) throw error;
   return (data ?? []).map(rowToNotif);
@@ -94,7 +94,8 @@ export const insertNotification = async (notif: NotificationLog): Promise<void> 
     recipient: notif.recipient,
     subject: notif.subject,
     body: notif.body,
-    timestamp: notif.timestamp,
+    // timestamp column uses DEFAULT NOW() — omitted here to support deployments
+    // where the column was added after initial table creation
     attachment_name: notif.attachmentName ?? null,
     attachment_type: notif.attachmentType ?? null,
   });

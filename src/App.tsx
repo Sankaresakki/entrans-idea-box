@@ -118,28 +118,40 @@ export default function App() {
 
     const loadAll = async () => {
       setIsLoading(true);
-      try {
-        const [ideasData, notifsData, meetingsData] = await Promise.all([
-          db.fetchIdeas(),
-          db.fetchNotifications(),
-          db.fetchMeetings(),
-        ]);
-        // Seed mock data on first run (empty DB) — REMOVED for live mode
-        setIdeas(ideasData);
-        setNotificationLogs(notifsData);
-        // Use demo meetings if Supabase meetings table is empty
-        setMeetings(meetingsData.length > 0 ? meetingsData : MOCK_MEETINGS);
-      } catch (err) {
-        console.error("[Supabase] Initial load failed — falling back to localStorage:", err);
-        const savedIdeas = localStorage.getItem("ion_ideas");
-        const savedNotifs = localStorage.getItem("ion_notifications");
-        const savedMeetings = localStorage.getItem("ion_meetings");
-        if (savedIdeas) setIdeas(JSON.parse(savedIdeas));
-        if (savedNotifs) setNotificationLogs(JSON.parse(savedNotifs));
-        if (savedMeetings) setMeetings(JSON.parse(savedMeetings));
-      } finally {
-        setIsLoading(false);
+      // Use allSettled so a single failing fetch (e.g. missing DB column) never
+      // prevents the other tables from loading successfully.
+      const [ideasResult, notifsResult, meetingsResult] = await Promise.allSettled([
+        db.fetchIdeas(),
+        db.fetchNotifications(),
+        db.fetchMeetings(),
+      ]);
+
+      if (ideasResult.status === "fulfilled") {
+        setIdeas(ideasResult.value);
+      } else {
+        console.error("[Supabase] fetchIdeas failed — falling back to localStorage:", ideasResult.reason);
+        const saved = localStorage.getItem("ion_ideas");
+        if (saved) setIdeas(JSON.parse(saved));
       }
+
+      if (notifsResult.status === "fulfilled") {
+        setNotificationLogs(notifsResult.value);
+      } else {
+        console.warn("[Supabase] fetchNotifications failed (non-fatal):", notifsResult.reason);
+        const saved = localStorage.getItem("ion_notifications");
+        if (saved) setNotificationLogs(JSON.parse(saved));
+      }
+
+      if (meetingsResult.status === "fulfilled") {
+        const meetingsData = meetingsResult.value;
+        setMeetings(meetingsData.length > 0 ? meetingsData : MOCK_MEETINGS);
+      } else {
+        console.error("[Supabase] fetchMeetings failed — falling back to localStorage:", meetingsResult.reason);
+        const saved = localStorage.getItem("ion_meetings");
+        if (saved) setMeetings(JSON.parse(saved));
+      }
+
+      setIsLoading(false);
     };
     loadAll();
 

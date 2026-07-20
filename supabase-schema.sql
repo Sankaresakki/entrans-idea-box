@@ -23,6 +23,11 @@ CREATE TABLE IF NOT EXISTS public.notifications (
   attachment_type TEXT
 );
 
+-- Migration: add timestamp column to existing deployments that were created
+-- before this column was introduced (CREATE TABLE IF NOT EXISTS skips existing tables).
+ALTER TABLE public.notifications
+  ADD COLUMN IF NOT EXISTS timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW();
+
 -- 3. MEETINGS table  (full meeting object as JSONB)
 CREATE TABLE IF NOT EXISTS public.meetings (
   id          TEXT        PRIMARY KEY,
