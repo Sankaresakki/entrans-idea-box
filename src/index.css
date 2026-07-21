@@ -1,0 +1,387 @@
+@import "tailwindcss";
+
+@theme {
+  /* ── Apple SF Pro system font stack ── */
+  --font-sans:    -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+                  "Helvetica Neue", "Helvetica", "Arial", ui-sans-serif, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+                  "Helvetica Neue", ui-sans-serif, sans-serif;
+  --font-mono:    "SF Mono", SFMono-Regular, ui-monospace, Menlo, Consolas, monospace;
+
+  /* ── Brand colours ── */
+  --color-ion-blue:  #0098DB;
+  --color-ion-sky:   #0098DB;
+  --color-ion-green: #15B45A;
+
+  /* ── Brand Blue (#0098DB) palette — overrides indigo, sky, blue ── */
+  --color-indigo-50:  #e0f5fd;
+  --color-indigo-100: #b3e5f9;
+  --color-indigo-200: #81d4f6;
+  --color-indigo-300: #4fc3f2;
+  --color-indigo-400: #27b5ef;
+  --color-indigo-500: #0098db;
+  --color-indigo-600: #0089c5;
+  --color-indigo-650: #007fb5;
+  --color-indigo-700: #0074a5;
+  --color-indigo-800: #005f87;
+  --color-indigo-900: #004a69;
+  --color-indigo-950: #003350;
+
+  --color-sky-50:  #e0f5fd;
+  --color-sky-100: #b3e5f9;
+  --color-sky-200: #81d4f6;
+  --color-sky-300: #4fc3f2;
+  --color-sky-400: #27b5ef;
+  --color-sky-500: #0098db;
+  --color-sky-600: #0089c5;
+  --color-sky-700: #0074a5;
+  --color-sky-800: #005f87;
+  --color-sky-900: #004a69;
+  --color-sky-950: #003350;
+
+  --color-blue-50:  #e0f5fd;
+  --color-blue-100: #b3e5f9;
+  --color-blue-200: #81d4f6;
+  --color-blue-300: #4fc3f2;
+  --color-blue-400: #27b5ef;
+  --color-blue-500: #0098db;
+  --color-blue-600: #0089c5;
+  --color-blue-700: #0074a5;
+  --color-blue-800: #005f87;
+  --color-blue-900: #004a69;
+  --color-blue-950: #003350;
+
+  /* ── Brand Green (#15B45A) palette — overrides emerald, green, teal ── */
+  --color-emerald-50:  #e7f9ef;
+  --color-emerald-100: #bcf0d1;
+  --color-emerald-200: #8de6b2;
+  --color-emerald-300: #5ddb93;
+  --color-emerald-400: #36d37c;
+  --color-emerald-500: #15b45a;
+  --color-emerald-600: #0fa04f;
+  --color-emerald-700: #0c8742;
+  --color-emerald-800: #096d35;
+  --color-emerald-900: #075429;
+  --color-emerald-950: #043d1c;
+
+  --color-green-50:  #e7f9ef;
+  --color-green-100: #bcf0d1;
+  --color-green-200: #8de6b2;
+  --color-green-300: #5ddb93;
+  --color-green-400: #36d37c;
+  --color-green-500: #15b45a;
+  --color-green-600: #0fa04f;
+  --color-green-700: #0c8742;
+  --color-green-800: #096d35;
+  --color-green-900: #075429;
+  --color-green-950: #043d1c;
+
+  --color-teal-50:  #e7f9ef;
+  --color-teal-100: #bcf0d1;
+  --color-teal-200: #8de6b2;
+  --color-teal-300: #5ddb93;
+  --color-teal-400: #36d37c;
+  --color-teal-500: #15b45a;
+  --color-teal-600: #0fa04f;
+  --color-teal-700: #0c8742;
+  --color-teal-800: #096d35;
+  --color-teal-900: #075429;
+  --color-teal-950: #043d1c;
+}
+
+/* ── Global base ── */
+*,
+*::before,
+*::after {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+html {
+  /* Bump root 16px → 17.5px — scales all rem-based Tailwind sizes proportionally */
+  font-size: 17.5px;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 1rem;        /* 17.5px — comfortable reading size */
+  font-weight: 400;
+  line-height: 1.65;      /* more breathing room between lines */
+  letter-spacing: 0;      /* remove tight negative tracking */
+  background-color: #f5f5f7;
+  color: #1c1c1e;
+}
+
+/* ── Scale up tiny hardcoded px label text globally ──────────────────────────
+   Components use text-[9px], text-[10px], text-[10.5px], text-[11px] everywhere.
+   We rescale these to comfortable reading sizes without editing every component. */
+
+/* Catch-all: clamp any element whose computed font-size is ≤ 11px */
+* {
+  min-height: 0;
+}
+
+/* Target the pattern: small text inside .font-mono labels (the "AI dashboard" look) */
+.font-mono {
+  font-size: max(12px, 0.7em);
+  letter-spacing: 0.01em;
+}
+
+/* Tailwind text-xs = 0.75rem → 13.1px at new root; bump slightly */
+.text-xs   { font-size: 0.8rem !important; }   /* ~14px */
+
+/* Tailwind text-sm = 0.875rem → 15.3px — good */
+
+/* Override tracking-widest (0.1em in Tailwind) — too wide for small text */
+.tracking-widest { letter-spacing: 0.07em !important; }
+.tracking-wider  { letter-spacing: 0.04em !important; }
+
+/* Uppercase labels: reduce tracking so they don't look like form-stamp art */
+.uppercase { letter-spacing: 0.05em; }
+
+/* ── Display / heading helpers ── */
+.font-display { font-family: var(--font-display); }
+
+.text-large-title { font-size: 2rem;    font-weight: 700; letter-spacing: -0.02em; }
+.text-title1      { font-size: 1.625rem;font-weight: 700; letter-spacing: -0.015em; }
+.text-title2      { font-size: 1.3rem;  font-weight: 700; letter-spacing: -0.01em;  }
+.text-title3      { font-size: 1.15rem; font-weight: 600; letter-spacing: -0.005em; }
+.text-headline    { font-size: 1rem;    font-weight: 600; }
+.text-body        { font-size: 1rem;    font-weight: 400; }
+.text-callout     { font-size: 0.95rem; font-weight: 400; }
+.text-subhead     { font-size: 0.9rem;  font-weight: 400; }
+.text-footnote    { font-size: 0.8rem;  font-weight: 400; }
+.text-caption1    { font-size: 0.75rem; font-weight: 400; }
+.text-caption2    { font-size: 0.7rem;  font-weight: 400; letter-spacing: 0.01em; }
+
+/* ── Cards ── */
+.card-shadow {
+  box-shadow: 0 1px 0 rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04);
+}
+.ios-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04);
+}
+
+/* ── Accents ── */
+.bento-accent-indigo {
+  background: linear-gradient(135deg, var(--color-indigo-600) 0%, var(--color-violet-700) 100%);
+}
+.bento-accent-dark {
+  background-color: var(--color-slate-900);
+}
+
+/* ── Lightbulb glow animation (Submit Idea button) ── */
+@keyframes bulb-glow {
+  0%, 100% {
+    box-shadow: 0 0 6px 3px rgba(250, 204, 21, 0.25), 0 0 0 0 rgba(250, 204, 21, 0);
+    background-color: #fefce8;
+  }
+  50% {
+    box-shadow: 0 0 18px 6px rgba(250, 204, 21, 0.55), 0 0 32px 10px rgba(250, 204, 21, 0.18);
+    background-color: #fef9c3;
+  }
+}
+.animate-bulb-glow {
+  animation: bulb-glow 2.4s ease-in-out infinite;
+}
+@keyframes bulb-flicker {
+  0%, 90%, 100% { opacity: 1; }
+  92%           { opacity: 0.6; }
+  96%           { opacity: 0.9; }
+}
+.animate-bulb-icon {
+  animation: bulb-flicker 3s ease-in-out infinite;
+}
+
+/* Print Styles for Certificate Generation */
+@page {
+  size: A4;
+  margin: 8mm;
+}
+
+@media print {
+  html, body {
+    height: auto !important;
+    overflow: hidden !important;
+  }
+  body * {
+    visibility: hidden;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-area, .print-area * {
+    visibility: visible;
+  }
+  .print-area {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    page-break-inside: avoid;
+    page-break-after: avoid;
+    overflow: hidden;
+  }
+}
+
+/* Annexure 9 table print — body gets .print-tracker class via JS before window.print() */
+.screen-hidden-print-visible {
+  display: none;
+}
+
+@media print {
+  body.print-tracker {
+    overflow: visible !important;
+    height: auto !important;
+  }
+  body.print-tracker * {
+    visibility: hidden;
+  }
+  body.print-tracker .no-print {
+    display: none !important;
+  }
+  body.print-tracker .print-area-table,
+  body.print-tracker .print-area-table * {
+    visibility: visible;
+  }
+  body.print-tracker .print-area-table {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    padding: 8mm;
+  }
+  body.print-tracker .screen-hidden-print-visible {
+    display: block;
+  }
+  body.print-tracker table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 8pt;
+  }
+  body.print-tracker th,
+  body.print-tracker td {
+    border: 1px solid #cbd5e1;
+    padding: 4pt 6pt;
+    vertical-align: top;
+  }
+  body.print-tracker thead {
+    background-color: #0f766e !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  body.print-tracker thead th {
+    color: #ffffff !important;
+  }
+}
+
+/* Global startup preloader — Murugappa-like bulb zoom then dock. */
+.ripple-preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  visibility: visible;
+  overflow: hidden;
+  transition: opacity 0.42s ease, visibility 0.42s ease;
+}
+
+.ripple-preloader::before {
+  content: "";
+  position: absolute;
+  width: min(88vw, 980px);
+  height: min(88vw, 980px);
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(0, 152, 219, 0.14) 0%, rgba(0, 152, 219, 0.05) 45%, rgba(0, 152, 219, 0) 75%);
+  animation: ripple-aura 2.6s ease-in-out infinite;
+}
+
+.ripple-preloader-stage {
+  position: absolute;
+  bottom: 18%;
+  width: min(60vw, 560px);
+  height: 64px;
+  border-radius: 999px;
+  background: radial-gradient(ellipse at center, rgba(0, 152, 219, 0.2) 0%, rgba(0, 152, 219, 0.08) 44%, rgba(0, 152, 219, 0) 74%);
+  filter: blur(11px);
+}
+
+.ripple-preloader-exit {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition-delay: 0.32s;
+}
+
+.ripple-preloader-bulb-pivot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(38vw, 300px);
+  transform: translate(-50%, -50%);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  z-index: 3;
+  transition: transform 0.86s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.36s ease;
+}
+
+.ripple-preloader-bulb-pivot-exit {
+  opacity: 0.98;
+}
+
+.ripple-preloader-bulb {
+  --bulb-start-scale: 1.62;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  transform-origin: center center;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+  filter: drop-shadow(0 10px 22px rgba(0, 116, 165, 0.16));
+  animation: ripple-bulb-hero 1.02s cubic-bezier(0.16, 0.86, 0.28, 1) 0.01s both;
+}
+
+@keyframes ripple-bulb-hero {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(var(--bulb-start-scale));
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes ripple-aura {
+  0%,
+  100% {
+    transform: scale(0.96);
+    opacity: 0.86;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .ripple-preloader-bulb-pivot {
+    width: min(52vw, 220px);
+  }
+
+  .ripple-preloader-bulb {
+    --bulb-start-scale: 1.45;
+  }
+}
