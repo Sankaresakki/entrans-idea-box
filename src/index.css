@@ -203,31 +203,46 @@ body {
 }
 
 @media print {
+  /* Collapse entire document to zero — prevents blank extra pages */
   html, body {
-    height: auto !important;
+    height: 0 !important;
     overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
   body * {
-    visibility: hidden;
+    visibility: hidden !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
   }
   .no-print {
     display: none !important;
   }
-  .print-area, .print-area * {
-    visibility: visible;
-  }
-  /* position: absolute (not fixed) — fixed repeats on every print page */
+
+  /* Certificate card: fixed overlay, centered, full bleed */
   .print-area {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: auto;
-    margin: 0;
-    padding: 0;
-    page-break-inside: avoid;
-    page-break-after: avoid;
-    overflow: hidden;
+    visibility: visible !important;
+    max-height: none !important;
+    height: auto !important;
+    overflow: visible !important;
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 16px !important;
+    background: white !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 99999 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .print-area * {
+    visibility: visible !important;
+    max-height: none !important;
+    height: auto !important;
+    overflow: visible !important;
   }
 }
 
