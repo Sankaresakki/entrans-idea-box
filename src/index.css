@@ -229,7 +229,7 @@ body {
 
   body.cert-printing #print-clone-cert > * {
     max-width: 100% !important;
-    width: auto !important;
+    width: 100% !important;
     height: auto !important;
   }
 }

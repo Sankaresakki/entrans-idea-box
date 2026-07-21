@@ -101,7 +101,7 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ idea, certType
           <div className="absolute bottom-[42px] right-[10px] w-5 h-5 border-2 border-blue-900 rounded-full pointer-events-none z-10" />
 
           {/* Inner border frame */}
-          <div className="mx-[22px] mt-[22px] mb-0 border border-blue-900/30">
+          <div className="mx-[22px] my-[22px] border border-blue-900/30">
 
             {/* ── Header: Logos row ──────────────────────────────────────── */}
             <div className="flex items-center justify-between px-8 pt-6 pb-4">
@@ -181,13 +181,6 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ idea, certType
               </div>
             </div>
 
-          </div>
-
-          {/* ── Green footer bar ──────────────────────────────────────────── */}
-          <div className="bg-green-700 py-2.5 px-6 text-center mt-[22px]">
-            <p className="text-white text-[9px] tracking-widest uppercase font-semibold">
-              Ion Exchange (India) Limited&nbsp;&nbsp;&#124;&nbsp;&nbsp;Ripple Employee Innovation Programme&nbsp;&nbsp;&#124;&nbsp;&nbsp;Confidential
-            </p>
           </div>
 
         </div>
