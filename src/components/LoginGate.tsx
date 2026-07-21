@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -30,7 +30,7 @@ interface LoginGateProps {
 }
 
 interface DemoAccount {
-  role: 'Employee' | 'C-POC' | 'IRC Member' | 'Functional Head' | 'Plan Owner' | 'Finance' | 'CFO';
+  role: 'Employee' | 'C-POC' | 'IRC Member' | 'Functional Head' | 'Project Lead' | 'Finance' | 'CFO';
   name: string;
   email: string;
   businessUnit?: string;
@@ -140,7 +140,7 @@ const DEMO_ACCOUNTS: DemoAccount[] = [
     avatarInitials: "AG"
   },
   {
-    role: "Plan Owner",
+    role: "Project Lead",
     name: "Kavita Sharma (Lead)",
     email: "kavita.s@ionexchange.com",
     businessUnit: "Project Execution Team",

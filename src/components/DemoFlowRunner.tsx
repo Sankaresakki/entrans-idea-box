@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -31,7 +31,7 @@ const P_FH: UserPersona = {
   department: "Chemical Manufacturing & Trials", designation: "Executive Director & Business Head",
 };
 const P_PLAN: UserPersona = {
-  role: "Plan Owner", name: "Kavita Sharma (Lead)", email: "kavita.s@ionexchange.com",
+  role: "Project Lead", name: "Kavita Sharma (Lead)", email: "kavita.s@ionexchange.com",
   businessUnit: "Project Execution Team", employeeId: "ION-PIL-2026-052",
   department: "Project Execution & Commissioning", designation: "Pilot Implementation Manager",
 };
@@ -167,8 +167,8 @@ const STEPS: DemoStep[] = [
     }),
   },
   {
-    id: 7, label: "Action Plan Approved", subLabel: "Plan Owner submits & FH approves the roadmap",
-    role: "Plan Owner", roleColor: "text-teal-700", roleBg: "bg-teal-100",
+    id: 7, label: "Action Plan Approved", subLabel: "Project Lead submits & FH approves the roadmap",
+    role: "Project Lead", roleColor: "text-teal-700", roleBg: "bg-teal-100",
     persona: P_PLAN, tab: "taskcenter", durationMs: 4000,
     applyToIdea: (prev) => ({
       ...prev,
@@ -186,7 +186,7 @@ const STEPS: DemoStep[] = [
   },
   {
     id: 8, label: "Pilot Completed & Report Filed", subLabel: "6-month execution done; final report submitted",
-    role: "Plan Owner", roleColor: "text-teal-700", roleBg: "bg-teal-100",
+    role: "Project Lead", roleColor: "text-teal-700", roleBg: "bg-teal-100",
     persona: P_PLAN, tab: "taskcenter", durationMs: 4000,
     applyToIdea: (prev) => ({
       ...prev,
@@ -244,7 +244,7 @@ const ROLE_COLORS: Record<string, { dot: string; badge: string }> = {
   "C-POC":            { dot: "bg-sky-500",     badge: "bg-sky-100 text-sky-800 border-sky-200" },
   "IRC Member":       { dot: "bg-violet-500",  badge: "bg-violet-100 text-violet-800 border-violet-200" },
   "Functional Head":  { dot: "bg-indigo-500",  badge: "bg-indigo-100 text-indigo-800 border-indigo-200" },
-  "Plan Owner":       { dot: "bg-teal-500",    badge: "bg-teal-100 text-teal-800 border-teal-200" },
+  "Project Lead":       { dot: "bg-teal-500",    badge: "bg-teal-100 text-teal-800 border-teal-200" },
   "Finance":          { dot: "bg-amber-500",   badge: "bg-amber-100 text-amber-800 border-amber-200" },
   "CFO":              { dot: "bg-rose-500",    badge: "bg-rose-100 text-rose-800 border-rose-200" },
 };

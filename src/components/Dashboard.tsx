@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -73,12 +73,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ ideas, onSelectIdea, selec
         return "Functional Head";
       case IdeaStatus.AwaitingActionPlan:
       case IdeaStatus.ActionPlanRevision:
-        return "Plan Owner (Project Lead)";
+        return "Project Lead";
       case IdeaStatus.ActionPlanSubmitted:
         return "Functional Head";
       case IdeaStatus.ActionPlanApproved:
       case IdeaStatus.ReportRevision:
-        return "Plan Owner (Project Lead)";
+        return "Project Lead";
       case IdeaStatus.ReportSubmitted:
         return "Functional Head";
       case IdeaStatus.PendingFinanceEvaluation:
@@ -122,7 +122,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ ideas, onSelectIdea, selec
       case IdeaStatus.ActionPlanRevision:
       case IdeaStatus.ActionPlanApproved:
       case IdeaStatus.ReportRevision:
-        return persona.role === "Plan Owner";
+        return persona.role === "Project Lead";
 
       case IdeaStatus.PendingFinanceEvaluation:
       case IdeaStatus.FinanceRevision:
@@ -1282,7 +1282,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ ideas, onSelectIdea, selec
                     {/* Gate 4: Project Pilot Progress Tracker */}
                     <div className="border border-slate-200 rounded-xl overflow-hidden shadow-3xs">
                       <div className="p-3 bg-slate-100 border-b border-slate-200 flex items-center justify-between">
-                        <span className="font-bold text-slate-800 tracking-tight">Gate 4: Pilot Progress Updates (Plan Owner)</span>
+                        <span className="font-bold text-slate-800 tracking-tight">Gate 4: Pilot Progress Updates (Project Lead)</span>
                         <span className="px-2 py-0.5 rounded-full bg-slate-200 border border-slate-300 text-[8.5px] font-black uppercase tracking-wider font-mono">
                           {viewingDetailIdea.monthlyTrackers?.length || 0} Filed
                         </span>
@@ -1317,7 +1317,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ ideas, onSelectIdea, selec
                             ))}
                           </div>
                         ) : (
-                          <p className="text-slate-400 italic">No monthly progress trackers or implementation logs have been filed yet by the Plan Owner.</p>
+                          <p className="text-slate-400 italic">No monthly progress trackers or implementation logs have been filed yet by the Project Lead.</p>
                         )}
                       </div>
                     </div>

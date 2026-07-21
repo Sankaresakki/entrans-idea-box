@@ -2,7 +2,7 @@
  * ANNEXURE 9 â€” RIPPLE Monthly Project Progress Tracker
  * One row per active pilot idea.
  * C-POC fills and saves by the 5th of each month, then prints / shares with CHRO.
- * Plan Owners log their own monthly updates; C-POC sees them pre-filled.
+ * Project Leads log their own monthly updates; C-POC sees them pre-filled.
  */
 
 import React, { useState, useEffect, useMemo } from "react";
@@ -99,7 +99,7 @@ export const MonthlyTrackerModule: React.FC<MonthlyTrackerModuleProps> = ({
   onAddNotification,
 }) => {
   const isCPOC = persona.role === "C-POC" || persona.role === "Super Admin";
-  const isPlanOwner = persona.role === "Plan Owner";
+  const isProjectLead = persona.role === "Project Lead";
 
   const activeIdeas = useMemo(
     () => ideas.filter((i) => PILOT_STATUSES.has(i.status)),
@@ -108,14 +108,14 @@ export const MonthlyTrackerModule: React.FC<MonthlyTrackerModuleProps> = ({
 
   const visibleIdeas = useMemo(
     () =>
-      isPlanOwner
+      isProjectLead
         ? activeIdeas.filter(
             (i) =>
               i.projectLeadEmail?.toLowerCase() === persona.email.toLowerCase() ||
               i.employeeEmail.toLowerCase() === persona.email.toLowerCase()
           )
         : activeIdeas,
-    [activeIdeas, persona, isPlanOwner]
+    [activeIdeas, persona, isProjectLead]
   );
 
   // â”€â”€ Month selector â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -215,7 +215,7 @@ export const MonthlyTrackerModule: React.FC<MonthlyTrackerModuleProps> = ({
     URL.revokeObjectURL(url);
   };
 
-  // â”€â”€ Plan Owner form state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â”€â”€ Project Lead form state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [selectedIdeaId, setSelectedIdeaId] = useState(""); // Require explicit selection
   const [poMonth, setPoMonth] = useState(formatMonth(new Date()));
   const [poMilestones, setPoMilestones] = useState("");
@@ -244,7 +244,7 @@ export const MonthlyTrackerModule: React.FC<MonthlyTrackerModuleProps> = ({
     onAddNotification(
       "coe@ionexchange.com",
       `Monthly Update Submitted — ${idea.id} (${poMonth.trim()})`,
-      `Dear C-POC,\n\nPlan Owner ${persona.name} has submitted their monthly progress update for "${idea.fhProjectTitle || idea.title}" (${idea.id}) â€” ${poMonth.trim()}.\n\nMilestone Activities: ${poMilestones}\nProgress Achieved: ${poProgress}\nStatus: ${poStatus}${poRemarks ? `\nRemarks: ${poRemarks}` : ""}\n\nPlease review and update the monthly tracker by the 5th of the month.`
+      `Dear C-POC,\n\nProject Lead ${persona.name} has submitted their monthly progress update for "${idea.fhProjectTitle || idea.title}" (${idea.id}) â€” ${poMonth.trim()}.\n\nMilestone Activities: ${poMilestones}\nProgress Achieved: ${poProgress}\nStatus: ${poStatus}${poRemarks ? `\nRemarks: ${poRemarks}` : ""}\n\nPlease review and update the monthly tracker by the 5th of the month.`
     );
     setPoMilestones(""); setPoProgress(""); setPoRemarks(""); setPoStatus("On Track");
     setShowPoForm(false);
@@ -252,8 +252,8 @@ export const MonthlyTrackerModule: React.FC<MonthlyTrackerModuleProps> = ({
     setTimeout(() => setPoSuccess(""), 5000);
   };
 
-  // â”€â”€ PLAN OWNER VIEW â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  if (isPlanOwner) {
+  // â”€â”€ Project Lead VIEW â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  if (isProjectLead) {
     const selectedIdea = ideas.find((i) => i.id === selectedIdeaId);
     const history = selectedIdea?.monthlyTrackers || [];
     // Generate rolling 13-month window (12 past + current)

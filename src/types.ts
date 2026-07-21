@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -30,7 +30,7 @@ export enum IdeaStatus {
 }
 
 export interface UserPersona {
-  role: 'Employee' | 'C-POC' | 'IRC Member' | 'Functional Head' | 'Plan Owner' | 'Finance' | 'CFO' | 'Super Admin';
+  role: 'Employee' | 'C-POC' | 'IRC Member' | 'Functional Head' | 'Project Lead' | 'Finance' | 'CFO' | 'Super Admin';
   name: string;
   email: string;
   businessUnit?: string;
@@ -368,7 +368,7 @@ export function getAuthorizedIdeasForRole(ideas: Idea[], persona: UserPersona): 
           IdeaStatus.PendingCFOSignOff,
           IdeaStatus.Completed
         ].includes(idea.status);
-      case "Plan Owner":
+      case "Project Lead":
         return [
           IdeaStatus.AwaitingActionPlan, 
           IdeaStatus.ActionPlanRevision,

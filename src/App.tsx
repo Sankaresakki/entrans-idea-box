@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -40,7 +40,7 @@ const ALL_SWITCH_PERSONAS: UserPersona[] = [
   { role: "C-POC",           name: "TM & OD CoE Lead",       email: "coe@ionexchange.com",           businessUnit: "Central HR & OD",           employeeId: "ION-HR-2026-004",   department: "Talent Management & OD",               designation: "AVP - Talent Management & OD" },
   { role: "IRC Member",      name: "Senior Advisory Panel",  email: "advisor@ionexchange.com",       businessUnit: "Technical Board",           employeeId: "ION-TECH-2026-012", department: "R&D Centre of Excellence",             designation: "Technical Jury Chairman" },
   { role: "Functional Head", name: "Dr. Alok Gupta",         email: "alok.gupta@ionexchange.com",    businessUnit: "Chemical Division",         employeeId: "ION-EXEC-2026-003", department: "Chemical Manufacturing & Trials",      designation: "Executive Director & Business Head" },
-  { role: "Plan Owner",      name: "Kavita Sharma (Lead)",   email: "kavita.s@ionexchange.com",      businessUnit: "Project Execution Team",    employeeId: "ION-PIL-2026-052",  department: "Project Execution & Commissioning",    designation: "Pilot Implementation Manager" },
+  { role: "Project Lead",      name: "Kavita Sharma (Lead)",   email: "kavita.s@ionexchange.com",      businessUnit: "Project Execution Team",    employeeId: "ION-PIL-2026-052",  department: "Project Execution & Commissioning",    designation: "Pilot Implementation Manager" },
   { role: "Finance",         name: "Central Finance Admin",  email: "finance@ionexchange.com",       businessUnit: "Corporate Finance",         employeeId: "ION-FIN-2026-018",  department: "Corporate Treasury & Audit",           designation: "Senior Finance Auditor" },
   { role: "CFO",             name: "N. M. Ranadive (CFO)",   email: "nmr@ionexchange.com",           businessUnit: "Executive Committee",       employeeId: "ION-CFO-2026-001",  department: "Executive Finance Committee",          designation: "Chief Financial Officer (CFO)" },
   // Super Admin
@@ -297,7 +297,7 @@ export default function App() {
       "C-POC":           "dashboard",
       "IRC Member":      "ircevaluation",
       "Functional Head": "assignedideas",
-      "Plan Owner":      "actionplansubmission",
+      "Project Lead":      "actionplansubmission",
       "Finance":         "financetemplate",
       "CFO":             "cfoapproval",
       "Super Admin":     "dashboard",
@@ -571,7 +571,7 @@ export default function App() {
             if (role === "C-POC") return (<>{T("dashboard","Dashboard")}{T("vetting","Idea Quality Vetting")}{T("fhassignment","FH Assignment")}{T("ircfinalization","Evaluation Finalization")}{T("monthlytracker","Monthly Tracker")}{T("meetings","Meetings Log")}</>);
             if (role === "IRC Member") return (<>{T("ircevaluation","Idea Evaluation")}</>);
             if (role === "Functional Head") return (<>{T("assignedideas","Assigned Ideas")}{T("actionplanapproval","Action Plan Approval")}{T("finalreportsapproval","Final Reports Approval")}</>);
-            if (role === "Plan Owner") return (<>{T("actionplansubmission","Action Plan Submission")}{T("finalreportsubmission","Final Report Submission")}</>);
+            if (role === "Project Lead") return (<>{T("actionplansubmission","Action Plan Submission")}{T("finalreportsubmission","Final Report Submission")}</>);
             if (role === "Finance") return (<>{T("financetemplate","Finance Impact Template")}</>);
             if (role === "CFO") return (<>{T("cfoapproval","Financial Impact Approval")}</>);
             if (role === "Super Admin") return (<>{T("dashboard","Dashboard")}{T("taskcenter","All Workflows")}{T("certificates","Certificates")}{T("monthlytracker","Monthly Tracker")}{T("meetings","Meetings Log")}{T("zohomail","Notifications", notifCount)}</>);
@@ -899,7 +899,7 @@ export default function App() {
                 {activeTab === "actionplanapproval" && (
                   <IdeaWorkflowPanel
                     title="Action Plan Approval"
-                    description="Review and approve action plans submitted by Plan Owners."
+                    description="Review and approve action plans submitted by Project Leads."
                     ideas={authorizedIdeas}
                     statuses={[IdeaStatus.ActionPlanSubmitted, IdeaStatus.ActionPlanRevision]}
                     persona={currentPersona}
@@ -912,7 +912,7 @@ export default function App() {
                 {activeTab === "finalreportsapproval" && (
                   <IdeaWorkflowPanel
                     title="Final Reports Approval"
-                    description="Review and approve final project reports submitted by Plan Owners."
+                    description="Review and approve final project reports submitted by Project Leads."
                     ideas={authorizedIdeas}
                     statuses={[IdeaStatus.ReportSubmitted, IdeaStatus.ReportRevision]}
                     persona={currentPersona}
@@ -921,7 +921,7 @@ export default function App() {
                   />
                 )}
 
-                {/* ── Plan Owner: Action Plan Submission ── */}
+                {/* ── Project Lead: Action Plan Submission ── */}
                 {activeTab === "actionplansubmission" && (
                   <IdeaWorkflowPanel
                     title="Action Plan Submission"
@@ -934,7 +934,7 @@ export default function App() {
                   />
                 )}
 
-                {/* ── Plan Owner: Final Report Submission ── */}
+                {/* ── Project Lead: Final Report Submission ── */}
                 {activeTab === "finalreportsubmission" && (
                   <IdeaWorkflowPanel
                     title="Final Report Submission"
@@ -1076,14 +1076,14 @@ export default function App() {
                 [IdeaStatus.UnderIRCEvaluation]:  { label: "IRC Member — Score Idea",       role: "IRC Member",      personaKey: "advisor@ionexchange.com",       instruction: "Open Task Center → adjust 4 score sliders (1–5) → Submit Scorecard. Then switch back to C-POC to run the board average." },
                 [IdeaStatus.SelectedByIRC]:       { label: "C-POC — Assign Functional Head",role: "C-POC",           personaKey: "coe@ionexchange.com",           instruction: "Open Task Center → select a Functional Head → Assign & Handoff." },
                 [IdeaStatus.WithFunctionalHead]:  { label: "Functional Head — Review",      role: "Functional Head", personaKey: "alok.gupta@ionexchange.com",    instruction: "Open Task Center → accept or decline. If accept, nominate Project Lead & team." },
-                [IdeaStatus.AwaitingActionPlan]:  { label: "Plan Owner — Submit Action Plan",role: "Plan Owner",     personaKey: "kavita.s@ionexchange.com",      instruction: "Open Task Center → fill objectives, milestones, budget, dates → Submit Action Plan." },
-                [IdeaStatus.ActionPlanRevision]:  { label: "Plan Owner — Revise Plan",       role: "Plan Owner",     personaKey: "kavita.s@ionexchange.com",      instruction: "Open Task Center → update Action Plan based on FH remarks → Resubmit." },
+                [IdeaStatus.AwaitingActionPlan]:  { label: "Project Lead — Submit Action Plan",role: "Project Lead",     personaKey: "kavita.s@ionexchange.com",      instruction: "Open Task Center → fill objectives, milestones, budget, dates → Submit Action Plan." },
+                [IdeaStatus.ActionPlanRevision]:  { label: "Project Lead — Revise Plan",       role: "Project Lead",     personaKey: "kavita.s@ionexchange.com",      instruction: "Open Task Center → update Action Plan based on FH remarks → Resubmit." },
                 [IdeaStatus.ActionPlanSubmitted]: { label: "Functional Head — Review Plan",  role: "Functional Head", personaKey: "alok.gupta@ionexchange.com",   instruction: "Open Task Center → review Action Plan → Approve, Send-back, or Reject." },
-                [IdeaStatus.ActionPlanApproved]:  { label: "Plan Owner — Run Pilot & Report",role: "Plan Owner",     personaKey: "kavita.s@ionexchange.com",      instruction: "Add Monthly Tracker updates, then open Task Center → submit Final Report with savings figure." },
-                [IdeaStatus.ReportRevision]:      { label: "Plan Owner — Revise Report",     role: "Plan Owner",     personaKey: "kavita.s@ionexchange.com",      instruction: "Open Task Center → revise Final Report per FH feedback → Resubmit." },
+                [IdeaStatus.ActionPlanApproved]:  { label: "Project Lead — Run Pilot & Report",role: "Project Lead",     personaKey: "kavita.s@ionexchange.com",      instruction: "Add Monthly Tracker updates, then open Task Center → submit Final Report with savings figure." },
+                [IdeaStatus.ReportRevision]:      { label: "Project Lead — Revise Report",     role: "Project Lead",     personaKey: "kavita.s@ionexchange.com",      instruction: "Open Task Center → revise Final Report per FH feedback → Resubmit." },
                 [IdeaStatus.ReportSubmitted]:     { label: "Functional Head — Review Report",role: "Functional Head", personaKey: "alok.gupta@ionexchange.com",   instruction: "Open Task Center → review Final Report → Approve (sends to Finance) or Send-back." },
                 [IdeaStatus.PendingFinanceEvaluation]: { label: "Finance — Audit Savings",  role: "Finance",         personaKey: "finance@ionexchange.com",       instruction: "Open Task Center → input certified savings (Rs.) → Approve or Send-back (max 2×)." },
-                [IdeaStatus.FinanceRevision]:     { label: "Plan Owner — Revise Savings",    role: "Plan Owner",     personaKey: "kavita.s@ionexchange.com",      instruction: "Open Task Center → update savings figure per Finance feedback → Resubmit." },
+                [IdeaStatus.FinanceRevision]:     { label: "Project Lead — Revise Savings",    role: "Project Lead",     personaKey: "kavita.s@ionexchange.com",      instruction: "Open Task Center → update savings figure per Finance feedback → Resubmit." },
                 [IdeaStatus.PendingCFOSignOff]:   { label: "CFO — Final Sign-Off",           role: "CFO",            personaKey: "nmr@ionexchange.com",           instruction: "Open Task Center → click CFO Sign-Off to release rewards & close the journey." },
               };
 

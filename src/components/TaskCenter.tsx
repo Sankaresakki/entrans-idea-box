@@ -35,7 +35,8 @@ import {
   FileCheck,
   Search,
   X,
-  UserPlus
+  UserPlus,
+  CalendarDays
 } from "lucide-react";
 
 interface EnterpriseReviewer {
@@ -117,6 +118,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
 
   // Collapsible Proposal Dossier and Quality Vetting states
   const [isDossierExpanded, setIsDossierExpanded] = useState(true);
+  const [isMonthlyLogExpanded, setIsMonthlyLogExpanded] = useState(true);
 
   // Step 1: C-POC Vetting (Annexure 2)
   const [vettingDecision,  setVettingDecision]  = useState<"" | "Approve" | "Send-back" | "Reject">("");
@@ -538,7 +540,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
     onAddNotification(
       fhEmail,
       `Task Pending: Incubation Project Assignment Review Required - ${idea.id}`,
-      `Dear ${selectedFH},\n\nUnder RIPPLE governance, the project "${idea.title}" has cleared IRC evaluation and is assigned to your business division.\n\nPlease log in to review technical parameters, confirm team allocations, and nominate a Project Lead/Plan Owner.`
+      `Dear ${selectedFH},\n\nUnder RIPPLE governance, the project "${idea.title}" has cleared IRC evaluation and is assigned to your business division.\n\nPlease log in to review technical parameters, confirm team allocations, and nominate a Project Lead/Project Lead.`
     );
 
     alert(`Handoff logged! Transitioned to: ${IdeaStatus.WithFunctionalHead}`);
@@ -592,7 +594,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
       return;
     }
     if (!nominatedOwner) {
-      alert("Please nominate a Plan Owner from the team.");
+      alert("Please nominate a Project Lead from the team.");
       return;
     }
     if (!rewardConfirmed) {
@@ -618,21 +620,21 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
     onAddNotification(
       "c-poc@ionexchange.com",
       `Step 1 Complete — Action Plan Initiated for ${idea.id}`,
-      `Dear C-POC,\n\nFunctional Head ${persona.name} has accepted idea "${idea.title}" (${idea.id}) for implementation.\n\nProject Title: ${fhProjectTitle || idea.title}\nNominated Plan Owner: ${nominatedOwner} (${ownerEmail})\nTeam: ${validTeam.map(r => r.name).join(", ")}\n\nStep 2 (Action Plan) has been initiated. The Plan Owner has been notified. Expected submission: within 3 working days.`
+      `Dear C-POC,\n\nFunctional Head ${persona.name} has accepted idea "${idea.title}" (${idea.id}) for implementation.\n\nProject Title: ${fhProjectTitle || idea.title}\nNominated Project Lead: ${nominatedOwner} (${ownerEmail})\nTeam: ${validTeam.map(r => r.name).join(", ")}\n\nStep 2 (Action Plan) has been initiated. The Project Lead has been notified. Expected submission: within 3 working days.`
     );
 
-    // 2 — Notify Nominated Plan Owner: Step 2 task assigned
+    // 2 — Notify Nominated Project Lead: Step 2 task assigned
     onAddNotification(
       ownerEmail,
       `Action Required — Submit Action Plan (Step 2) for ${idea.id}`,
-      `Dear ${nominatedOwner},\n\nFunctional Head ${persona.name} has nominated you as the Plan Owner for project "${fhProjectTitle || idea.title}" (${idea.id}).\n\nYour task: Please log in to RIPPLE and submit the Step 2 Action Plan within 3 working days.\n\nThe Action Plan should cover: project objectives, phased milestones, team allocation, and estimated budget.\n\nFor questions, contact your Functional Head or the Ripple C-POC team.\n\nWarm regards,\nTeam Ripple | Talent Management & OD`
+      `Dear ${nominatedOwner},\n\nFunctional Head ${persona.name} has nominated you as the Project Lead for project "${fhProjectTitle || idea.title}" (${idea.id}).\n\nYour task: Please log in to RIPPLE and submit the Step 2 Action Plan within 3 working days.\n\nThe Action Plan should cover: project objectives, phased milestones, team allocation, and estimated budget.\n\nFor questions, contact your Functional Head or the Ripple C-POC team.\n\nWarm regards,\nTeam Ripple | Talent Management & OD`
     );
 
-    alert(`Step 1 complete! ${nominatedOwner} notified as Plan Owner. C-POC informed. Status: Awaiting Action Plan.`);
+    alert(`Step 1 complete! ${nominatedOwner} notified as Project Lead. C-POC informed. Status: Awaiting Action Plan.`);
   };
 
   // 7. Project Lead submits action plan
-  // 7. Plan Owner submits Action Plan (Step 2 — Pilot Project spec)
+  // 7. Project Lead submits Action Plan (Step 2 — Pilot Project spec)
   const handleActionPlanSubmission = () => {
     if (!apKRA.trim()) { alert("Please fill in the KRA (what this pilot will improve)."); return; }
     if (!apKPIName.trim()) { alert("Please provide the Primary KPI metric name."); return; }
@@ -659,7 +661,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
     onAddNotification(
       idea.assignedFHEmail || "functional.head@ionexchange.com",
       `[Step 2] Action Plan Submitted for Review — ${idea.id}`,
-      `Dear ${idea.assignedFHName || 'Functional Head'},\n\nPlan Owner ${idea.projectLeadName} has submitted the Step 2 Action Plan for "${actionPlanTitle}" (${idea.id}).\n\nKRA: ${apKRA}\nPrimary KPI: ${apKPIName} | Baseline: ${apKPIBaseline} → Target: ${apKPITarget}\nSuccess Threshold: ≥${apSuccessThreshold}%\n\nPlease review and approve / send-back / reject in the Task Center.`
+      `Dear ${idea.assignedFHName || 'Functional Head'},\n\nProject Lead ${idea.projectLeadName} has submitted the Step 2 Action Plan for "${actionPlanTitle}" (${idea.id}).\n\nKRA: ${apKRA}\nPrimary KPI: ${apKPIName} | Baseline: ${apKPIBaseline} → Target: ${apKPITarget}\nSuccess Threshold: ≥${apSuccessThreshold}%\n\nPlease review and approve / send-back / reject in the Task Center.`
     );
     const isResubmit = idea.status === IdeaStatus.ActionPlanRevision;
     onAddNotification(
@@ -668,8 +670,8 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
         ? `[Step 2 Resubmit] Revised Action Plan Submitted — Pending FH Approval (${idea.id})`
         : `[Step 2] Action Plan Submitted — Pending FH Approval (${idea.id})`,
       isResubmit
-        ? `Dear C-POC,\n\nPlan Owner ${idea.projectLeadName} has resubmitted the revised Step 2 Action Plan for "${actionPlanTitle}" (${idea.id}) following Functional Head send-back.\n\nStatus: Awaiting Functional Head (${idea.assignedFHName || 'FH'}) final decision (Approve or Reject). If no response within 3 working days, please follow up manually.`
-        : `Dear C-POC,\n\nPlan Owner ${idea.projectLeadName} has submitted the Step 2 Action Plan for "${actionPlanTitle}" (${idea.id}).\n\nStatus: Awaiting Functional Head (${idea.assignedFHName || 'FH'}) approval. If no response within 3 working days, please follow up manually.`
+        ? `Dear C-POC,\n\nProject Lead ${idea.projectLeadName} has resubmitted the revised Step 2 Action Plan for "${actionPlanTitle}" (${idea.id}) following Functional Head send-back.\n\nStatus: Awaiting Functional Head (${idea.assignedFHName || 'FH'}) final decision (Approve or Reject). If no response within 3 working days, please follow up manually.`
+        : `Dear C-POC,\n\nProject Lead ${idea.projectLeadName} has submitted the Step 2 Action Plan for "${actionPlanTitle}" (${idea.id}).\n\nStatus: Awaiting Functional Head (${idea.assignedFHName || 'FH'}) approval. If no response within 3 working days, please follow up manually.`
     );
     alert(isResubmit ? "Revised Action Plan resubmitted to Functional Head. C-POC notified." : "Action Plan submitted to Functional Head for review. C-POC notified.");
   };
@@ -706,7 +708,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
         onAddNotification(
           idea.employeeEmail,
           `[Step 2 Approved] Your project pilot has officially started — ${idea.id}`,
-          `Dear ${idea.employeeName},\n\nThe Action Plan for your idea "${idea.title}" (${idea.id}) has been approved and implementation has formally started.\n\nYour Plan Owner (${idea.projectLeadName}) is leading the pilot. You will receive updates on milestones and completion.\n\nWarm regards,\nTeam Ripple | Talent Management & OD`
+          `Dear ${idea.employeeName},\n\nThe Action Plan for your idea "${idea.title}" (${idea.id}) has been approved and implementation has formally started.\n\nYour Project Lead (${idea.projectLeadName}) is leading the pilot. You will receive updates on milestones and completion.\n\nWarm regards,\nTeam Ripple | Talent Management & OD`
         );
       }
       onAddNotification(
@@ -717,7 +719,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
       onAddNotification(
         idea.assignedFHEmail || persona.email,
         `[Step 2 Approved] Action Plan Locked — ${idea.id}`,
-        `Dear ${idea.assignedFHName || persona.name},\n\nYour approval of the Action Plan for "${idea.actionPlanTitle || idea.title}" (${idea.id}) has been recorded.\n\nThe plan is now locked and forms the baseline for:\n• Monthly milestone tracking (Block 8b)\n• Final project report (Block 8c)\n\nImplementation has formally started under Plan Owner ${idea.projectLeadName}.\n\nWarm regards,\nTeam Ripple | Talent Management & OD`
+        `Dear ${idea.assignedFHName || persona.name},\n\nYour approval of the Action Plan for "${idea.actionPlanTitle || idea.title}" (${idea.id}) has been recorded.\n\nThe plan is now locked and forms the baseline for:\n• Monthly milestone tracking (Block 8b)\n• Final project report (Block 8c)\n\nImplementation has formally started under Project Lead ${idea.projectLeadName}.\n\nWarm regards,\nTeam Ripple | Talent Management & OD`
       );
       alert(`Action Plan approved and locked! Implementation has formally started. All stakeholders notified.`);
     } else if (decision === 'Send-back') {
@@ -729,7 +731,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
       onAddNotification(
         "c-poc@ionexchange.com",
         `[Step 2 Send-back] FH Sent Back Action Plan (${idea.id})`,
-        `Dear C-POC,\n\nFunctional Head ${persona.name} sent back the Action Plan for ${idea.id}. Plan Owner ${idea.projectLeadName} has been notified.\n\nFeedback: "${fhPlanRemarks}"`
+        `Dear C-POC,\n\nFunctional Head ${persona.name} sent back the Action Plan for ${idea.id}. Project Lead ${idea.projectLeadName} has been notified.\n\nFeedback: "${fhPlanRemarks}"`
       );
       alert(`Send-back recorded. ${idea.projectLeadName} notified with feedback.`);
     } else {
@@ -784,12 +786,12 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
     onAddNotification(
       idea.assignedFHEmail || "functional.head@ionexchange.com",
       `[Project Report] Submitted for Approval — ${idea.id}`,
-      `Dear ${idea.assignedFHName || 'Functional Head'},\n\nPlan Owner ${idea.projectLeadName} has submitted the Project Report for "${idea.fhProjectTitle || idea.title}" (${idea.id}).\n\nSection A — Actual KPI: ${rptActualKPI}\n% of target achieved: ${rptPctTarget}%\n\nSection B — Financial Impact: ${rptActualFinancialImpact}\nImpact type(s): ${rptImpactTypes.join(', ')} · ${rptRecurringType}\n\nPlease review and Approve / Send-back / Reject in the Task Center.`
+      `Dear ${idea.assignedFHName || 'Functional Head'},\n\nProject Lead ${idea.projectLeadName} has submitted the Project Report for "${idea.fhProjectTitle || idea.title}" (${idea.id}).\n\nSection A — Actual KPI: ${rptActualKPI}\n% of target achieved: ${rptPctTarget}%\n\nSection B — Financial Impact: ${rptActualFinancialImpact}\nImpact type(s): ${rptImpactTypes.join(', ')} · ${rptRecurringType}\n\nPlease review and Approve / Send-back / Reject in the Task Center.`
     );
     onAddNotification(
       "coe@ionexchange.com",
       `[Project Report] Submitted — Pending FH Approval (${idea.id})`,
-      `Dear C-POC,\n\nPlan Owner ${idea.projectLeadName} has submitted the Project Report for "${idea.fhProjectTitle || idea.title}" (${idea.id}).\n\nStatus: Awaiting Functional Head (${idea.assignedFHName || 'FH'}) approval.\nPilot outcome: ${rptPctTarget}% of KPI target achieved. Financial impact: ${rptActualFinancialImpact}.`
+      `Dear C-POC,\n\nProject Lead ${idea.projectLeadName} has submitted the Project Report for "${idea.fhProjectTitle || idea.title}" (${idea.id}).\n\nStatus: Awaiting Functional Head (${idea.assignedFHName || 'FH'}) approval.\nPilot outcome: ${rptPctTarget}% of KPI target achieved. Financial impact: ${rptActualFinancialImpact}.`
     );
     alert("Project Report submitted to Functional Head for review. C-POC notified.");
   };
@@ -842,7 +844,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
       onAddNotification(
         "finance@ionexchange.com",
         `[Block 12] Project Report for Finance Vetting — ${idea.id}`,
-        `Dear Finance Team,\n\nProject Report for "${idea.fhProjectTitle || idea.title}" (${idea.id}) is approved and ready for financial impact vetting.\n\nPlan Owner: ${idea.projectLeadName}\nActual Financial Impact Claimed: ${idea.rptActualFinancialImpact || '—'}\nCalculation: ${idea.rptCalculationMethodology || '—'}\nImpact Types: ${(idea.rptImpactTypes || []).join(', ') || '—'}\nRecurring: ${idea.rptRecurringType || '—'}\n\nPlease review, validate assumptions, and certify the net annual savings.`
+        `Dear Finance Team,\n\nProject Report for "${idea.fhProjectTitle || idea.title}" (${idea.id}) is approved and ready for financial impact vetting.\n\nProject Lead: ${idea.projectLeadName}\nActual Financial Impact Claimed: ${idea.rptActualFinancialImpact || '—'}\nCalculation: ${idea.rptCalculationMethodology || '—'}\nImpact Types: ${(idea.rptImpactTypes || []).join(', ') || '—'}\nRecurring: ${idea.rptRecurringType || '—'}\n\nPlease review, validate assumptions, and certify the net annual savings.`
       );
       alert("Project Report approved! Routed to Finance. All stakeholders notified.");
     } else if (decision === 'Send-back') {
@@ -854,7 +856,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
       onAddNotification(
         "coe@ionexchange.com",
         `[Project Report Send-back] Revision Requested — ${idea.id}`,
-        `Dear C-POC,\n\nFunctional Head ${persona.name} sent back the Project Report for ${idea.id}. Plan Owner ${idea.projectLeadName} has been notified.\n\nFeedback: "${fhReportRemarks}"`
+        `Dear C-POC,\n\nFunctional Head ${persona.name} sent back the Project Report for ${idea.id}. Project Lead ${idea.projectLeadName} has been notified.\n\nFeedback: "${fhReportRemarks}"`
       );
       alert(`Send-back recorded. ${idea.projectLeadName} notified with feedback.`);
     } else {
@@ -921,7 +923,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
       onAddNotification(
         "coe@ionexchange.com",
         `[Finance Send-back ${newCount}/2] Revision Requested — ${idea.id}`,
-        `Dear C-POC,\n\nFinance sent back the financial impact section for ${idea.id} (round ${newCount}/2).\n\nPlan Owner ${idea.projectLeadName} has been notified.\nChecklist items flagged: ${finSBChecklist.join(', ')}`
+        `Dear C-POC,\n\nFinance sent back the financial impact section for ${idea.id} (round ${newCount}/2).\n\nProject Lead ${idea.projectLeadName} has been notified.\nChecklist items flagged: ${finSBChecklist.join(', ')}`
       );
       alert(`Send-back ${newCount}/2 recorded. ${idea.projectLeadName} notified with compiled feedback.`);
       return;
@@ -1002,7 +1004,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
     alert(`Finance validated! Certified: ₹${finCertifiedAmount.toLocaleString()}. Routed to CFO for sign-off.`);
   };
 
-  // 11b. Plan Owner resubmits financial report to Finance
+  // 11b. Project Lead resubmits financial report to Finance
   const handleFinanceResubmit = () => {
     if (!rptActualFinancialImpact.trim()) { alert("Please update the actual financial impact (₹)."); return; }
     if (!rptCalcMethodology.trim()) { alert("Calculation methodology is mandatory."); return; }
@@ -1019,12 +1021,12 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
     onAddNotification(
       "finance@ionexchange.com",
       `[Finance Revision Resubmitted] Round ${(idea.financeSendBackCount || 0) + 1} — ${idea.id}`,
-      `Dear Finance Team,\n\nPlan Owner ${idea.projectLeadName} has revised and resubmitted the financial impact section for "${idea.fhProjectTitle || idea.title}" (${idea.id}).\n\nUpdated Financial Impact: ${rptActualFinancialImpact}\nUpdated Calculation: ${rptCalcMethodology}\n\nPlease review in the Task Center.`
+      `Dear Finance Team,\n\nProject Lead ${idea.projectLeadName} has revised and resubmitted the financial impact section for "${idea.fhProjectTitle || idea.title}" (${idea.id}).\n\nUpdated Financial Impact: ${rptActualFinancialImpact}\nUpdated Calculation: ${rptCalcMethodology}\n\nPlease review in the Task Center.`
     );
     onAddNotification(
       "coe@ionexchange.com",
       `[Finance Revision Resubmitted] ${idea.id} back with Finance`,
-      `Dear C-POC,\n\nPlan Owner ${idea.projectLeadName} has resubmitted the financial report for ${idea.id} after Finance send-back. Now awaiting Finance validation.`
+      `Dear C-POC,\n\nProject Lead ${idea.projectLeadName} has resubmitted the financial report for ${idea.id} after Finance send-back. Now awaiting Finance validation.`
     );
     alert("Financial report resubmitted to Finance. Awaiting validation.");
   };
@@ -1066,12 +1068,12 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
     if (status === IdeaStatus.UnderIRCEvaluation) return persona.role === 'IRC Member';
     if (status === IdeaStatus.SelectedByIRC) return persona.role === 'C-POC';
     if (status === IdeaStatus.WithFunctionalHead) return persona.role === 'Functional Head';
-    if (status === IdeaStatus.AwaitingActionPlan || status === IdeaStatus.ActionPlanRevision) return persona.role === 'Plan Owner';
+    if (status === IdeaStatus.AwaitingActionPlan || status === IdeaStatus.ActionPlanRevision) return persona.role === 'Project Lead';
     if (status === IdeaStatus.ActionPlanSubmitted) return persona.role === 'Functional Head';
-    if (status === IdeaStatus.ActionPlanApproved || status === IdeaStatus.ReportRevision) return persona.role === 'Plan Owner';
+    if (status === IdeaStatus.ActionPlanApproved || status === IdeaStatus.ReportRevision) return persona.role === 'Project Lead';
     if (status === IdeaStatus.ReportSubmitted) return persona.role === 'Functional Head';
     if (status === IdeaStatus.PendingFinanceEvaluation) return persona.role === 'Finance';
-    if (status === IdeaStatus.FinanceRevision) return persona.role === 'Plan Owner';
+    if (status === IdeaStatus.FinanceRevision) return persona.role === 'Project Lead';
     if (status === IdeaStatus.PendingCFOSignOff) return persona.role === 'CFO';
     return false;
   };
@@ -1085,12 +1087,12 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
     if (status === IdeaStatus.UnderIRCEvaluation) return 'IRC Member';
     if (status === IdeaStatus.SelectedByIRC) return 'C-POC';
     if (status === IdeaStatus.WithFunctionalHead) return 'Functional Head';
-    if (status === IdeaStatus.AwaitingActionPlan || status === IdeaStatus.ActionPlanRevision) return 'Plan Owner (Project Lead)';
+    if (status === IdeaStatus.AwaitingActionPlan || status === IdeaStatus.ActionPlanRevision) return 'Project Lead';
     if (status === IdeaStatus.ActionPlanSubmitted) return 'Functional Head';
-    if (status === IdeaStatus.ActionPlanApproved || status === IdeaStatus.ReportRevision) return 'Plan Owner (Project Lead)';
+    if (status === IdeaStatus.ActionPlanApproved || status === IdeaStatus.ReportRevision) return 'Project Lead';
     if (status === IdeaStatus.ReportSubmitted) return 'Functional Head';
     if (status === IdeaStatus.PendingFinanceEvaluation) return 'Finance';
-    if (status === IdeaStatus.FinanceRevision) return 'Plan Owner (Project Lead)';
+    if (status === IdeaStatus.FinanceRevision) return 'Project Lead';
     if (status === IdeaStatus.PendingCFOSignOff) return 'CFO';
     return '';
   };
@@ -1283,6 +1285,83 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
           </div>
         )}
       </div>
+
+      {/* Monthly Progress Log */}
+      {(idea.monthlyTrackers && idea.monthlyTrackers.length > 0) && (
+        <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
+          <button
+            onClick={() => setIsMonthlyLogExpanded(!isMonthlyLogExpanded)}
+            className="w-full px-5 py-4 bg-slate-50 border-b border-slate-150 flex items-center justify-between text-left focus:outline-hidden hover:bg-slate-100 transition-all"
+          >
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 bg-emerald-50 border border-emerald-100 text-emerald-700 rounded-lg">
+                <CalendarDays className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="text-xs font-black font-display tracking-wider text-slate-900 uppercase">
+                  Monthly Progress Log
+                </h3>
+                <p className="text-[9.5px] text-slate-500 font-sans mt-0.5">
+                  {idea.monthlyTrackers.length} entr{idea.monthlyTrackers.length === 1 ? 'y' : 'ies'} logged by Project Lead
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[8.5px] font-mono bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded-md border border-emerald-100 uppercase">
+                {idea.monthlyTrackers.length} Log{idea.monthlyTrackers.length !== 1 ? 's' : ''}
+              </span>
+              {isMonthlyLogExpanded ? (
+                <ChevronUp className="w-4 h-4 text-slate-400" />
+              ) : (
+                <ChevronDown className="w-4 h-4 text-slate-400" />
+              )}
+            </div>
+          </button>
+          {isMonthlyLogExpanded && (
+            <div className="p-5 space-y-3">
+              {[...idea.monthlyTrackers].reverse().map((entry, i) => {
+                const statusColor =
+                  entry.status === 'On Track'  ? 'bg-emerald-100 text-emerald-700' :
+                  entry.status === 'Completed' ? 'bg-teal-100 text-teal-700' :
+                  entry.status === 'Delayed'   ? 'bg-amber-100 text-amber-700' :
+                                                 'bg-slate-100 text-slate-600';
+                return (
+                  <div key={i} className="border border-slate-200 rounded-xl p-4 space-y-2 text-[11px] bg-slate-50">
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <span className="font-bold text-slate-800 text-xs">{entry.month}</span>
+                      <div className="flex items-center gap-2">
+                        {entry.completionPercentage !== undefined && (
+                          <span className="font-mono text-[10px] text-slate-500">{entry.completionPercentage}% complete</span>
+                        )}
+                        <span className={`text-[9.5px] font-bold px-2 py-0.5 rounded-full ${statusColor}`}>{entry.status}</span>
+                      </div>
+                    </div>
+                    {entry.achievements && (
+                      <p className="text-slate-700 leading-relaxed">
+                        <strong className="text-slate-500 font-semibold">Achievements: </strong>{entry.achievements}
+                      </p>
+                    )}
+                    {entry.milestones && (
+                      <p className="text-slate-600">
+                        <strong className="text-slate-500 font-semibold">Milestones: </strong>{entry.milestones}
+                      </p>
+                    )}
+                    {entry.risks && (
+                      <p className="text-amber-700">
+                        <strong className="font-semibold">Risks: </strong>{entry.risks}
+                      </p>
+                    )}
+                    {entry.comments && (
+                      <p className="text-slate-500 italic text-[10px]">{entry.comments}</p>
+                    )}
+                    <p className="text-[9px] text-slate-400 font-mono mt-1">Submitted: {new Date(entry.dateSubmitted).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* RENDER DYNAMIC INCUBATION STEPS */}
       
@@ -2558,7 +2637,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
               </div>
             )}
 
-            {/* Accept: team rows + plan owner + reward checkbox */}
+            {/* Accept: team rows + Project Lead + reward checkbox */}
             {fhDecisionChoice === "Accept" && (
               <div className="space-y-5">
 
@@ -2622,10 +2701,10 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
                   </div>
                 </div>
 
-                {/* Nominated Plan Owner */}
+                {/* Nominated Project Lead */}
                 <div>
                   <label className="block text-[9.5px] font-bold uppercase tracking-widest text-slate-500 mb-1.5">
-                    Nominated Plan Owner <span className="text-rose-500">*</span>
+                    Nominated Project Lead <span className="text-rose-500">*</span>
                     <span className="ml-1 text-slate-400 normal-case font-normal tracking-normal">(will draft &amp; submit Step 2 Action Plan — can be the FH)</span>
                   </label>
                   <select
@@ -2677,7 +2756,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
                 </button>
                 {fhDecisionChoice === "Accept" && (
                   <p className="text-center text-[9.5px] text-slate-400 mt-1.5">
-                    Step 2 (Action Plan) must be submitted by the Plan Owner within 3 working days.
+                    Step 2 (Action Plan) must be submitted by the Project Lead within 3 working days.
                   </p>
                 )}
               </div>
@@ -2687,14 +2766,14 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
         </div>
       )}
 
-      {/* STEP 7: Plan Owner submits Action Plan (Step 2 — Pilot Project spec) */}
-      {(idea.status === IdeaStatus.AwaitingActionPlan || idea.status === IdeaStatus.ActionPlanRevision) && persona.role === "Plan Owner" && (
+      {/* STEP 7: Project Lead submits Action Plan (Step 2 — Pilot Project spec) */}
+      {(idea.status === IdeaStatus.AwaitingActionPlan || idea.status === IdeaStatus.ActionPlanRevision) && persona.role === "Project Lead" && (
         <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
           <div className="bg-linear-to-r from-emerald-900 to-teal-800 px-5 py-4 flex items-center gap-2.5">
             <FileText className="w-4 h-4 text-emerald-300 flex-shrink-0" />
             <div>
               <p className="text-white font-black text-[11px] uppercase tracking-widest">Step 2 — Pilot Project Action Plan</p>
-              <p className="text-emerald-300 text-[9.5px] mt-0.5">Nominated Plan Owner · Expected: ~20–30 min · Submit within 3 working days of Step 1</p>
+              <p className="text-emerald-300 text-[9.5px] mt-0.5">Nominated Project Lead · Expected: ~20–30 min · Submit within 3 working days of Step 1</p>
             </div>
           </div>
           <div className="p-5 space-y-5">
@@ -2892,7 +2971,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
                 <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-1">Submitted Plan</p>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="col-span-2"><strong>Project:</strong> {idea.actionPlanTitle || idea.fhProjectTitle || idea.title}</div>
-                  <div><strong>Plan Owner:</strong> {idea.projectLeadName}</div>
+                  <div><strong>Project Lead:</strong> {idea.projectLeadName}</div>
                   <div><strong>Team:</strong> {(idea.allocatedTeamMembers || []).join(", ")}</div>
                 </div>
                 {idea.apKRA && <div><strong>KRA:</strong> {idea.apKRA}</div>}
@@ -2986,8 +3065,8 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
         );
       })()}
 
-      {/* STEP 9: Plan Owner — Project Report (full spec, Sections A + B) */}
-      {(idea.status === IdeaStatus.ActionPlanApproved || idea.status === IdeaStatus.ReportRevision) && persona.role === "Plan Owner" && (
+      {/* STEP 9: Project Lead — Project Report (full spec, Sections A + B) */}
+      {(idea.status === IdeaStatus.ActionPlanApproved || idea.status === IdeaStatus.ReportRevision) && persona.role === "Project Lead" && (
         <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
           <div className="bg-linear-to-r from-slate-800 to-slate-700 px-5 py-4 flex items-center gap-2.5">
             <FileText className="w-4 h-4 text-slate-300 flex-shrink-0" />
@@ -3029,7 +3108,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
                   <span className="text-slate-700">{idea.assignedFHName || '—'}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 text-[9px] uppercase tracking-wider block mb-0.5">Plan Owner</span>
+                  <span className="text-slate-400 text-[9px] uppercase tracking-wider block mb-0.5">Project Lead</span>
                   <span className="text-slate-700">{idea.projectLeadName}</span>
                 </div>
                 <div className="col-span-2">
@@ -3287,7 +3366,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
               <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3 text-[11px]">
                 <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-1">Submitted Report</p>
                 <div className="grid grid-cols-2 gap-2">
-                  <div><strong>Plan Owner:</strong> {idea.projectLeadName}</div>
+                  <div><strong>Project Lead:</strong> {idea.projectLeadName}</div>
                   <div><strong>% Target achieved:</strong> <span className={`font-bold ${(idea.rptPctTargetAchieved ?? 0) >= (idea.apSuccessThreshold ?? 80) ? 'text-emerald-700' : (idea.rptPctTargetAchieved ?? 0) >= (idea.apPartialThreshold ?? 50) ? 'text-amber-700' : 'text-rose-700'}`}>{idea.rptPctTargetAchieved ?? '—'}%</span></div>
                 </div>
                 {idea.rptPilotDescription && <div><strong>What was done:</strong> <span className="text-slate-600">{idea.rptPilotDescription}</span></div>}
@@ -3367,8 +3446,8 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
         );
       })()}
 
-      {/* STEP 11a: FinanceRevision -> Plan Owner revises financial report */}
-      {idea.status === IdeaStatus.FinanceRevision && persona.role === "Plan Owner" && (
+      {/* STEP 11a: FinanceRevision -> Project Lead revises financial report */}
+      {idea.status === IdeaStatus.FinanceRevision && persona.role === "Project Lead" && (
         <div className="bg-white border border-amber-200 rounded-2xl overflow-hidden">
           <div className="bg-linear-to-r from-amber-600 to-orange-600 px-5 py-4 flex items-center gap-2.5">
             <Landmark className="w-4 h-4 text-amber-100 flex-shrink-0" />
@@ -3482,7 +3561,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
                 <div className={`border rounded-xl p-3.5 text-[10.5px] ${sbCount >= 2 ? 'bg-amber-50 border-amber-200 text-amber-900' : 'bg-blue-50 border-blue-200 text-blue-900'}`}>
                   {sbCount >= 2
                     ? `⚠ Send-back limit reached (2/2). You can only Validate or mark No quantifiable financial benefit — no further send-backs.`
-                    : `Round ${sbCount + 1} of max 2. Plan Owner has revised and resubmitted — please review the updated financial figures below.`}
+                    : `Round ${sbCount + 1} of max 2. Project Lead has revised and resubmitted — please review the updated financial figures below.`}
                 </div>
               )}
 
@@ -3499,7 +3578,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
                     <span className="font-mono text-slate-700">{idea.id}</span>
                   </div>
                   <div>
-                    <span className="text-slate-400 text-[9px] uppercase tracking-wider block mb-0.5">Plan Owner</span>
+                    <span className="text-slate-400 text-[9px] uppercase tracking-wider block mb-0.5">Project Lead</span>
                     <span className="text-slate-700">{idea.projectLeadName}</span>
                   </div>
                   <div>
@@ -3639,7 +3718,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
                   <div>
                     <label className="block text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-1.5">
                       Adjustments made vs claimed figure
-                      <span className="ml-1 text-slate-400 normal-case font-normal tracking-normal">(optional — if figure differs from Plan Owner's claim)</span>
+                      <span className="ml-1 text-slate-400 normal-case font-normal tracking-normal">(optional — if figure differs from Project Lead's claim)</span>
                     </label>
                     <textarea value={finAdjustmentNote} onChange={e => setFinAdjustmentNote(e.target.value)} rows={2}
                       placeholder="e.g. Reduced blended rate from ₹2,000 to ₹1,750/day per Finance standard; applied 50% productivity discount as freed time is redeployed. Net certified: ₹8.5L/year."
@@ -3670,7 +3749,7 @@ export const TaskCenter: React.FC<TaskCenterProps> = ({ idea, persona, onUpdateI
                   <div>
                     <label className="block text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-1.5">Additional remarks <span className="text-slate-400 normal-case font-normal tracking-normal">(optional)</span></label>
                     <textarea value={finExtraRemarks} onChange={e => setFinExtraRemarks(e.target.value)} rows={2}
-                      placeholder="Any additional context for the Plan Owner…"
+                      placeholder="Any additional context for the Project Lead…"
                       className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs focus:outline-none resize-none" />
                   </div>
                 </div>
