@@ -321,7 +321,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
             transition={{ duration: 1.05, ease: "easeOut", delay: 0.12 }}
             className="relative"
           >
-            <div className="relative rounded-[1.8rem] border border-white/20 bg-white/10 backdrop-blur-xl shadow-[0_24px_70px_rgba(2,18,34,0.38)] p-4 sm:p-5 flex items-center justify-center">
+            <div className="relative rounded-[1.8rem] border border-white/20 bg-white/10 backdrop-blur-xl shadow-[0_24px_70px_rgba(2,18,34,0.38)] p-8 sm:p-12 flex items-center justify-center">
               <div className="rounded-2xl px-8 py-6 border transition-all bg-white/92 border-white/70 shadow-md">
                 <img
                   src="/image001-transparent.png"
