@@ -79,7 +79,7 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ idea, certType
     })();
 
     return (
-      <div id={`cert-card-${idea.id}`} className="max-w-5xl mx-auto my-4 print-area p-6">
+      <div id={`cert-card-${idea.id}`} className="max-w-5xl mx-auto my-4 print-area p-6 bg-slate-100 rounded-xl">
         {/* Print button */}
         <div className="flex justify-end mb-2 no-print">
           <button
