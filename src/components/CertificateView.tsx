@@ -62,7 +62,7 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ idea, certType
     })();
 
     return (
-      <div id={`cert-card-${idea.id}`} className="max-w-3xl mx-auto my-4 print-area">
+      <div id={`cert-card-${idea.id}`} className="max-w-5xl mx-auto my-4 print-area">
         {/* Print button */}
         <div className="flex justify-end mb-2 no-print">
           <button
@@ -89,9 +89,9 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ idea, certType
             {/* ── Header: Logos row ──────────────────────────────────────── */}
             <div className="flex items-center justify-between px-8 pt-6 pb-4">
               {/* ION EXCHANGE logo – left */}
-              <img src={ionLogo} alt="Ion Exchange Logo" className="h-20 w-auto object-contain" />
+              <img src={ionLogo} alt="Ion Exchange Logo" className="h-12 w-auto object-contain" />
               {/* Right logo */}
-              <img src={rightLogo} alt="Right Logo" className="h-20 w-auto object-contain" />
+              <img src={rightLogo} alt="Right Logo" className="h-12 w-auto object-contain" />
             </div>
 
             {/* Top title divider */}
@@ -179,7 +179,7 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ idea, certType
   }
 
   return (
-    <div id={`cert-card-${idea.id}`} className="max-w-3xl mx-auto my-4 print-area">
+    <div id={`cert-card-${idea.id}`} className="max-w-5xl mx-auto my-4 print-area">
       <div className="flex justify-end mb-2 no-print">
         <button
           onClick={handlePrint}
@@ -200,8 +200,8 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ idea, certType
           {/* Header */}
           <div className="mb-6">
             <div className="flex items-center justify-between mb-3">
-              <img src={ionLogo} alt="Ion Exchange Logo" className="h-20 w-auto object-contain" />
-              <img src={rightLogo} alt="Right Logo" className="h-20 w-auto object-contain" />
+              <img src={ionLogo} alt="Ion Exchange Logo" className="h-12 w-auto object-contain" />
+              <img src={rightLogo} alt="Right Logo" className="h-12 w-auto object-contain" />
             </div>
             <div className="text-center">
               <span className="text-[10px] tracking-widest font-bold text-slate-500 uppercase block mb-1">

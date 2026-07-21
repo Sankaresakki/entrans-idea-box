@@ -528,7 +528,7 @@ export default function App() {
       
       {/* Dynamic Header — Row 1: Left-aligned logo for preloader handoff */}
       <header className="bg-[#e9f7ff] border-b border-sky-300 text-slate-900 py-2.5 px-6 sticky top-0 z-10 shadow-sm">
-        <div className="max-w-7xl mx-auto flex items-center justify-start">
+        <div className="max-w-7xl mx-auto flex items-center justify-center">
           <div className="inline-flex items-center gap-3 rounded-2xl border border-sky-300 bg-white px-4 py-2.5 shadow-md shadow-sky-100/90">
             <img src="/image001-transparent.png" className="h-20 md:h-24 w-auto object-contain drop-shadow-[0_10px_24px_rgba(0,76,112,0.22)]" alt="Ripple" />
             <div className="hidden md:block leading-tight">
