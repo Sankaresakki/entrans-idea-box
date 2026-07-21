@@ -571,7 +571,7 @@ export default function App() {
             if (role === "C-POC") return (<>{T("dashboard","Dashboard")}{T("vetting","Idea Quality Vetting")}{T("fhassignment","FH Assignment")}{T("ircfinalization","Evaluation Finalization")}{T("monthlytracker","Monthly Tracker")}{T("meetings","Meetings Log")}</>);
             if (role === "IRC Member") return (<>{T("ircevaluation","Idea Evaluation")}</>);
             if (role === "Functional Head") return (<>{T("assignedideas","Assigned Ideas")}{T("actionplanapproval","Action Plan Approval")}{T("finalreportsapproval","Final Reports Approval")}</>);
-            if (role === "Project Lead") return (<>{T("actionplansubmission","Action Plan Submission")}{T("finalreportsubmission","Final Report Submission")}</>);
+            if (role === "Project Lead") return (<>{T("actionplansubmission","Action Plan Submission")}{T("finalreportsubmission","Final Report Submission")}{T("monthlytracker","Monthly Tracker")}</>);
             if (role === "Finance") return (<>{T("financetemplate","Finance Impact Template")}</>);
             if (role === "CFO") return (<>{T("cfoapproval","Financial Impact Approval")}</>);
             if (role === "Super Admin") return (<>{T("dashboard","Dashboard")}{T("taskcenter","All Workflows")}{T("certificates","Certificates")}{T("monthlytracker","Monthly Tracker")}{T("meetings","Meetings Log")}{T("zohomail","Notifications", notifCount)}</>);
