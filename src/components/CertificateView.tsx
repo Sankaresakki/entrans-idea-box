@@ -42,6 +42,23 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ idea, certType
   const details = getBannerDetails();
 
   const handlePrint = () => {
+    const certEl = document.getElementById(`cert-card-${idea.id}`);
+    if (!certEl) { window.print(); return; }
+
+    // Clone the certificate and strip non-print elements
+    const clone = certEl.cloneNode(true) as HTMLElement;
+    clone.querySelectorAll(".no-print").forEach(el => el.remove());
+    clone.id = "print-clone-cert";
+    document.body.appendChild(clone);
+    document.body.classList.add("cert-printing");
+
+    const cleanup = () => {
+      const el = document.getElementById("print-clone-cert");
+      if (el) document.body.removeChild(el);
+      document.body.classList.remove("cert-printing");
+      window.removeEventListener("afterprint", cleanup);
+    };
+    window.addEventListener("afterprint", cleanup);
     window.print();
   };
 

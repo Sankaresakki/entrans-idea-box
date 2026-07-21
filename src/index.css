@@ -202,47 +202,42 @@ body {
   margin: 8mm;
 }
 
+/* ── JS-clone print: body.cert-printing is set by handlePrint() ── */
 @media print {
-  /* Collapse entire document to zero — prevents blank extra pages */
-  html, body {
-    height: 0 !important;
-    overflow: hidden !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-  body * {
-    visibility: hidden !important;
-    max-height: 0 !important;
-    overflow: hidden !important;
-  }
-  .no-print {
+  /* Hide the entire live page */
+  body.cert-printing > *:not(#print-clone-cert) {
     display: none !important;
   }
 
-  /* Certificate card: fixed overlay, centered, full bleed */
-  .print-area {
-    visibility: visible !important;
-    max-height: none !important;
-    height: auto !important;
-    overflow: visible !important;
-    position: fixed !important;
-    inset: 0 !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 16px !important;
-    background: white !important;
+  /* The cloned certificate — full page, centered */
+  body.cert-printing #print-clone-cert {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: white !important;
     z-index: 99999 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
-  .print-area * {
-    visibility: visible !important;
-    max-height: none !important;
+
+  body.cert-printing #print-clone-cert > * {
+    max-width: 100% !important;
+    width: auto !important;
     height: auto !important;
-    overflow: visible !important;
+  }
+}
+
+/* Legacy fallback for non-JS print */
+@media print {
+  body:not(.cert-printing) .no-print {
+    display: none !important;
   }
 }
 
