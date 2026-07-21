@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Idea, IdeaStatus, UserPersona, NotificationLog, getAuthorizedIdeasForRole, OfflineMeeting } from "./types";
 import { MOCK_MEETINGS } from "./mockData";
@@ -100,96 +100,6 @@ export default function App() {
   const [realtimeStatus, setRealtimeStatus] = useState<"connecting" | "connected" | "offline">(
     isSupabaseConfigured ? "connecting" : "offline"
   );
-  const [showBrandPreloader, setShowBrandPreloader] = useState(true);
-  const [isBrandPreloaderExiting, setIsBrandPreloaderExiting] = useState(false);
-  const [bulbDockTransform, setBulbDockTransform] = useState<string | null>(null);
-  const preloaderBulbPivotRef = useRef<HTMLDivElement | null>(null);
-
-  // Startup preloader: wait for core assets, then fade out smoothly.
-  useEffect(() => {
-    let cancelled = false;
-
-    const waitForBulb = () => new Promise<void>((resolve) => {
-      const img = new Image();
-      img.onload = () => resolve();
-      img.onerror = () => resolve();
-      img.src = "/bulb-core-final.png?v=2";
-      if (img.complete) resolve();
-    });
-
-    const waitForFonts = (document as Document & { fonts?: FontFaceSet }).fonts
-      ? (document as Document & { fonts: FontFaceSet }).fonts.ready.catch(() => undefined)
-      : Promise.resolve();
-
-    const waitForWindowLoad = document.readyState === "complete"
-      ? Promise.resolve()
-      : new Promise<void>((resolve) => window.addEventListener("load", () => resolve(), { once: true }));
-
-    const minBrandDelay = new Promise<void>((resolve) => setTimeout(resolve, 1900));
-
-    const computeDockTransform = (): string | null => {
-      const appSurface = document.getElementById("ripple-app-surface");
-      const targetLogo = appSurface?.querySelector('img[alt="Ripple"]') as HTMLImageElement | null;
-      const pivot = preloaderBulbPivotRef.current;
-      if (!targetLogo || !pivot) return null;
-
-      const from = pivot.getBoundingClientRect();
-      const to = targetLogo.getBoundingClientRect();
-      if (from.width <= 0 || to.width <= 0) return null;
-
-      const fromCenterX = from.left + from.width / 2;
-      const fromCenterY = from.top + from.height / 2;
-      // Dock to the bulb/icon segment at the left side of the header logo.
-      const toCenterX = to.left + Math.min(to.width * 0.18, to.height * 0.95);
-      const toCenterY = to.top + to.height / 2;
-
-      const deltaX = Math.round((toCenterX - fromCenterX) * 100) / 100;
-      const deltaY = Math.round((toCenterY - fromCenterY) * 100) / 100;
-      const iconTargetSize = Math.max(30, to.height * 1.05);
-      const rawScale = iconTargetSize / from.width;
-      const scale = Math.min(0.62, Math.max(0.12, rawScale));
-
-      return `translate(calc(-50% + ${deltaX}px), calc(-50% + ${deltaY}px)) scale(${scale})`;
-    };
-
-    Promise.allSettled([waitForBulb(), waitForFonts, waitForWindowLoad, minBrandDelay]).then(() => {
-      if (cancelled) return;
-      const dockTransform = computeDockTransform();
-      if (dockTransform) setBulbDockTransform(dockTransform);
-
-      requestAnimationFrame(() => {
-        if (!cancelled) setIsBrandPreloaderExiting(true);
-      });
-
-      setTimeout(() => {
-        if (!cancelled) setShowBrandPreloader(false);
-      }, 980);
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  // Keep viewport scrollbar hidden during preloader so the bulb sits on true center.
-  useEffect(() => {
-    const html = document.documentElement;
-    const body = document.body;
-
-    if (showBrandPreloader) {
-      const prevHtmlOverflow = html.style.overflow;
-      const prevBodyOverflow = body.style.overflow;
-      html.style.overflow = "hidden";
-      body.style.overflow = "hidden";
-
-      return () => {
-        html.style.overflow = prevHtmlOverflow;
-        body.style.overflow = prevBodyOverflow;
-      };
-    }
-
-    return undefined;
-  }, [showBrandPreloader]);
 
   // ── localStorage backup (always sync — provides resilience if Supabase is unavailable) ──
   useEffect(() => {
@@ -487,28 +397,29 @@ export default function App() {
     setNotificationLogs([]);
   };
 
-  let appContent: React.ReactNode;
+
 
   if (!currentPersona) {
     if (!showLogin) {
-      appContent = <LandingPage onSignIn={() => setShowLogin(true)} />;
-    } else {
-      appContent = (
-        <LoginGate
-          onBack={() => setShowLogin(false)}
-          onLogin={(persona) => {
-            setCurrentPersona(persona);
-            setShowLogin(false);
-            localStorage.setItem("ripple_logged_persona", JSON.stringify(persona));
-          }}
-        />
-      );
+      return <LandingPage onSignIn={() => setShowLogin(true)} />;
     }
-  } else if (isLoading) {
-    // Supabase initial data load screen
-    appContent = (
+    return (
+      <LoginGate
+        onBack={() => setShowLogin(false)}
+        onLogin={(persona) => {
+          setCurrentPersona(persona);
+          setShowLogin(false);
+          localStorage.setItem("ripple_logged_persona", JSON.stringify(persona));
+        }} 
+      />
+    );
+  }
+
+  // Supabase initial data load screen
+  if (isLoading) {
+    return (
       <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center gap-5 text-white">
-        <img src="/image001-transparent.png" className="h-20 md:h-24 w-auto object-contain drop-shadow-[0_10px_22px_rgba(6,35,58,0.6)]" alt="Ripple" />
+        <img src="/image001.png" className="h-14 w-auto object-contain" alt="Ripple" />
         <div className="flex items-center gap-3 text-sm font-medium text-slate-300">
           <Loader2 className="w-5 h-5 animate-spin text-indigo-400" />
           Connecting to Supabase — loading live data…
@@ -516,26 +427,15 @@ export default function App() {
         <p className="text-xs text-slate-500">One Ion Ripple Platform</p>
       </div>
     );
-  } else {
-    appContent = (
-    <div className="min-h-screen relative flex flex-col font-sans select-none antialiased bg-slate-50 text-slate-800 overflow-x-hidden">
+  }
 
-      {/* Persistent brand watermark across authenticated modules */}
-      <div className="pointer-events-none fixed right-4 bottom-4 z-[1] opacity-[0.20]">
-        <img src="/ripple-transparent.png" alt="Ripple Brand Watermark" className="w-[200px] md:w-[270px] h-auto object-contain" />
-      </div>
-      <div className="pointer-events-none fixed left-0 top-0 bottom-0 w-1.5 z-[2] bg-gradient-to-b from-emerald-400 via-sky-400 to-indigo-500 opacity-80" />
+  return (
+    <div className="min-h-screen flex flex-col font-sans select-none antialiased bg-slate-50 text-slate-800">
       
-      {/* Dynamic Header — Row 1: Left-aligned logo for preloader handoff */}
-      <header className="bg-[#e9f7ff] border-b border-sky-300 text-slate-900 py-2.5 px-6 sticky top-0 z-10 shadow-sm">
-        <div className="max-w-7xl mx-auto flex items-center justify-start">
-          <div className="inline-flex items-center gap-3 rounded-2xl border border-sky-300 bg-white px-4 py-2.5 shadow-md shadow-sky-100/90">
-            <img src="/image001-transparent.png" className="h-20 md:h-24 w-auto object-contain drop-shadow-[0_10px_24px_rgba(0,76,112,0.22)]" alt="Ripple" />
-            <div className="hidden md:block leading-tight">
-              <p className="text-[10px] font-black tracking-[0.17em] uppercase text-[#0098DB]">One Ion Ripple</p>
-              <p className="text-[12px] text-slate-700 font-bold">Enterprise Ideation Engine</p>
-            </div>
-          </div>
+      {/* Dynamic Header — Row 1: Centered Logo */}
+      <header className="bg-white border-b border-slate-200 text-slate-900 py-3 px-6 sticky top-0 z-10 shadow-xs">
+        <div className="max-w-7xl mx-auto flex items-center justify-center">
+          <img src="/image001.png" className="h-20 w-auto object-contain" alt="Ripple" />
         </div>
       </header>
 
@@ -1160,26 +1060,5 @@ export default function App() {
       </footer>
 
     </div>
-    );
-  }
-
-  return (
-    <>
-      <div id="ripple-app-surface">{appContent}</div>
-
-      {showBrandPreloader && (
-        <div className={`ripple-preloader ${isBrandPreloaderExiting ? "ripple-preloader-exit" : ""}`} aria-hidden="true">
-          <div className="ripple-preloader-stage" />
-
-          <div
-            ref={preloaderBulbPivotRef}
-            className={`ripple-preloader-bulb-pivot ${isBrandPreloaderExiting ? "ripple-preloader-bulb-pivot-exit" : ""}`}
-            style={isBrandPreloaderExiting && bulbDockTransform ? { transform: bulbDockTransform } : undefined}
-          >
-            <img src="/bulb-core-final.png?v=2" alt="Ripple Bulb" className="ripple-preloader-bulb" />
-          </div>
-        </div>
-      )}
-    </>
   );
 }

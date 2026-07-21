@@ -383,11 +383,6 @@ export const LoginGate: React.FC<LoginGateProps> = ({ onLogin, onBack }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-indigo-900 to-violet-900 flex flex-col font-sans overflow-x-hidden">
-      <div className="pointer-events-none fixed right-4 bottom-4 z-[1] opacity-[0.28]">
-        <img src="/ripple-transparent.png" alt="Ripple Login Brand" className="w-[190px] md:w-[260px] h-auto object-contain" />
-      </div>
-      <div className="pointer-events-none fixed left-0 top-0 bottom-0 w-1.5 z-[2] bg-gradient-to-b from-emerald-300 via-sky-300 to-indigo-400 opacity-85" />
-
       {/* Background decorative rings — same as hero */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full border border-white/5" />
@@ -396,19 +391,21 @@ export const LoginGate: React.FC<LoginGateProps> = ({ onLogin, onBack }) => {
         <div className="absolute bottom-1/4 left-1/4 w-80 h-80 bg-indigo-500/15 rounded-full blur-3xl" />
       </div>
 
-      {/* Top brand banner */}
-      <div className="relative z-10 w-full bg-white/95 border-b border-sky-200 shadow-md">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex flex-col items-center justify-center gap-1.5">
-          <img src="/image001-transparent.png" alt="Ripple" className="h-20 md:h-24 w-auto object-contain drop-shadow-[0_12px_20px_rgba(0,77,120,0.2)]" />
-          <p className="text-[11px] md:text-xs font-black uppercase tracking-[0.18em] text-[#0074a5]">One Ion Enterprise Ideation Platform</p>
+      {/* Top bar */}
+      <div className="relative z-10 max-w-5xl w-full mx-auto px-6 pt-6 flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-md">
+            <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-white" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="3" fill="white" />
+              <circle cx="12" cy="12" r="7" strokeOpacity="0.5" />
+              <circle cx="12" cy="12" r="11" strokeOpacity="0.25" />
+            </svg>
+          </div>
+          <span className="text-lg font-bold text-white tracking-tight">Ripple</span>
         </div>
-      </div>
-
-      {/* Utility row */}
-      <div className="relative z-10 max-w-5xl w-full mx-auto px-6 pt-4 flex items-center justify-end">
         <button
           onClick={onBack}
-          className="flex items-center gap-2 text-sm text-sky-100 hover:text-white transition-colors cursor-pointer"
+          className="flex items-center gap-2 text-sm text-indigo-300 hover:text-white transition-colors cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Home
@@ -780,7 +777,13 @@ export const LoginGate: React.FC<LoginGateProps> = ({ onLogin, onBack }) => {
       <footer className="relative z-10 py-6 px-6">
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <img src="/ripple-transparent.png" alt="Ripple Footer" className="h-7 w-auto object-contain" />
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
+              <svg viewBox="0 0 24 24" fill="none" className="w-3.5 h-3.5 text-white" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="3" fill="white" />
+                <circle cx="12" cy="12" r="7" strokeOpacity="0.5" />
+              </svg>
+            </div>
+            <span className="text-sm font-semibold text-white">Ripple</span>
             <span className="text-indigo-400 text-sm">· Talent Management &amp; OD</span>
           </div>
           <p className="text-xs text-indigo-400">&copy; {new Date().getFullYear()} Ripple Initiative. All rights reserved.</p>

@@ -3,10 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion } from "motion/react";
-import { MOCK_IDEAS } from "../mockData";
-import { Idea, IdeaStatus } from "../types";
 
 interface LandingPageProps {
   onSignIn: () => void;
@@ -118,69 +116,12 @@ const WORKFLOW_STEPS = [
 export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [ideaSnapshot, setIdeaSnapshot] = useState<Idea[]>(MOCK_IDEAS);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  useEffect(() => {
-    const syncIdeaSnapshot = () => {
-      try {
-        const raw = localStorage.getItem("ion_ideas");
-        if (!raw) {
-          setIdeaSnapshot(MOCK_IDEAS);
-          return;
-        }
-        const parsed = JSON.parse(raw) as Idea[];
-        setIdeaSnapshot(Array.isArray(parsed) && parsed.length > 0 ? parsed : MOCK_IDEAS);
-      } catch {
-        setIdeaSnapshot(MOCK_IDEAS);
-      }
-    };
-
-    syncIdeaSnapshot();
-    window.addEventListener("storage", syncIdeaSnapshot);
-    return () => window.removeEventListener("storage", syncIdeaSnapshot);
-  }, []);
-
-  const bannerCounts = useMemo(() => {
-    const submitted = ideaSnapshot.length;
-
-    const approvedStatuses = new Set<IdeaStatus>([
-      IdeaStatus.WithFunctionalHead,
-      IdeaStatus.AwaitingActionPlan,
-      IdeaStatus.ActionPlanSubmitted,
-      IdeaStatus.ActionPlanRevision,
-      IdeaStatus.ActionPlanApproved,
-      IdeaStatus.ReportSubmitted,
-      IdeaStatus.ReportRevision,
-      IdeaStatus.PendingFinanceEvaluation,
-      IdeaStatus.FinanceRevision,
-      IdeaStatus.PendingCFOSignOff,
-      IdeaStatus.Completed,
-    ]);
-
-    const liveStatuses = new Set<IdeaStatus>([
-      IdeaStatus.WithFunctionalHead,
-      IdeaStatus.AwaitingActionPlan,
-      IdeaStatus.ActionPlanSubmitted,
-      IdeaStatus.ActionPlanRevision,
-      IdeaStatus.ActionPlanApproved,
-      IdeaStatus.ReportSubmitted,
-      IdeaStatus.ReportRevision,
-      IdeaStatus.PendingFinanceEvaluation,
-      IdeaStatus.FinanceRevision,
-      IdeaStatus.PendingCFOSignOff,
-    ]);
-
-    const approved = ideaSnapshot.filter((idea) => approvedStatuses.has(idea.status)).length;
-    const live = ideaSnapshot.filter((idea) => liveStatuses.has(idea.status)).length;
-
-    return { submitted, approved, live };
-  }, [ideaSnapshot]);
 
   const scrollTo = (href: string) => {
     setMobileMenuOpen(false);
@@ -190,9 +131,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
 
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900 overflow-x-hidden">
-      <div className="pointer-events-none fixed right-5 bottom-5 z-[2] opacity-[0.12]">
-        <img src="/ripple-transparent.png" alt="Ripple Global Brand" className="w-[150px] md:w-[200px] h-auto object-contain" />
-      </div>
 
       {/* ── NAVIGATION ──────────────────────────────────────────────── */}
       <motion.nav
@@ -201,23 +139,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
         transition={{ duration: 0.7, ease: "easeOut" }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
-            ? "bg-[#f3fbff]/98 backdrop-blur-md shadow-sm border-b border-sky-200/80"
-            : "bg-[#e8f7ff]/94 backdrop-blur-md shadow-sm border-b border-sky-200/80"
+            ? "bg-white/95 backdrop-blur-md shadow-sm border-b border-slate-200/80"
+            : "bg-gradient-to-b from-black/30 to-transparent"
         }`}
       >
-        <div className="max-w-7xl mx-auto px-6 py-2.5 md:py-3 flex items-center justify-between">
-          {/* Logo — left, elegant brand lockup */}
-          <div className={`ml-2 md:ml-3 mr-4 rounded-2xl px-4 py-2 border transition-all shrink-0 ${
-            scrolled
-              ? "bg-white border-sky-200 shadow-sm"
-              : "bg-white/92 border-white/70 shadow-md"
-          }`}>
-            <img
-              src="/image001-transparent.png"
-              className="h-12 md:h-14 w-auto object-contain"
-              alt="Ripple"
-            />
-          </div>
+        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
+          {/* Logo — left, small in nav */}
+          <img
+            src="/image001.png"
+            className="h-10 w-auto object-contain"
+            alt="Ripple"
+          />
 
           {/* Desktop Nav — center */}
           <div className="hidden md:flex items-center gap-6 absolute left-1/2 -translate-x-1/2">
@@ -226,7 +158,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
                 key={link.href}
                 onClick={() => scrollTo(link.href)}
                 className={`text-sm font-medium transition-colors cursor-pointer ${
-                  "text-slate-700 hover:text-[#0074a5]"
+                  scrolled ? "text-slate-600 hover:text-indigo-600" : "text-white/80 hover:text-white"
                 }`}
               >
                 {link.label}
@@ -247,7 +179,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
               onClick={() => setMobileMenuOpen(v => !v)}
               aria-label="Menu"
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="#1e293b" strokeWidth="2" className="w-5 h-5">
+              <svg viewBox="0 0 24 24" fill="none" stroke={scrolled ? "#1e293b" : "#fff"} strokeWidth="2" className="w-5 h-5">
                 {mobileMenuOpen
                   ? <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
                   : <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />}
@@ -274,159 +206,165 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
 
       {/* ── HERO ────────────────────────────────────────────────────── */}
       <style>{`
-        @keyframes heroSweep {
-          0%   { transform: translate3d(-1.2%, 0.8%, 0) scale(1); }
-          100% { transform: translate3d(1.2%, -1%, 0) scale(1.08); }
+        @keyframes kenBurns {
+          0%   { transform: scale(1)     translateX(0)       translateY(0); }
+          50%  { transform: scale(1.07)  translateX(-1%)     translateY(-0.5%); }
+          100% { transform: scale(1.12)  translateX(0.5%)    translateY(-1%); }
         }
-        .hero-sweep { animation: heroSweep 16s ease-in-out infinite alternate; }
-
-        @keyframes signalDrift {
-          0%, 100% { transform: translateY(0px); opacity: 0.72; }
-          50%      { transform: translateY(-8px); opacity: 1; }
+        .ken-burns { animation: kenBurns 14s ease-in-out infinite alternate; }
+        @keyframes logoGlow {
+          0%,100% { box-shadow: 0 0 0 0 rgba(255,255,255,0), 0 25px 60px rgba(0,0,0,0.35); }
+          50%     { box-shadow: 0 0 70px 20px rgba(255,255,255,0.18), 0 25px 60px rgba(0,0,0,0.35); }
         }
-        .signal-drift { animation: signalDrift 3.6s ease-in-out infinite; }
-
-        @keyframes radarPulse {
-          0%   { transform: scale(0.75); opacity: 0.16; }
-          70%  { transform: scale(1.08); opacity: 0.04; }
-          100% { transform: scale(1.15); opacity: 0; }
-        }
-        .radar-pulse { animation: radarPulse 2.8s ease-out infinite; }
-
-        @keyframes arcSpin {
-          from { transform: rotate(0deg); }
-          to   { transform: rotate(360deg); }
-        }
-        .arc-spin { animation: arcSpin 18s linear infinite; }
-
-        @keyframes tokenFloat {
-          0%, 100% { transform: translateY(0px) rotate(-2deg); }
-          50%      { transform: translateY(-10px) rotate(2deg); }
-        }
-        .token-float { animation: tokenFloat 5.2s ease-in-out infinite; }
+        .logo-glow { animation: logoGlow 3.5s ease-in-out infinite; }
+        @keyframes orbit-a { from{transform:rotate(0deg)   translateX(230px) rotate(0deg)}   to{transform:rotate(360deg)  translateX(230px) rotate(-360deg)} }
+        @keyframes orbit-b { from{transform:rotate(72deg)  translateX(220px) rotate(-72deg)}  to{transform:rotate(432deg)  translateX(220px) rotate(-432deg)} }
+        @keyframes orbit-c { from{transform:rotate(144deg) translateX(235px) rotate(-144deg)} to{transform:rotate(504deg)  translateX(235px) rotate(-504deg)} }
+        @keyframes orbit-d { from{transform:rotate(216deg) translateX(225px) rotate(-216deg)} to{transform:rotate(576deg)  translateX(225px) rotate(-576deg)} }
+        @keyframes orbit-e { from{transform:rotate(288deg) translateX(228px) rotate(-288deg)} to{transform:rotate(648deg)  translateX(228px) rotate(-648deg)} }
       `}</style>
-      <section className="relative min-h-screen overflow-hidden">
+      <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
 
-        {/* Animated banner background */}
-        <div className="hero-sweep absolute inset-0 bg-[radial-gradient(circle_at_10%_16%,rgba(21,180,90,0.18),transparent_40%),radial-gradient(circle_at_86%_82%,rgba(0,152,219,0.24),transparent_42%),linear-gradient(132deg,#052a42_0%,#0a4e73_48%,#0d6792_100%)]" />
+        {/* Ken Burns background */}
+        <div className="ken-burns absolute inset-0 bg-gradient-to-br from-[#002D47] via-[#00466B] to-[#0086C0]" />
 
-        {/* Light texture + center beam */}
+        {/* Layered glow blobs */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute inset-0 opacity-[0.05] [background-image:radial-gradient(rgba(255,255,255,0.36)_1px,transparent_1px)] [background-size:26px_26px]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[950px] h-[950px] rounded-full border border-white/[0.04]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[680px] h-[680px] rounded-full border border-white/[0.04]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] h-[420px] rounded-full border border-white/[0.06]" />
+          <div className="absolute top-1/4 right-1/3 w-96 h-96 bg-sky-400/15 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/3 left-1/4 w-96 h-96 bg-indigo-500/15 rounded-full blur-3xl" />
+          <div className="absolute top-2/3 right-1/4 w-72 h-72 bg-violet-500/10 rounded-full blur-3xl" />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto min-h-screen px-6 pt-28 pb-20 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-14 items-center">
+        {/* ─── CENTERED HERO CONTENT ─── */}
+        <div className="relative z-10 flex flex-col items-center text-center px-6 pt-20 pb-16 max-w-3xl mx-auto w-full">
 
-          {/* Left section: message and action */}
+          {/* ══ LOGO — THE HIGHLIGHT (Saturn Orbit) ══ */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.95, ease: "easeOut" }}
-            className="text-white"
+            initial={{ opacity: 0, scale: 0.75, y: -24 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 1.1, ease: [0.34, 1.56, 0.64, 1] }}
+            className="mb-4 relative flex items-center justify-center flex-shrink-0"
+            style={{ width: 500, height: 500 }}
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/20 bg-white/10 backdrop-blur-sm text-[13px] font-semibold tracking-wide text-sky-100 mb-7">
-              <span className="w-2 h-2 rounded-full bg-emerald-300 signal-drift" />
-              Innovation Pipeline · Live Program
-            </div>
+            {/* ── Saturn rings — behind logo ── */}
+            <div
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[18deg] w-[450px] h-[145px] rounded-[50%] border-2 border-white/[0.22] pointer-events-none"
+              style={{ zIndex: 1 }}
+            />
+            <div
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[18deg] w-[475px] h-[160px] rounded-[50%] border border-white/[0.10] pointer-events-none"
+              style={{ zIndex: 1 }}
+            />
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.03] tracking-tight mb-6">
-              Ideas In.
-              <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-sky-200 to-cyan-100">
-                Impact Out.
-              </span>
-            </h1>
-
-            <p className="text-base sm:text-lg leading-relaxed text-sky-100/90 max-w-xl mb-8">
-              Ripple turns employee insight into measurable business outcomes through one streamlined path: submit,
-              evaluate, execute, and reward.
-            </p>
-
-            <div className="grid grid-cols-3 gap-3 max-w-xl mb-8">
-              <div className="rounded-2xl border border-white/20 bg-white/10 backdrop-blur-sm p-3 sm:p-4">
-                <p className="text-[11px] uppercase tracking-wider text-sky-100/70 font-semibold">Cycle</p>
-                <p className="text-xl sm:text-2xl font-black">4 Steps</p>
-              </div>
-              <div className="rounded-2xl border border-white/20 bg-white/10 backdrop-blur-sm p-3 sm:p-4">
-                <p className="text-[11px] uppercase tracking-wider text-sky-100/70 font-semibold">Review</p>
-                <p className="text-xl sm:text-2xl font-black">Monthly</p>
-              </div>
-              <div className="rounded-2xl border border-white/20 bg-white/10 backdrop-blur-sm p-3 sm:p-4">
-                <p className="text-[11px] uppercase tracking-wider text-sky-100/70 font-semibold">Focus</p>
-                <p className="text-xl sm:text-2xl font-black">ROI</p>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-4">
-              <button
-                onClick={onSignIn}
-                className="px-7 py-3.5 rounded-full bg-white text-[#004f78] font-bold shadow-xl shadow-cyan-950/35 hover:bg-sky-50 transition-all cursor-pointer"
+            {/* ── Orbiting icons ── */}
+            {([
+              { anim: 'orbit-a', dur: '10s', emoji: '💡', label: 'Idea'     },
+              { anim: 'orbit-b', dur: '14s', emoji: '🎯', label: 'Evaluate' },
+              { anim: 'orbit-c', dur: '9s',  emoji: '🚀', label: 'Execute'  },
+              { anim: 'orbit-d', dur: '16s', emoji: '🏆', label: 'Impact'   },
+              { anim: 'orbit-e', dur: '12s', emoji: '⚡', label: 'Action'   },
+            ] as const).map(item => (
+              <div
+                key={item.label}
+                title={item.label}
+                className="absolute top-1/2 left-1/2 -mt-5 -ml-5 w-10 h-10 bg-white/15 backdrop-blur-sm border border-white/30 rounded-full flex items-center justify-center text-lg shadow-lg shadow-black/20 pointer-events-none"
+                style={{ animation: `${item.anim} ${item.dur} linear infinite`, zIndex: 2 }}
               >
-                Submit an Idea
-              </button>
-              <button
-                onClick={() => scrollTo("#workflow")}
-                className="px-7 py-3.5 rounded-full border border-white/35 bg-white/10 backdrop-blur-sm text-white font-semibold hover:bg-white/20 transition-all cursor-pointer"
-              >
-                Explore Workflow
-              </button>
+                {item.emoji}
+              </div>
+            ))}
+
+            {/* ── Logo glow halo ── */}
+            <div
+              className="absolute w-64 h-44 bg-white/10 blur-3xl rounded-full pointer-events-none"
+              style={{ zIndex: 2 }}
+            />
+
+            {/* ── White logo card ── */}
+            <div
+              className="logo-glow relative bg-white rounded-[2rem] px-10 py-6 shadow-2xl border border-white/30"
+              style={{ zIndex: 3 }}
+            >
+              <img src="/image001.png" className="h-20 w-auto object-contain" alt="Ripple — One Idea Many Ripples" />
             </div>
+
+            {/* ── Saturn ring — front arc (lower portion, in front of logo) ── */}
+            <div
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[18deg] w-[450px] h-[145px] rounded-[50%] border-2 border-white/[0.18] pointer-events-none"
+              style={{ zIndex: 4, clipPath: 'polygon(0 52%, 100% 52%, 100% 100%, 0 100%)' }}
+            />
           </motion.div>
 
-          {/* Right section: creative impact board */}
+          {/* Live badge */}
           <motion.div
-            initial={{ opacity: 0, x: 28, y: 20 }}
-            animate={{ opacity: 1, x: 0, y: 0 }}
-            transition={{ duration: 1.05, ease: "easeOut", delay: 0.12 }}
-            className="relative"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.4 }}
+            className="mb-6 inline-flex items-center gap-2 px-5 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white/90 text-sm font-semibold tracking-wide"
           >
-            <div className="relative rounded-[1.8rem] border border-white/20 bg-white/10 backdrop-blur-xl shadow-[0_24px_70px_rgba(2,18,34,0.38)] p-5 sm:p-6">
+            <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
+            Employee Innovation Platform &nbsp;·&nbsp; One Ion
+          </motion.div>
 
-              <div className="rounded-2xl bg-[#063a58]/92 border border-white/10 p-4 sm:p-5">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <p className="text-[11px] uppercase tracking-[0.16em] text-sky-100/60 font-semibold">Ripple Console</p>
-                    <p className="text-white font-bold text-lg">Idea Impact Board</p>
-                  </div>
-                  <img src="/ripple-transparent.png" alt="Ripple" className="h-8 w-auto object-contain opacity-95" />
-                </div>
+          <motion.h1
+            initial={{ opacity: 0, y: 35 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, ease: "easeOut", delay: 0.58 }}
+            className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.04] mb-6"
+          >
+            One Small{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-indigo-300 to-violet-300">
+              Idea,
+            </span>
+            <br />
+            Massive{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-teal-300 to-sky-300">
+              Impact.
+            </span>
+          </motion.h1>
 
-                <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4">
-                  <div className="rounded-xl bg-white/10 border border-white/10 p-3">
-                    <p className="text-[10px] text-sky-100/65 uppercase tracking-wider">Submitted</p>
-                    <p className="text-white font-black text-lg">{bannerCounts.submitted}</p>
-                  </div>
-                  <div className="rounded-xl bg-white/10 border border-white/10 p-3">
-                    <p className="text-[10px] text-sky-100/65 uppercase tracking-wider">Approved</p>
-                    <p className="text-white font-black text-lg">{bannerCounts.approved}</p>
-                  </div>
-                  <div className="rounded-xl bg-white/10 border border-white/10 p-3">
-                    <p className="text-[10px] text-sky-100/65 uppercase tracking-wider">Live</p>
-                    <p className="text-white font-black text-lg">{bannerCounts.live}</p>
-                  </div>
-                </div>
+          <motion.p
+            initial={{ opacity: 0, y: 25 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, ease: "easeOut", delay: 0.73 }}
+            className="text-lg text-sky-100/80 leading-relaxed max-w-xl mx-auto mb-8"
+          >
+            Ripple captures, evaluates, and implements high-value employee ideas
+            — driving innovation and growth at every level of the organization.
+          </motion.p>
 
-                <div className="rounded-xl border border-white/10 bg-white/[0.07] p-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <p className="text-xs font-semibold text-sky-50">Impact Trend</p>
-                    <p className="text-[11px] text-emerald-200 font-bold">+27% QoQ</p>
-                  </div>
-                  <div className="relative h-20 rounded-lg bg-gradient-to-r from-[#0a4d72] to-[#166a95] overflow-hidden">
-                    <div className="absolute inset-0 flex items-end gap-2 px-3 pb-2">
-                      {[32, 45, 40, 58, 73, 69, 84].map((h, i) => (
-                        <div key={i} className="flex-1 rounded-t bg-gradient-to-t from-emerald-300/70 to-cyan-200/90" style={{ height: `${h}%` }} />
-                      ))}
-                    </div>
-                    <div className="absolute -left-4 -top-5 w-28 h-28 rounded-full bg-emerald-200/18 radar-pulse" />
-                  </div>
-                </div>
-              </div>
-            </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, ease: "easeOut", delay: 0.88 }}
+            className="flex flex-wrap gap-4 justify-center mb-10"
+          >
+            <button
+              onClick={onSignIn}
+              className="px-8 py-4 bg-white text-indigo-900 font-bold rounded-full text-base shadow-2xl hover:shadow-white/20 hover:bg-sky-50 transition-all cursor-pointer flex items-center gap-2 group"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5 group-hover:rotate-12 transition-transform">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636-.707.707M21 12h-1M4 12H3m3.343-5.657-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+              Submit Your Idea
+            </button>
+            <button
+              onClick={() => scrollTo("#workflow")}
+              className="px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/25 text-white font-semibold rounded-full text-base hover:bg-white/20 transition-all cursor-pointer flex items-center gap-2"
+            >
+              How It Works
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
           </motion.div>
         </div>
 
         {/* Scroll cue */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-white/50 text-xs">
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-white/40 text-xs">
           <span>Scroll to explore</span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4 animate-bounce">
             <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
