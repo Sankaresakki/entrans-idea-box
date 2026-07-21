@@ -3,10 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "motion/react";
-import { MOCK_IDEAS } from "../mockData";
-import { Idea, IdeaStatus } from "../types";
 
 interface LandingPageProps {
   onSignIn: () => void;
@@ -118,69 +116,12 @@ const WORKFLOW_STEPS = [
 export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [ideaSnapshot, setIdeaSnapshot] = useState<Idea[]>(MOCK_IDEAS);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  useEffect(() => {
-    const syncIdeaSnapshot = () => {
-      try {
-        const raw = localStorage.getItem("ion_ideas");
-        if (!raw) {
-          setIdeaSnapshot(MOCK_IDEAS);
-          return;
-        }
-        const parsed = JSON.parse(raw) as Idea[];
-        setIdeaSnapshot(Array.isArray(parsed) && parsed.length > 0 ? parsed : MOCK_IDEAS);
-      } catch {
-        setIdeaSnapshot(MOCK_IDEAS);
-      }
-    };
-
-    syncIdeaSnapshot();
-    window.addEventListener("storage", syncIdeaSnapshot);
-    return () => window.removeEventListener("storage", syncIdeaSnapshot);
-  }, []);
-
-  const bannerCounts = useMemo(() => {
-    const submitted = ideaSnapshot.length;
-
-    const approvedStatuses = new Set<IdeaStatus>([
-      IdeaStatus.WithFunctionalHead,
-      IdeaStatus.AwaitingActionPlan,
-      IdeaStatus.ActionPlanSubmitted,
-      IdeaStatus.ActionPlanRevision,
-      IdeaStatus.ActionPlanApproved,
-      IdeaStatus.ReportSubmitted,
-      IdeaStatus.ReportRevision,
-      IdeaStatus.PendingFinanceEvaluation,
-      IdeaStatus.FinanceRevision,
-      IdeaStatus.PendingCFOSignOff,
-      IdeaStatus.Completed,
-    ]);
-
-    const liveStatuses = new Set<IdeaStatus>([
-      IdeaStatus.WithFunctionalHead,
-      IdeaStatus.AwaitingActionPlan,
-      IdeaStatus.ActionPlanSubmitted,
-      IdeaStatus.ActionPlanRevision,
-      IdeaStatus.ActionPlanApproved,
-      IdeaStatus.ReportSubmitted,
-      IdeaStatus.ReportRevision,
-      IdeaStatus.PendingFinanceEvaluation,
-      IdeaStatus.FinanceRevision,
-      IdeaStatus.PendingCFOSignOff,
-    ]);
-
-    const approved = ideaSnapshot.filter((idea) => approvedStatuses.has(idea.status)).length;
-    const live = ideaSnapshot.filter((idea) => liveStatuses.has(idea.status)).length;
-
-    return { submitted, approved, live };
-  }, [ideaSnapshot]);
 
   const scrollTo = (href: string) => {
     setMobileMenuOpen(false);
@@ -380,46 +321,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
             transition={{ duration: 1.05, ease: "easeOut", delay: 0.12 }}
             className="relative"
           >
-            <div className="relative rounded-[1.8rem] border border-white/20 bg-white/10 backdrop-blur-xl shadow-[0_24px_70px_rgba(2,18,34,0.38)] p-5 sm:p-6">
-
-              <div className="rounded-2xl bg-[#063a58]/92 border border-white/10 p-4 sm:p-5">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <p className="text-[11px] uppercase tracking-[0.16em] text-sky-100/60 font-semibold">Ripple Console</p>
-                    <p className="text-white font-bold text-lg">Idea Impact Board</p>
-                  </div>
-                  <img src="/ripple-transparent.png" alt="Ripple" className="h-8 w-auto object-contain opacity-95" />
-                </div>
-
-                <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4">
-                  <div className="rounded-xl bg-white/10 border border-white/10 p-3">
-                    <p className="text-[10px] text-sky-100/65 uppercase tracking-wider">Submitted</p>
-                    <p className="text-white font-black text-lg">{bannerCounts.submitted}</p>
-                  </div>
-                  <div className="rounded-xl bg-white/10 border border-white/10 p-3">
-                    <p className="text-[10px] text-sky-100/65 uppercase tracking-wider">Approved</p>
-                    <p className="text-white font-black text-lg">{bannerCounts.approved}</p>
-                  </div>
-                  <div className="rounded-xl bg-white/10 border border-white/10 p-3">
-                    <p className="text-[10px] text-sky-100/65 uppercase tracking-wider">Live</p>
-                    <p className="text-white font-black text-lg">{bannerCounts.live}</p>
-                  </div>
-                </div>
-
-                <div className="rounded-xl border border-white/10 bg-white/[0.07] p-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <p className="text-xs font-semibold text-sky-50">Impact Trend</p>
-                    <p className="text-[11px] text-emerald-200 font-bold">+27% QoQ</p>
-                  </div>
-                  <div className="relative h-20 rounded-lg bg-gradient-to-r from-[#0a4d72] to-[#166a95] overflow-hidden">
-                    <div className="absolute inset-0 flex items-end gap-2 px-3 pb-2">
-                      {[32, 45, 40, 58, 73, 69, 84].map((h, i) => (
-                        <div key={i} className="flex-1 rounded-t bg-gradient-to-t from-emerald-300/70 to-cyan-200/90" style={{ height: `${h}%` }} />
-                      ))}
-                    </div>
-                    <div className="absolute -left-4 -top-5 w-28 h-28 rounded-full bg-emerald-200/18 radar-pulse" />
-                  </div>
-                </div>
+            <div className="relative rounded-[1.8rem] border border-white/20 bg-white/10 backdrop-blur-xl shadow-[0_24px_70px_rgba(2,18,34,0.38)] p-8 sm:p-12 flex items-center justify-center">
+              <div className="rounded-2xl px-8 py-6 border transition-all bg-white/92 border-white/70 shadow-md">
+                <img
+                  src="/image001-transparent.png"
+                  className="h-24 md:h-32 w-auto object-contain"
+                  alt="Ripple"
+                />
               </div>
             </div>
           </motion.div>
