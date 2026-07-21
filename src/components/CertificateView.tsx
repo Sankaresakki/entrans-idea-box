@@ -79,7 +79,7 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ idea, certType
     })();
 
     return (
-      <div id={`cert-card-${idea.id}`} className="max-w-5xl mx-auto my-4 print-area">
+      <div id={`cert-card-${idea.id}`} className="max-w-5xl mx-auto my-4 print-area bg-white p-6">
         {/* Print button */}
         <div className="flex justify-end mb-2 no-print">
           <button
@@ -97,8 +97,8 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ idea, certType
           {/* Corner circle accents */}
           <div className="absolute top-[10px] left-[10px] w-5 h-5 border-2 border-blue-900 rounded-full pointer-events-none z-10" />
           <div className="absolute top-[10px] right-[10px] w-5 h-5 border-2 border-blue-900 rounded-full pointer-events-none z-10" />
-          <div className="absolute bottom-[42px] left-[10px] w-5 h-5 border-2 border-blue-900 rounded-full pointer-events-none z-10" />
-          <div className="absolute bottom-[42px] right-[10px] w-5 h-5 border-2 border-blue-900 rounded-full pointer-events-none z-10" />
+          <div className="absolute bottom-[10px] left-[10px] w-5 h-5 border-2 border-blue-900 rounded-full pointer-events-none z-10" />
+          <div className="absolute bottom-[10px] right-[10px] w-5 h-5 border-2 border-blue-900 rounded-full pointer-events-none z-10" />
 
           {/* Inner border frame */}
           <div className="mx-[22px] my-[22px] border border-blue-900/30">
